@@ -8,26 +8,42 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.qnoow.telephaty.MainActivity" >
 
+    <LinearLayout
+        android:id="@+id/linearLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical" >
+
+        <Button
+            android:id="@+id/button1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="67dp"
+            android:layout_marginTop="16dp"
+            android:onClick="scan"
+            android:text="Scan" />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/devicesfound"
+        android:layout_width="fill_parent"
+        android:layout_height="276dp"
+        android:layout_alignLeft="@+id/linearLayout1"
+        android:layout_alignParentBottom="true"
+        android:layout_below="@+id/linearLayout1"
+        android:layout_marginBottom="15dp" >
+
+    </ListView>
+
     <Button
         android:id="@+id/button2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBaseline="@+id/button1"
-        android:layout_alignBottom="@+id/button1"
-        android:layout_marginLeft="38dp"
-        android:layout_toRightOf="@+id/button1"
+        android:layout_alignBottom="@+id/linearLayout1"
+        android:layout_alignRight="@+id/devicesfound"
+        android:layout_marginRight="38dp"
         android:onClick="paired"
         android:text="Paired" />
-
-    <Button
-        android:id="@+id/button1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:layout_marginLeft="67dp"
-        android:layout_marginTop="16dp"
-        android:onClick="scan"
-        android:text="Scan" />
 
 </RelativeLayout>

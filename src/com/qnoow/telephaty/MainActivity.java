@@ -1,14 +1,12 @@
 package com.qnoow.telephaty;
 
 import android.bluetooth.BluetoothAdapter;
-import android.content.BroadcastReceiver;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.qnoow.telephaty.Bluetooth.Bluetooth;
@@ -17,9 +15,8 @@ import com.qnoow.telephaty.Bluetooth.Bluetooth;
 public class MainActivity extends ActionBarActivity {
 
     private ArrayAdapter mArrayAdapter;
-    private BluetoothAdapter mBluetoothAdapter;
     private Bluetooth bluetooth = new Bluetooth();;
-    
+    private ListView listDevicesFound;
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,10 +26,11 @@ public class MainActivity extends ActionBarActivity {
         if (!bluetooth.isSupported())
         	Toast.makeText(this, "bluetooth no soportado", Toast.LENGTH_SHORT).show();
         bluetooth.setEnable(this);
-        
-        BroadcastReceiver mReceiver = bluetooth.setBroadcastReceiver(mBluetoothAdapter, mArrayAdapter);
-    	bluetooth.registerBroadcastReceiver(getApplicationContext(), mReceiver);
-    	
+        listDevicesFound = (ListView)findViewById(R.id.devicesfound);
+        mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+        listDevicesFound.setAdapter(mArrayAdapter);
+    	bluetooth.registerBroadcastReceiver(getApplicationContext(), bluetooth.setBroadcastReceiver(getApplicationContext(),mArrayAdapter));
+
 
 
 	
@@ -58,7 +56,9 @@ public class MainActivity extends ActionBarActivity {
 //    
     public void scan(View view){
     	Toast.makeText(this, "pulsado scan", Toast.LENGTH_SHORT).show();
-    	mBluetoothAdapter.startDiscovery();
+    	mArrayAdapter.clear();
+    	BluetoothAdapter.getDefaultAdapter().startDiscovery();
+
     }
 
 
