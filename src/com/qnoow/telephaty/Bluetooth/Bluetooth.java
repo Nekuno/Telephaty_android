@@ -115,14 +115,15 @@ public class Bluetooth {
 
 	}
 
-	public Intent setEnableDiscoverability() {
+	public Intent enableDiscoverability(int time) {
 		Intent discoverableIntent = new Intent(
 				BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
 		discoverableIntent.putExtra(
-				BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 0); //  0 means the device is always discoverable
+				BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, time); //  0 means the device is always discoverable
 		return discoverableIntent;
-
 	}
+	
+	
 
 	// public void showBlueDialog(Context context) {
 	//

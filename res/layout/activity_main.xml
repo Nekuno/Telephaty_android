@@ -10,19 +10,31 @@
 
     <LinearLayout
         android:id="@+id/linearLayout1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical" >
 
         <Button
             android:id="@+id/button1"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="67dp"
-            android:layout_marginTop="16dp"
             android:onClick="scan"
             android:text="Scan" />
 
+        <Button
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="paired"
+            android:text="Paired" />
+        
+        <Button
+            android:id="@+id/enableDiscoverability"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="setEnableDiscoverability"
+            android:text="Discoverability" />
+        
     </LinearLayout>
 
     <ListView
@@ -33,17 +45,6 @@
         android:layout_alignParentBottom="true"
         android:layout_below="@+id/linearLayout1"
         android:layout_marginBottom="15dp" >
-
     </ListView>
-
-    <Button
-        android:id="@+id/button2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/linearLayout1"
-        android:layout_alignRight="@+id/devicesfound"
-        android:layout_marginRight="38dp"
-        android:onClick="paired"
-        android:text="Paired" />
 
 </RelativeLayout>

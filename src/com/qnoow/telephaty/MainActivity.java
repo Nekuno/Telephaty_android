@@ -1,6 +1,7 @@
 package com.qnoow.telephaty;
 
 import android.bluetooth.BluetoothAdapter;
+import android.net.nsd.NsdManager.DiscoveryListener;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.view.Menu;
@@ -17,29 +18,22 @@ public class MainActivity extends ActionBarActivity {
     private ArrayAdapter mArrayAdapter;
     private Bluetooth bluetooth = new Bluetooth();;
     private ListView listDevicesFound;
-    
+    private Boolean discoverability; 
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-                
-        
         if (!bluetooth.isSupported())
         	Toast.makeText(this, "Bluetooth no soportado", Toast.LENGTH_SHORT).show();
         
-        // Init
+        discoverability = false;
         bluetooth.setEnable(this);
-        startActivity(bluetooth.setEnableDiscoverability()); 
-        
         listDevicesFound = (ListView)findViewById(R.id.devicesfound);
         mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         listDevicesFound.setAdapter(mArrayAdapter);
     	bluetooth.registerBroadcastReceiver(getApplicationContext(), bluetooth.setBroadcastReceiver(getApplicationContext(),mArrayAdapter));
-    
-
-
-	
-	 }
+    	
+ 	 }
 	
 	
 //	class MyClickListener implements OnClickListener {
@@ -71,8 +65,19 @@ public class MainActivity extends ActionBarActivity {
     	bluetooth.getPairedDevices(this,"Dispositivos emparejados anteriormente"); 
     }
 
+    public void setEnableDiscoverability(View view){
+    	if (discoverability == true){
+    		discoverability = false;
+    		Toast.makeText(this, "Disabling Discoverability", Toast.LENGTH_SHORT).show();
+    		startActivity(bluetooth.enableDiscoverability(1)); 
+    	}else{
+     		discoverability = true;
+     		Toast.makeText(this, "Enabling Discoverability", Toast.LENGTH_SHORT).show();
+     		startActivity(bluetooth.enableDiscoverability(0)); 
+    	}
+    }
     
-    
+ 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
