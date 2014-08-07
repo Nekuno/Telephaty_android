@@ -123,6 +123,10 @@ public class Bluetooth {
 		return discoverableIntent;
 	}
 	
+	public void disableDiscoverability() {
+		mBluetoothAdapter.cancelDiscovery();
+	}
+	
 	
 
 	// public void showBlueDialog(Context context) {
