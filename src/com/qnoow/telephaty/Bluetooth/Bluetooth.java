@@ -114,7 +114,9 @@ public class Bluetooth {
 		context.registerReceiver(mReceiver, filter);
 
 	}
-
+    // Function that enables/disables the discoverability depending on the parameter time
+	// time == 0 -> Enable visibility for ever.
+	// time == 1 -> Disable visibility in 1 sec, this is the only method to disable it
 	public Intent enableDiscoverability(int time) {
 		Intent discoverableIntent = new Intent(
 				BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
