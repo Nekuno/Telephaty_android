@@ -17,6 +17,7 @@ public class MainActivity extends ActionBarActivity {
     private ArrayAdapter mArrayAdapter;
     private Bluetooth bluetooth = new Bluetooth();;
     private ListView listDevicesFound;
+    
 	@Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -24,13 +25,17 @@ public class MainActivity extends ActionBarActivity {
                 
         
         if (!bluetooth.isSupported())
-        	Toast.makeText(this, "bluetooth no soportado", Toast.LENGTH_SHORT).show();
+        	Toast.makeText(this, "Bluetooth no soportado", Toast.LENGTH_SHORT).show();
+        
+        // Init
         bluetooth.setEnable(this);
+        startActivity(bluetooth.setEnableDiscoverability()); 
+        
         listDevicesFound = (ListView)findViewById(R.id.devicesfound);
         mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
         listDevicesFound.setAdapter(mArrayAdapter);
     	bluetooth.registerBroadcastReceiver(getApplicationContext(), bluetooth.setBroadcastReceiver(getApplicationContext(),mArrayAdapter));
-
+    
 
 
 	
@@ -74,5 +79,6 @@ public class MainActivity extends ActionBarActivity {
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
-
+    
+    
 }
