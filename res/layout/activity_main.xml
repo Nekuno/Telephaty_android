@@ -27,24 +27,24 @@
             android:layout_height="wrap_content"
             android:onClick="paired"
             android:text="Paired" />
-        
+
         <Button
             android:id="@+id/enableDiscoverability"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:onClick="setEnableDiscoverability"
             android:text="Discoverability" />
-        
-    </LinearLayout>
 
-    <ListView
-        android:id="@+id/devicesfound"
-        android:layout_width="fill_parent"
-        android:layout_height="276dp"
-        android:layout_alignLeft="@+id/linearLayout1"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/linearLayout1"
-        android:layout_marginBottom="15dp" >
-    </ListView>
+        <ListView
+            android:id="@+id/devicesfound"
+            android:layout_width="fill_parent"
+            android:layout_height="276dp"
+            android:layout_alignLeft="@+id/linearLayout1"
+            android:layout_alignParentBottom="true"
+            android:layout_below="@+id/linearLayout1"
+            android:layout_marginBottom="15dp" >
+        </ListView>
+    
+    </LinearLayout>
 
 </RelativeLayout>
