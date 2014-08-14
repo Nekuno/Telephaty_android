@@ -139,23 +139,23 @@ public class MainActivity extends ActionBarActivity {
 
         // Initialize the array adapter for the conversation thread
         mConversationArrayAdapter = new ArrayAdapter<String>(this, R.layout.message);
-        mConversationView = (ListView) findViewById(R.id.in);
-        mConversationView.setAdapter(mConversationArrayAdapter);
+//        mConversationView = (ListView) findViewById(R.id.in);
+//        mConversationView.setAdapter(mConversationArrayAdapter);
 
         // Initialize the compose field with a listener for the return key
-        mOutEditText = (EditText) findViewById(R.id.edit_text_out);
-        mOutEditText.setOnEditorActionListener(mWriteListener);
+//        mOutEditText = (EditText) findViewById(R.id.edit_text_out);
+//        mOutEditText.setOnEditorActionListener(mWriteListener);
 
         // Initialize the send button with a listener that for click events
-        mSendButton = (Button) findViewById(R.id.button_send);
-        mSendButton.setOnClickListener(new OnClickListener() {
-            public void onClick(View v) {
-                // Send a message using content of the edit text widget
-                TextView view = (TextView) findViewById(R.id.edit_text_out);
-                String message = view.getText().toString();
-                sendMessage(message);
-            }
-        });
+//        mSendButton = (Button) findViewById(R.id.button_send);
+//        mSendButton.setOnClickListener(new OnClickListener() {
+//            public void onClick(View v) {
+//                // Send a message using content of the edit text widget
+//                TextView view = (TextView) findViewById(R.id.edit_text_out);
+//                String message = view.getText().toString();
+//                sendMessage(message);
+//            }
+//        });
 
         // Initialize the buffer for outgoing messages
         mOutStringBuffer = new StringBuffer("");
@@ -165,38 +165,38 @@ public class MainActivity extends ActionBarActivity {
      * Sends a message.
      * @param message  A string of text to send.
      */
-    private void sendMessage(String message) {
-        // Check that we're actually connected before trying anything
-        if (myBluetooth.getState() != Utilities.STATE_CONNECTED) {
-            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Check that there's actually something to send
-        if (message.length() > 0) {
-            // Get the message bytes and tell the BluetoothChatService to write
-            byte[] send = message.getBytes();
-            myBluetooth.write(send);
-
-            // Reset out string buffer to zero and clear the edit text field
-            mOutStringBuffer.setLength(0);
-            mOutEditText.setText(mOutStringBuffer);
-        }
-    }
+//    private void sendMessage(String message) {
+//        // Check that we're actually connected before trying anything
+//        if (myBluetooth.getState() != Utilities.STATE_CONNECTED) {
+//            Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
+//            return;
+//        }
+//
+//        // Check that there's actually something to send
+//        if (message.length() > 0) {
+//            // Get the message bytes and tell the BluetoothChatService to write
+//            byte[] send = message.getBytes();
+//            myBluetooth.write(send);
+//
+//            // Reset out string buffer to zero and clear the edit text field
+//            mOutStringBuffer.setLength(0);
+//            mOutEditText.setText(mOutStringBuffer);
+//        }
+//    }
 
     // The action listener for the EditText widget, to listen for the return key
-    private TextView.OnEditorActionListener mWriteListener =
-        new TextView.OnEditorActionListener() {
-        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
-            // If the action is a key-up event on the return key, send the message
-            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
-                String message = view.getText().toString();
-                sendMessage(message);
-            }
-            Log.i(TAG, "END onEditorAction");
-            return true;
-        }
-    };
+//    private TextView.OnEditorActionListener mWriteListener =
+//        new TextView.OnEditorActionListener() {
+//        public boolean onEditorAction(TextView view, int actionId, KeyEvent event) {
+//            // If the action is a key-up event on the return key, send the message
+//            if (actionId == EditorInfo.IME_NULL && event.getAction() == KeyEvent.ACTION_UP) {
+//                String message = view.getText().toString();
+//                sendMessage(message);
+//            }
+//            Log.i(TAG, "END onEditorAction");
+//            return true;
+//        }
+//    };
 
     private final void setStatus(int resId) {
         final ActionBar actionBar = getActionBar();
@@ -261,7 +261,7 @@ public class MainActivity extends ActionBarActivity {
         case Utilities.REQUEST_CONNECT_DEVICE:
             // When DeviceListActivity returns with a device to connect
             if (resultCode == Activity.RESULT_OK) {
-                connectDevice(data, false);
+                connectDevice(data);
             }
             break;
         case Utilities.REQUEST_ENABLE_BT:
@@ -278,15 +278,14 @@ public class MainActivity extends ActionBarActivity {
         }
     }
 
-    private void connectDevice(Intent data, boolean secure) {
+    private void connectDevice(Intent data) {
         // Get the device MAC address
         String address = data.getExtras()
             .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
         // Get the BluetoothDevice object
-        
         BluetoothDevice device = BluetoothAdapter.getDefaultAdapter().getRemoteDevice(address);
         // Attempt to connect to the device
-        myBluetooth.connect(device, secure);
+        myBluetooth.connect(device);
     }
 
    
