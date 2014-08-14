@@ -6,7 +6,7 @@ public class Utilities {
 
 	// Debugging
     private static final String ID_PROJECT = "QnoowBluetoothConnection";
-    public static final String TAG = "BluetoothConnection";
+    public static final String TAG = "BluetoothConnection Telephaty";
     
     // Message types sent from the Bluetooth Handler
     public static final int MESSAGE_STATE_CHANGE = 1;
@@ -35,6 +35,7 @@ public class Utilities {
     // Intent request codes
     public static final int REQUEST_CONNECT_DEVICE = 1;
     public static final int REQUEST_ENABLE_BT = 3;
+	public static final boolean D = true;
    
 
 }
