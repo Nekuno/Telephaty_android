@@ -40,9 +40,7 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		// Initialize the BluetoothChatService to perform bluetooth connections
-		if (!myBluetooth.isSupported())
-			Toast.makeText(this, "Bluetooth no soportado", Toast.LENGTH_SHORT)
-					.show();
+		
 		mAdapter  = BluetoothAdapter.getDefaultAdapter();
 		
 		
