@@ -222,7 +222,7 @@ public class Bluetooth {
 			mConnectedThread = null;
 		}
 
-		setState(STATE_LISTEN);
+		setState(Utilities.STATE_LISTEN);
 
 		// Start the thread to listen on a BluetoothServerSocket
 		if (mSecureAcceptThread == null) {
