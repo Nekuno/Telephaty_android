@@ -25,7 +25,6 @@ import com.qnoow.telephaty.MainActivity;
 
 public class Bluetooth {
 
-	BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 	public static final int REQ_CODE = 1001;
 	private List<BluetoothDevice> devices = new ArrayList<BluetoothDevice>();
 	
@@ -35,7 +34,7 @@ public class Bluetooth {
 	private ConnectedThread mConnectedThread;
 
 	// Member fields
-	private final BluetoothAdapter mAdapter;
+	private BluetoothAdapter mAdapter = null;
 	private final Handler mHandler;
 	private int mState;
 	
@@ -49,7 +48,7 @@ public class Bluetooth {
 
 	// Function that checks if Bluetooth is supported by a device
 	public Boolean isSupported() {
-		if (mBluetoothAdapter == null) {
+		if (mAdapter == null) {
 			// Device does not support Bluetooth
 			return false;
 		}
@@ -59,7 +58,7 @@ public class Bluetooth {
 
 	// function that allow us to enable Bluetooth
 	public void setEnable(Context context) {
-		if (!mBluetoothAdapter.isEnabled()) {
+		if (!mAdapter.isEnabled()) {
 			Intent enableBtIntent = new Intent(
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			Activity c = (Activity) context;
@@ -71,7 +70,7 @@ public class Bluetooth {
 	public void getPairedDevices(final Context context, final String title) {
 
 		Set<BluetoothDevice> pairedDevices;
-		pairedDevices = mBluetoothAdapter.getBondedDevices();
+		pairedDevices = mAdapter.getBondedDevices();
 		final String[] devices = new String[pairedDevices.size()];
 		final String[] MAC = new String[pairedDevices.size()];
 		// put it's one to the adapter
@@ -156,7 +155,7 @@ public class Bluetooth {
 	}
 
 	public void disableDiscoverability() {
-		mBluetoothAdapter.cancelDiscovery();
+		mAdapter.cancelDiscovery();
 	}
 
 	// public void showBlueDialog(Context context) {
