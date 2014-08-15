@@ -12,8 +12,12 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qnoow.telephaty.Bluetooth.Bluetooth;
@@ -31,7 +35,8 @@ public class MainActivity extends ActionBarActivity {
 	private Bluetooth mService = null;
 	// Name of the connected device
     private String mConnectedDeviceName = null;
-
+    
+    private Button mSendButton;
    
 
     
@@ -42,8 +47,7 @@ public class MainActivity extends ActionBarActivity {
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		
 		mAdapter  = BluetoothAdapter.getDefaultAdapter();
-		
-		
+		setupCommunication();
 		if (mService == null)
 			setupService();
 
@@ -147,7 +151,7 @@ public class MainActivity extends ActionBarActivity {
 				byte[] readBuf = (byte[]) msg.obj;
 				// construct a string from the valid bytes in the buffer
 				String readMessage = new String(readBuf, 0, msg.arg1);
-
+				Toast.makeText(MainActivity.this, readMessage, Toast.LENGTH_LONG).show();
 				Log.e(TAG, "NOSSO DEBUG - READ:" + readMessage + "!!!");
 
 			
@@ -279,5 +283,20 @@ public class MainActivity extends ActionBarActivity {
       
         }
         return false;
+    }
+    
+    private void setupCommunication() {
+        Log.d(TAG, "setupCommunication");
+        // Initialize the send button with a listener that for click events
+        mSendButton = (Button) findViewById(R.id.button_send);
+        mSendButton.setOnClickListener(new OnClickListener() {
+            public void onClick(View v) {
+                // Send a message using content of the edit text widget
+                TextView view = (TextView) findViewById(R.id.edit_text_out);
+                String message = view.getText().toString();
+                sendMessage(message);
+            }
+        });
+        
     }
 }

@@ -178,8 +178,6 @@ public class Bluetooth {
 	
 
 	
-	
-	
 	/**
 	 * Set the current state of the chat connection
 	 * @param state
