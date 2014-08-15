@@ -25,7 +25,7 @@ public class ConnectThread extends Thread {
     	if (secure){
     		try {
     			tmp = device.createRfcommSocketToServiceRecord(
-    					Utilities.MY_UUID);
+    					Utilities.MY_UUID_SECURE);
     		} catch (IOException e) {
     			Log.e(Utilities.TAG, "create() failed", e);
     		}
@@ -34,7 +34,7 @@ public class ConnectThread extends Thread {
     	else{
     		try {
     			tmp = device.createInsecureRfcommSocketToServiceRecord(
-    					Utilities.MY_UUID);
+    					Utilities.MY_UUID_INSECURE);
     		} catch (IOException e) {
     			Log.e(Utilities.TAG, "create() failed", e);
     		}

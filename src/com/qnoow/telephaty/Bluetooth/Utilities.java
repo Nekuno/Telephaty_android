@@ -21,10 +21,13 @@ public class Utilities {
     
 
     // Name for the SDP record when creating server socket
-    public static final String NAME = ID_PROJECT;
+    public static final String NAME_SECURE = ID_PROJECT;
+    public static final String NAME_INSECURE = ID_PROJECT;
 
     // Unique UUID for this application
-    public static final UUID MY_UUID =  UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
+    public static final UUID MY_UUID_SECURE =  UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
+    public static final UUID MY_UUID_INSECURE =  UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a67");
+    
     
     // Constants that indicate the current connection state
     public static final int STATE_NONE = 0;       // we're doing nothing

@@ -28,12 +28,12 @@ public class AcceptThread extends Thread {
 		try {
 			if (secure) {
 				tmp = mService.getAdapter().listenUsingRfcommWithServiceRecord(
-						Utilities.NAME,
-						Utilities.MY_UUID);
+						Utilities.NAME_SECURE,
+						Utilities.MY_UUID_SECURE);
 			} else {
 				tmp = mService.getAdapter().listenUsingInsecureRfcommWithServiceRecord(
-						Utilities.NAME,
-						Utilities.MY_UUID);
+						Utilities.NAME_INSECURE,
+						Utilities.MY_UUID_INSECURE);
 			}
 		} catch (IOException e) {
 			Log.e(Utilities.TAG, "Socket Type: " + mSocketType
