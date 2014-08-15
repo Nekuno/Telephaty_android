@@ -31,7 +31,7 @@ public class AcceptThread extends Thread {
 						Utilities.NAME,
 						Utilities.MY_UUID);
 			} else {
-				tmp = mService.getAdapter().listenUsingRfcommWithServiceRecord(
+				tmp = mService.getAdapter().listenUsingInsecureRfcommWithServiceRecord(
 						Utilities.NAME,
 						Utilities.MY_UUID);
 			}

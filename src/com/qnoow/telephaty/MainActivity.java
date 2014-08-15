@@ -262,7 +262,7 @@ public class MainActivity extends ActionBarActivity {
 		BluetoothDevice device = mAdapter.getRemoteDevice(address);
 
 		// Attempt to connect to the device
-		mService.connect(device);
+		mService.connect(device,false);
 	}
 
 	

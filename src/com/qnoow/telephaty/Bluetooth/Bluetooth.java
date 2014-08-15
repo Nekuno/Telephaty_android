@@ -241,7 +241,7 @@ public class Bluetooth {
 	 * @param device
 	 *            The BluetoothDevice to connect
 	 */
-	public synchronized void connect(BluetoothDevice device) {
+	public synchronized void connect(BluetoothDevice device, Boolean secure) {
 		if (Utilities.D)
 			Log.d(Utilities.TAG, "connect to: " + device);
 
@@ -260,7 +260,7 @@ public class Bluetooth {
 		}
 
 		// Start the thread to connect with the given device
-		mConnectThread = new ConnectThread(this, device);
+		mConnectThread = new ConnectThread(this, device, secure);
 		mConnectThread.start();
 		setState(Utilities.STATE_CONNECTING);
 	}

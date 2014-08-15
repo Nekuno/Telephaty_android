@@ -14,20 +14,33 @@ public class ConnectThread extends Thread {
     private final BluetoothSocket mSocket;
     private final BluetoothDevice mDevice;
 
-	public ConnectThread(Bluetooth service, BluetoothDevice device) {
+    public ConnectThread(Bluetooth service, BluetoothDevice device, boolean secure) {
     	mService = service;
-        mDevice = device;
-        BluetoothSocket tmp = null;
+    	mDevice = device;
+    	BluetoothSocket tmp = null;
 
-        // Get a BluetoothSocket for a connection with the
-        // given BluetoothDevice
-        try {
-            tmp = device.createRfcommSocketToServiceRecord(
-                    Utilities.MY_UUID);
-        } catch (IOException e) {
-            Log.e(Utilities.TAG, "create() failed", e);
-        }
-        mSocket = tmp;
+    	// Get a BluetoothSocket for a connection with the
+    	// given BluetoothDevice
+
+    	if (secure){
+    		try {
+    			tmp = device.createRfcommSocketToServiceRecord(
+    					Utilities.MY_UUID);
+    		} catch (IOException e) {
+    			Log.e(Utilities.TAG, "create() failed", e);
+    		}
+    		mSocket = tmp;
+    	}
+    	else{
+    		try {
+    			tmp = device.createInsecureRfcommSocketToServiceRecord(
+    					Utilities.MY_UUID);
+    		} catch (IOException e) {
+    			Log.e(Utilities.TAG, "create() failed", e);
+    		}
+    		mSocket = tmp;
+    	}
+    	
     }
 
     public void run() {
