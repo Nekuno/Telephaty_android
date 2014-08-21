@@ -41,5 +41,8 @@ public class Utilities {
     public static final int REQUEST_ENABLE_BT = 3;
 	public static final boolean D = true;
    
+	
+	//SharedKey
+	public static byte[] sharedKey;
 
 }

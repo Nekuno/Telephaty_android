@@ -1,5 +1,7 @@
 package com.qnoow.telephaty;
 
+import java.io.IOException;
+
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -23,6 +25,7 @@ import android.widget.Toast;
 import com.qnoow.telephaty.Bluetooth.Bluetooth;
 import com.qnoow.telephaty.Bluetooth.DeviceListActivity;
 import com.qnoow.telephaty.Bluetooth.Utilities;
+import com.qnoow.telephaty.security.Support;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -126,7 +129,7 @@ public class MainActivity extends ActionBarActivity {
 
 				Log.i(TAG, "NOSSO DEBUG - WRITE:" + writeMessage + "!!!");
 				break;
-			case Utilities.MESSAGE_READ:
+			case Utilities.SHARED_KEY:
 				byte[] readBuf = (byte[]) msg.obj;
 				// construct a string from the valid bytes in the buffer
 				String readMessage = new String(readBuf, 0, msg.arg1);
@@ -136,6 +139,31 @@ public class MainActivity extends ActionBarActivity {
 				tx.setText(readMessage);
 				Log.i(TAG, "NOSSO DEBUG - READ:" + readMessage + "!!!");
 
+				break;
+				
+			case Utilities.MESSAGE_READ:
+				byte[] readBuff = (byte[]) msg.obj;
+				
+				byte[] byte_pad = Support.crypt_decrypt(Utilities.sharedKey, Utilities.sharedKey, readBuff);
+				byte[] original_byte = Support.delete_padding(byte_pad);
+				try {
+					byte[] original_data = (byte[]) Support.deserialize(original_byte);
+				
+				// construct a string from the valid bytes in the buffer
+				String readString = new String(original_data, 0, original_data.length);
+				Toast.makeText(MainActivity.this, readString,
+						Toast.LENGTH_LONG).show();
+				TextView txv = (TextView) findViewById(R.id.textView1);
+				txv.setText(readString);
+				Log.i(TAG, "NOSSO DEBUG - READ:" + readString + "!!!");
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				break;
 			case Utilities.MESSAGE_DEVICE_NAME:
 				// save the connected device's name
