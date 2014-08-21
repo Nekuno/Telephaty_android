@@ -21,7 +21,9 @@ import android.util.Log;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+
 import com.qnoow.telephaty.MainActivity;
+import com.qnoow.telephaty.security.Support;
 
 public class Bluetooth {
 
@@ -357,6 +359,7 @@ public class Bluetooth {
 				return;
 			r = mConnectedThread;
 		}
+		
 		// Perform the write unsynchronized
 		r.write(out);
 	}
@@ -406,4 +409,7 @@ public class Bluetooth {
 	public Handler getHandler() {
 		return mHandler;
 	}
+	
+	
+	
 }

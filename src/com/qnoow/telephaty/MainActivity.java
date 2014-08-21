@@ -124,7 +124,7 @@ public class MainActivity extends ActionBarActivity {
 				// construct a string from the buffer
 				String writeMessage = new String(writeBuf);
 
-				Log.e(TAG, "NOSSO DEBUG - WRITE:" + writeMessage + "!!!");
+				Log.i(TAG, "NOSSO DEBUG - WRITE:" + writeMessage + "!!!");
 				break;
 			case Utilities.MESSAGE_READ:
 				byte[] readBuf = (byte[]) msg.obj;
@@ -132,7 +132,9 @@ public class MainActivity extends ActionBarActivity {
 				String readMessage = new String(readBuf, 0, msg.arg1);
 				Toast.makeText(MainActivity.this, readMessage,
 						Toast.LENGTH_LONG).show();
-				Log.e(TAG, "NOSSO DEBUG - READ:" + readMessage + "!!!");
+				TextView tx = (TextView) findViewById(R.id.textView1);
+				tx.setText(readMessage);
+				Log.i(TAG, "NOSSO DEBUG - READ:" + readMessage + "!!!");
 
 				break;
 			case Utilities.MESSAGE_DEVICE_NAME:
@@ -162,10 +164,10 @@ public class MainActivity extends ActionBarActivity {
 		} else {
 			discoverability = false;
 			myBluetooth.setEnable(this);
-			listDevicesFound = (ListView) findViewById(R.id.devicesfound);
+			//listDevicesFound = (ListView) findViewById(R.id.devicesfound);
 			mArrayAdapter = new ArrayAdapter<String>(this,
 					android.R.layout.simple_list_item_1);
-			listDevicesFound.setAdapter(mArrayAdapter);
+			//listDevicesFound.setAdapter(mArrayAdapter);
 			myBluetooth.registerBroadcastReceiver(getApplicationContext(),
 					myBluetooth.setBroadcastReceiver(getApplicationContext(),
 							mArrayAdapter));
@@ -287,7 +289,7 @@ public class MainActivity extends ActionBarActivity {
 
 	private void setupCommunication() {
 		Log.d(TAG, "setupCommunication");
-		// Initialize the send button with a listener that for click events
+		//Initialize the send button with a listener that for click events
 		mSendButton = (Button) findViewById(R.id.button_send);
 		mSendButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {

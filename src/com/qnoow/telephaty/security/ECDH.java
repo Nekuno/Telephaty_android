@@ -17,7 +17,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.KeyAgreement;
 
-public class ecdh {
+public class ECDH {
 	
 	private PublicKey pubKey;
 	private PrivateKey privKey;
@@ -42,7 +42,7 @@ public class ecdh {
 	*/
 	
 	
-	public ecdh() throws InvalidAlgorithmParameterException, NoSuchProviderException, InvalidKeySpecException {
+	public ECDH() throws InvalidAlgorithmParameterException, NoSuchProviderException, InvalidKeySpecException {
 		
 		/* Generamos una curva según los parámetros de la curva  secp128r1 */
 		ECGenParameterSpec ecParamSpec = new ECGenParameterSpec("secp128r1");
