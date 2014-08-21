@@ -60,7 +60,7 @@ public class ConnectedThread extends Thread {
 
 	public void run() {
 		Log.i(Utilities.TAG, "BEGIN mConnectedThread");
-		byte[] buffer = new byte[1024];
+		byte[] buffer = null;
 		int bytes;
 		
 		Boolean setECDH = false;
@@ -135,14 +135,18 @@ public class ConnectedThread extends Thread {
 		while (true) {
 			try {
 				// Read from the InputStream
-				bytes = mInStream.read(buffer);
-				byte[] byte_pad = Support.crypt_decrypt(sharedKey, sharedKey, buffer);
+				if (mSocket.getInputStream() != null) {
+					//en escucha para recibir un mensaje
+				ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
+				Object line = ois.readObject();
+				byte[] byte_pad = Support.crypt_decrypt(sharedKey, sharedKey, (byte[]) line);
 				byte[] original_byte = Support.delete_padding(byte_pad);
 				byte[] original_data = (byte[]) Support.deserialize(original_byte);
 				
 				// Send the obtained bytes to the UI Activity
 				mService.getHandler().obtainMessage(Utilities.MESSAGE_READ, original_data.length, -1,
 						original_data).sendToTarget();
+				}
 			} catch (IOException e) {
 				Log.e(Utilities.TAG, "disconnected", e);
 				mService.connectionLost();
@@ -166,7 +170,9 @@ public class ConnectedThread extends Thread {
 		try {
 			final byte data_tmp[] = Support.serialize(buffer);
 			byte[] crypt_data = Support.crypt_decrypt(sharedKey, sharedKey, Support.padding(data_tmp));
-			mOutStream.write(crypt_data);
+			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
+			//enviamos al servidor nuestra clave pública
+			oos.writeObject(crypt_data);
 
 			// Share the sent message back to the UI Activity
 			mService.getHandler().obtainMessage(Utilities.MESSAGE_WRITE, -1, -1, crypt_data)
