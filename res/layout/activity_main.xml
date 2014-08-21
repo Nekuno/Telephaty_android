@@ -11,41 +11,40 @@
 
     <LinearLayout
         android:id="@+id/linearLayout1"
-        android:transcriptMode="alwaysScroll"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical" >
+        android:orientation="vertical"
+        android:transcriptMode="alwaysScroll" >
 
         <Button
-        android:id="@+id/button1"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="scan_insecure"
-        android:text="Scan/Paired Insecure" />
-
-		 <Button
-        android:id="@+id/button2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="scan_secure"
-        android:text="Scan/Paired Secure" />
-        
-<!--         <Button -->
-<!--         android:id="@+id/button2" -->
-<!--         android:layout_width="match_parent" -->
-<!--         android:layout_height="wrap_content" -->
-<!--         android:onClick="paired" -->
-<!--         android:text="Paired" /> -->
-
+            android:id="@+id/button1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="scan_insecure"
+            android:text="Scan/Paired Insecure" />
 
         <Button
-        android:id="@+id/enableDiscoverability"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:onClick="setEnableDiscoverability"
-        android:text="Discoverability" />
+            android:id="@+id/button2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="scan_secure"
+            android:text="Scan/Paired Secure" />
 
-        <ListView
+        <!-- <Button -->
+        <!-- android:id="@+id/button2" -->
+        <!-- android:layout_width="match_parent" -->
+        <!-- android:layout_height="wrap_content" -->
+        <!-- android:onClick="paired" -->
+        <!-- android:text="Paired" /> -->
+
+        <Button
+            android:id="@+id/enableDiscoverability"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="setEnableDiscoverability"
+            android:text="Discoverability" />
+
+        <!--      <ListView
             android:id="@+id/devicesfound"
             android:layout_width="fill_parent"
             android:layout_height="276dp"
@@ -54,14 +53,17 @@
             android:layout_below="@+id/linearLayout1"
             android:layout_marginBottom="15dp" >
         </ListView>
+ -->
 
-<!--         <ListView -->
-<!--             android:id="@+id/in" -->
-<!--             android:layout_width="match_parent" -->
-<!--             android:layout_height="match_parent" -->
-<!--             android:layout_weight="1" -->
-<!--             android:stackFromBottom="true" -->
-<!--             android:transcriptMode="alwaysScroll" /> -->
+
+        <!-- <ListView -->
+        <!-- android:id="@+id/in" -->
+        <!-- android:layout_width="match_parent" -->
+        <!-- android:layout_height="match_parent" -->
+        <!-- android:layout_weight="1" -->
+        <!-- android:stackFromBottom="true" -->
+        <!-- android:transcriptMode="alwaysScroll" /> -->
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -81,6 +83,13 @@
                 android:layout_height="wrap_content"
                 android:text="@string/send" />
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/textView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.01"
+            android:text="TextView" />
     </LinearLayout>
 
 </RelativeLayout>
