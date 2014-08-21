@@ -143,26 +143,15 @@ public class MainActivity extends ActionBarActivity {
 				
 			case Utilities.MESSAGE_READ:
 				byte[] readBuff = (byte[]) msg.obj;
-				
-				byte[] byte_pad = Support.crypt_decrypt(Utilities.sharedKey, Utilities.sharedKey, readBuff);
-				byte[] original_byte = Support.delete_padding(byte_pad);
-				try {
-					byte[] original_data = (byte[]) Support.deserialize(original_byte);
-				
+								
 				// construct a string from the valid bytes in the buffer
-				String readString = new String(original_data, 0, original_data.length);
+				String readString = new String(readBuff, 0, readBuff.length);
 				Toast.makeText(MainActivity.this, readString,
 						Toast.LENGTH_LONG).show();
 				TextView txv = (TextView) findViewById(R.id.textView1);
 				txv.setText(readString);
 				Log.i(TAG, "NOSSO DEBUG - READ:" + readString + "!!!");
-				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				
 				
 				break;
 			case Utilities.MESSAGE_DEVICE_NAME:

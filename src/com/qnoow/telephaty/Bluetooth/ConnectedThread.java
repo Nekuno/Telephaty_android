@@ -140,12 +140,11 @@ public class ConnectedThread extends Thread {
 					//en escucha para recibir un mensaje
 				ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
 				Object line = ois.readObject();
-				byte[] b = (byte[]) line;
-				
+				byte[] decryptedData = Support.decrypt(sharedKey,(byte[]) line);
 				
 				// Send the obtained bytes to the UI Activity
-				mService.getHandler().obtainMessage(Utilities.MESSAGE_READ, b.length, -1,
-						b).sendToTarget();
+				mService.getHandler().obtainMessage(Utilities.MESSAGE_READ, decryptedData.length, -1,
+						decryptedData).sendToTarget();
 				}
 			} catch (IOException e) {
 				Log.e(Utilities.TAG, "disconnected", e);
@@ -154,6 +153,9 @@ public class ConnectedThread extends Thread {
       			mService.start();
 				break;
 			} catch (ClassNotFoundException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
@@ -168,18 +170,20 @@ public class ConnectedThread extends Thread {
 	 */
 	public void write(byte[] buffer) {
 		try {
-			final byte data_tmp[] = Support.serialize(buffer);
-			byte[] crypt_data = Support.crypt_decrypt(sharedKey, sharedKey, Support.padding(data_tmp));	
+			byte[] encryptedData = Support.encrypt(sharedKey,buffer);
 			
 			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
 			//enviamos al servidor nuestra clave pública
-			oos.writeObject(crypt_data);
+			oos.writeObject(encryptedData);
 
 			// Share the sent message back to the UI Activity
-			mService.getHandler().obtainMessage(Utilities.MESSAGE_WRITE, -1, -1, crypt_data)
+			mService.getHandler().obtainMessage(Utilities.MESSAGE_WRITE, -1, -1, encryptedData)
 					.sendToTarget();
 		} catch (IOException e) {
 			Log.e(Utilities.TAG, "Exception during write", e);
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 
