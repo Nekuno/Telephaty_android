@@ -83,13 +83,22 @@
                 android:layout_height="wrap_content"
                 android:text="@string/send" />
         </LinearLayout>
-
+	
         <TextView
             android:id="@+id/textView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="0.01"
             android:text="TextView" />
+        
+        <Button
+            android:id="@+id/close"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="close"
+            android:text="Cerrar por completo" />
+        
+         
     </LinearLayout>
 
 </RelativeLayout>

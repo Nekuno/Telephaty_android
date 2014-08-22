@@ -18,8 +18,8 @@ public class Notifications {
 	PendingIntent pIntent;
 	Notification mNotification;
 	
-	String title = "Qnoow Notification";
-	String ticker = "Qnoow ticker";
+	String title = "Nuevo mensaje";
+	String ticker = "Qnoow Notification";
 	
 	public Notifications(NotificationManager basicNotificationManager, Context externalContext) {
 		notificationManager = basicNotificationManager;
@@ -34,7 +34,7 @@ public class Notifications {
 					context);
 			builder.setContentIntent(pIntent)
 					.setSmallIcon(R.drawable.ic_launcher)
-					.setTicker("holaa!! soy una notificacion")
+					.setTicker(ticker)
 					.setWhen(System.currentTimeMillis()).setAutoCancel(true)
 					.setDefaults(Notification.DEFAULT_SOUND)
 					.setContentTitle(title).setContentText(msg);
@@ -42,7 +42,7 @@ public class Notifications {
 		} else {
 			Builder builder = new Builder(context);
 			mNotification = builder.setContentTitle(title)
-					.setContentText(msg).setTicker("Notification!")
+					.setContentText(msg).setTicker(ticker)
 					.setWhen(System.currentTimeMillis())
 					.setContentIntent(pIntent)
 					.setDefaults(Notification.DEFAULT_SOUND)

@@ -44,6 +44,7 @@ public class MainActivity extends ActionBarActivity {
 	private String mConnectedDeviceName = null;
 	private Button mSendButton;
 	private Notifications notificationManager;
+	String lastmessage;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -52,12 +53,14 @@ public class MainActivity extends ActionBarActivity {
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		init();
 		setupCommunication();
-
 	}
 
 	@Override
 	public synchronized void onResume() {
 		super.onResume();
+		Log.d("CDA", "onResume Called"+lastmessage);
+		TextView txv = (TextView) findViewById(R.id.textView1);
+		txv.setText(lastmessage);
 		if (myBluetooth != null && mAdapter.isEnabled()) {
 			// Only if the state is STATE_NONE, do we know that we haven't
 			// started already
@@ -84,23 +87,19 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	public synchronized void onPause() {
 		super.onPause();
-
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-
 		// // Stop the Bluetooth service
 		// if (myBluetooth != null)
 		// myBluetooth.stop();
-
 	}
 
 	public void sendMessage(String message) {
@@ -125,7 +124,6 @@ public class MainActivity extends ActionBarActivity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case Utilities.MESSAGE_STATE_CHANGE:
-
 				break;
 			case Utilities.MESSAGE_WRITE:
 				byte[] writeBuf = (byte[]) msg.obj;
@@ -142,13 +140,12 @@ public class MainActivity extends ActionBarActivity {
 						Toast.LENGTH_LONG).show();
 				TextView tx = (TextView) findViewById(R.id.textView1);
 				tx.setText(readMessage);
+				lastmessage = readMessage;
 				Log.i(TAG, "SHARED_KEY READ:" + readMessage + "!!!");
-
 				break;
 
 			case Utilities.MESSAGE_READ:
 				byte[] readBuff = (byte[]) msg.obj;
-
 				// construct a string from the valid bytes in the buffer
 				String readString = new String(readBuff, 0, readBuff.length);
 				Toast.makeText(MainActivity.this, readString, Toast.LENGTH_LONG)
@@ -241,7 +238,11 @@ public class MainActivity extends ActionBarActivity {
 			startActivity(myBluetooth.enableDiscoverability(0));
 		}
 	}
-
+	
+	public void close(View view) {
+		finish();
+	}
+	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult " + resultCode);
 		switch (requestCode) {
@@ -253,9 +254,7 @@ public class MainActivity extends ActionBarActivity {
 			break;
 		case Utilities.REQUEST_ENABLE_BT:
 			// When the request to enable Bluetooth returns
-			if (resultCode == Activity.RESULT_OK) {
-				// Here we setup the chat
-			} else {
+			if (resultCode != Activity.RESULT_OK) {
 				// User did not enable Bluetooth or an error occurred
 				Log.d(TAG, "BT not enabled");
 				Toast.makeText(this, R.string.bt_not_enabled_leaving,
@@ -269,29 +268,13 @@ public class MainActivity extends ActionBarActivity {
 		// Get the device MAC address
 		String address = data.getExtras().getString(
 				DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-
 		// Get the BluetoothDevice object
 		BluetoothDevice device = mAdapter.getRemoteDevice(address);
-
 		// Attempt to connect to the device
 		myBluetooth.connect(device, false);
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent serverIntent = null;
-		switch (item.getItemId()) {
-		case R.id.connect_scan:
-			// Launch the DeviceListActivity to see devices and do scan
-			serverIntent = new Intent(this, DeviceListActivity.class);
-			startActivityForResult(serverIntent,
-					Utilities.REQUEST_CONNECT_DEVICE);
-			return true;
-
-		}
-		return false;
-	}
-
+	
 	private void setupCommunication() {
 		Log.d(TAG, "setupCommunication");
 		// Initialize the send button with a listener that for click events
@@ -306,4 +289,23 @@ public class MainActivity extends ActionBarActivity {
 		});
 
 	}
+	
+	@Override
+	public void onBackPressed() {
+	   Log.d("CDA", "onBackPressed Called");
+	   Intent setIntent = new Intent(Intent.ACTION_MAIN);
+	   setIntent.addCategory(Intent.CATEGORY_HOME);
+	   setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	   startActivity(setIntent);
+	}
+	
+	/**
+	 * This is a wrapper around the new startForeground method, using the older
+	 * APIs if it is not available.
+	 */
+	void startForegroundCompat(int id, Notification notification) {
+	    // If we have the new startForeground API, then use it.
+		   Log.d("startForegroundCompat", "startForegroundCompat Called");
+	}
+
 }
