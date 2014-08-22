@@ -3,9 +3,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.qnoow.telephaty.MainActivity" >
     
-    <item android:id="@+id/connect_scan"
-          android:icon="@android:drawable/ic_menu_search"
-          android:title="@string/secure_connect"
-          android:showAsAction="ifRoom|withText" />
+   
 
 </menu>

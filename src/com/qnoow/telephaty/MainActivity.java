@@ -3,9 +3,13 @@ package com.qnoow.telephaty;
 import java.io.IOException;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -24,6 +28,7 @@ import android.widget.Toast;
 
 import com.qnoow.telephaty.Bluetooth.Bluetooth;
 import com.qnoow.telephaty.Bluetooth.DeviceListActivity;
+import com.qnoow.telephaty.Bluetooth.Notifications;
 import com.qnoow.telephaty.Bluetooth.Utilities;
 import com.qnoow.telephaty.security.Support;
 
@@ -37,9 +42,10 @@ public class MainActivity extends ActionBarActivity {
 	private BluetoothAdapter mAdapter = null;
 	// Name of the connected device
 	private String mConnectedDeviceName = null;
-
 	private Button mSendButton;
-
+	private Notifications notificationManager;
+	String lastmessage;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -47,12 +53,14 @@ public class MainActivity extends ActionBarActivity {
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		init();
 		setupCommunication();
-
 	}
 
 	@Override
 	public synchronized void onResume() {
 		super.onResume();
+		Log.d("CDA", "onResume Called"+lastmessage);
+		TextView txv = (TextView) findViewById(R.id.textView1);
+		txv.setText(lastmessage);
 		if (myBluetooth != null && mAdapter.isEnabled()) {
 			// Only if the state is STATE_NONE, do we know that we haven't
 			// started already
@@ -79,23 +87,19 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	public synchronized void onPause() {
 		super.onPause();
-
 	}
 
 	@Override
 	public void onStop() {
 		super.onStop();
-
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-
-		// Stop the Bluetooth service
-		if (myBluetooth != null)
-			myBluetooth.stop();
-
+		// // Stop the Bluetooth service
+		// if (myBluetooth != null)
+		// myBluetooth.stop();
 	}
 
 	public void sendMessage(String message) {
@@ -120,15 +124,14 @@ public class MainActivity extends ActionBarActivity {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case Utilities.MESSAGE_STATE_CHANGE:
-
 				break;
 			case Utilities.MESSAGE_WRITE:
 				byte[] writeBuf = (byte[]) msg.obj;
 				// construct a string from the buffer
 				String writeMessage = new String(writeBuf);
-
-				Log.i(TAG, "NOSSO DEBUG - WRITE:" + writeMessage + "!!!");
+				Log.i(TAG, "WRITE:" + writeMessage + "!!!");
 				break;
+
 			case Utilities.SHARED_KEY:
 				byte[] readBuf = (byte[]) msg.obj;
 				// construct a string from the valid bytes in the buffer
@@ -137,29 +140,30 @@ public class MainActivity extends ActionBarActivity {
 						Toast.LENGTH_LONG).show();
 				TextView tx = (TextView) findViewById(R.id.textView1);
 				tx.setText(readMessage);
-				Log.i(TAG, "NOSSO DEBUG - READ:" + readMessage + "!!!");
-
+				lastmessage = readMessage;
+				Log.i(TAG, "SHARED_KEY READ:" + readMessage + "!!!");
 				break;
-				
+
 			case Utilities.MESSAGE_READ:
 				byte[] readBuff = (byte[]) msg.obj;
-								
 				// construct a string from the valid bytes in the buffer
 				String readString = new String(readBuff, 0, readBuff.length);
-				Toast.makeText(MainActivity.this, readString,
-						Toast.LENGTH_LONG).show();
+				Toast.makeText(MainActivity.this, readString, Toast.LENGTH_LONG)
+						.show();
 				TextView txv = (TextView) findViewById(R.id.textView1);
 				txv.setText(readString);
-				Log.i(TAG, "NOSSO DEBUG - READ:" + readString + "!!!");
-				
-				
+				Log.i(TAG, "READ:" + readString + "!!!");
+				// build notification
+				notificationManager.generateNotification(readString);
+				notificationManager.sendNotification();
+
 				break;
 			case Utilities.MESSAGE_DEVICE_NAME:
 				// save the connected device's name
 				mConnectedDeviceName = msg.getData().getString(
 						Utilities.DEVICE_NAME);
 				Toast.makeText(getApplicationContext(),
-						"Conectado em " + mConnectedDeviceName,
+						"Conectado con " + mConnectedDeviceName,
 						Toast.LENGTH_SHORT).show();
 				break;
 			case Utilities.MESSAGE_TOAST:
@@ -181,58 +185,39 @@ public class MainActivity extends ActionBarActivity {
 		} else {
 			discoverability = false;
 			myBluetooth.setEnable(this);
-			//listDevicesFound = (ListView) findViewById(R.id.devicesfound);
+			// listDevicesFound = (ListView) findViewById(R.id.devicesfound);
 			mArrayAdapter = new ArrayAdapter<String>(this,
 					android.R.layout.simple_list_item_1);
-			//listDevicesFound.setAdapter(mArrayAdapter);
+			// listDevicesFound.setAdapter(mArrayAdapter);
 			myBluetooth.registerBroadcastReceiver(getApplicationContext(),
 					myBluetooth.setBroadcastReceiver(getApplicationContext(),
 							mArrayAdapter));
 			mAdapter = BluetoothAdapter.getDefaultAdapter();
+			Utilities.mainContext = this;
+			notificationManager = new Notifications((NotificationManager) getSystemService(NOTIFICATION_SERVICE), this);
+
 		}
 	}
 
-	// class MyClickListener implements OnClickListener {
-	//
-	// private Bluetooth bluetooth;
-	// private BluetoothAdapter mBluetoothAdapter;
-	//
-	// public MyClickListener(Bluetooth bluetooth,BluetoothAdapter
-	// mBluetoothAdapter) {
-	// this.bluetooth = bluetooth;
-	// this.mBluetoothAdapter = mBluetoothAdapter;
-	// }
-	//
-	// public void onClick(View view){
-	// BroadcastReceiver mReceiver =
-	// bluetooth.setBroadcastReceiver(mBluetoothAdapter, mArrayAdapter);
-	// bluetooth.registerBroadcastReceiver(getApplicationContext(), mReceiver);
-	// }
-	//
-	// }
-	//
 	public void scan_insecure(View view) {
 		Toast.makeText(this, "Insecure connection", Toast.LENGTH_SHORT).show();
 		Intent serverIntent = null;
 		mArrayAdapter.clear();
 		BluetoothAdapter.getDefaultAdapter().startDiscovery();
 		serverIntent = new Intent(this, DeviceListActivity.class);
-		startActivityForResult(serverIntent,
-				Utilities.REQUEST_CONNECT_DEVICE);
+		startActivityForResult(serverIntent, Utilities.REQUEST_CONNECT_DEVICE);
 
 	}
-	
+
 	public void scan_secure(View view) {
 		Toast.makeText(this, "Secure connection", Toast.LENGTH_SHORT).show();
 		Intent serverIntent = null;
 		mArrayAdapter.clear();
 		BluetoothAdapter.getDefaultAdapter().startDiscovery();
 		serverIntent = new Intent(this, DeviceListActivity.class);
-		startActivityForResult(serverIntent,
-				Utilities.REQUEST_CONNECT_DEVICE);
+		startActivityForResult(serverIntent, Utilities.REQUEST_CONNECT_DEVICE);
 
 	}
-
 
 	public void paired(View view) {
 		myBluetooth.getPairedDevices(this,
@@ -253,7 +238,11 @@ public class MainActivity extends ActionBarActivity {
 			startActivity(myBluetooth.enableDiscoverability(0));
 		}
 	}
-
+	
+	public void close(View view) {
+		finish();
+	}
+	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult " + resultCode);
 		switch (requestCode) {
@@ -265,9 +254,7 @@ public class MainActivity extends ActionBarActivity {
 			break;
 		case Utilities.REQUEST_ENABLE_BT:
 			// When the request to enable Bluetooth returns
-			if (resultCode == Activity.RESULT_OK) {
-				// Here we setup the chat
-			} else {
+			if (resultCode != Activity.RESULT_OK) {
 				// User did not enable Bluetooth or an error occurred
 				Log.d(TAG, "BT not enabled");
 				Toast.makeText(this, R.string.bt_not_enabled_leaving,
@@ -281,32 +268,16 @@ public class MainActivity extends ActionBarActivity {
 		// Get the device MAC address
 		String address = data.getExtras().getString(
 				DeviceListActivity.EXTRA_DEVICE_ADDRESS);
-
 		// Get the BluetoothDevice object
 		BluetoothDevice device = mAdapter.getRemoteDevice(address);
-
 		// Attempt to connect to the device
 		myBluetooth.connect(device, false);
 	}
 
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		Intent serverIntent = null;
-		switch (item.getItemId()) {
-		case R.id.connect_scan:
-			// Launch the DeviceListActivity to see devices and do scan
-			serverIntent = new Intent(this, DeviceListActivity.class);
-			startActivityForResult(serverIntent,
-					Utilities.REQUEST_CONNECT_DEVICE);
-			return true;
-
-		}
-		return false;
-	}
-
+	
 	private void setupCommunication() {
 		Log.d(TAG, "setupCommunication");
-		//Initialize the send button with a listener that for click events
+		// Initialize the send button with a listener that for click events
 		mSendButton = (Button) findViewById(R.id.button_send);
 		mSendButton.setOnClickListener(new OnClickListener() {
 			public void onClick(View v) {
@@ -318,4 +289,23 @@ public class MainActivity extends ActionBarActivity {
 		});
 
 	}
+	
+	@Override
+	public void onBackPressed() {
+	   Log.d("CDA", "onBackPressed Called");
+	   Intent setIntent = new Intent(Intent.ACTION_MAIN);
+	   setIntent.addCategory(Intent.CATEGORY_HOME);
+	   setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+	   startActivity(setIntent);
+	}
+	
+	/**
+	 * This is a wrapper around the new startForeground method, using the older
+	 * APIs if it is not available.
+	 */
+	void startForegroundCompat(int id, Notification notification) {
+	    // If we have the new startForeground API, then use it.
+		   Log.d("startForegroundCompat", "startForegroundCompat Called");
+	}
+
 }
