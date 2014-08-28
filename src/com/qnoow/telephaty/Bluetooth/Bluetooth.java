@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 
 import com.qnoow.telephaty.MainActivity;
+import com.qnoow.telephaty.R;
 import com.qnoow.telephaty.security.Support;
 
 public class Bluetooth {
@@ -40,7 +41,7 @@ public class Bluetooth {
 	private final Handler mHandler;
 	private int mState;
 	
-	
+	private List<String> MACs = new ArrayList<String>();
 	
 	public Bluetooth(Context context, Handler handler) {
 		mAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -104,20 +105,31 @@ public class Bluetooth {
 	// ACTION_DISCOVERY_FINISHED
 	public BroadcastReceiver setBroadcastReceiver(final Context context,
 			final ArrayAdapter mArrayAdapter) {
-
+		
+			
+			
 		BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				// TODO Auto-generated method stub
 				String action = intent.getAction();
-				if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+				
+				if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)){
+					MACs.clear();
+				}
+				else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 					BluetoothDevice device = intent
 							.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 					mArrayAdapter.add(device.getName() + "\n"
 							+ device.getAddress());
+					MACs.add(device.getAddress());
 					mArrayAdapter.notifyDataSetChanged();
-				}
+					// When discovery is finished, change the Activity title
+	            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+	            	//hacer llamadas a conectar y enviar mensaje
+	                Toast.makeText(context, "finalizado el escaneo", Toast.LENGTH_SHORT).show();
+	            }
 
 			}
 		};

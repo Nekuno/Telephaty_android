@@ -204,8 +204,8 @@ public class MainActivity extends ActionBarActivity {
 		Intent serverIntent = null;
 		mArrayAdapter.clear();
 		BluetoothAdapter.getDefaultAdapter().startDiscovery();
-		serverIntent = new Intent(this, DeviceListActivity.class);
-		startActivityForResult(serverIntent, Utilities.REQUEST_CONNECT_DEVICE);
+//		serverIntent = new Intent(this, DeviceListActivity.class);
+//		startActivityForResult(serverIntent, Utilities.REQUEST_CONNECT_DEVICE);
 
 	}
 
