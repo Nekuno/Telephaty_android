@@ -19,6 +19,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 
@@ -129,6 +130,9 @@ public class Bluetooth {
 	            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 	            	//hacer llamadas a conectar y enviar mensaje
 	                Toast.makeText(context, "finalizado el escaneo", Toast.LENGTH_SHORT).show();
+	                if (Utilities.difussion == true){
+	            		sendDifussion(Utilities.message);
+	                }
 	            }
 
 			}
@@ -172,6 +176,25 @@ public class Bluetooth {
 		mAdapter.cancelDiscovery();
 	}
 
+	
+	//Function that allows to the user to send difussion messages, create a new connection
+	//with all near devices and send a message and later close the connection
+	public void sendDifussion(String msg){
+		for (int i = 0; i < MACs.size(); i++){
+			BluetoothDevice device = mAdapter.getRemoteDevice(MACs.get(i));
+			// Attempt to connect to the device
+			connect(device, false);
+			while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH){
+			}
+			write(msg.getBytes());
+			stop();
+			setState(Utilities.STATE_NONE);
+		}
+	}
+	
+	
+	
+	
 	// public void showBlueDialog(Context context) {
 	//
 	// AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -196,7 +219,7 @@ public class Bluetooth {
 	 * @param state
 	 *  An integer defining the current connection state
 	 */
-	private synchronized void setState(int state) {
+	public synchronized void setState(int state) {
 		if (Utilities.D)
 			Log.d(Utilities.TAG, "setState() " + mState + " -> " + state);
 		mState = state;
@@ -367,7 +390,7 @@ public class Bluetooth {
 		ConnectedThread r;
 		// Synchronize a copy of the ConnectedThread
 		synchronized (this) {
-			if (mState != Utilities.STATE_CONNECTED)
+			if (mState != Utilities.STATE_CONNECTED_ECDH_FINISH)
 				return;
 			r = mConnectedThread;
 		}

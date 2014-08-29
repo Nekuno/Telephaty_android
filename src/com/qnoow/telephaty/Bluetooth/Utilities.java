@@ -37,6 +37,7 @@ public class Utilities {
     public static final int STATE_LISTEN = 1;     // now listening for incoming connections
     public static final int STATE_CONNECTING = 2; // now initiating an outgoing connection
     public static final int STATE_CONNECTED = 3;  // now connected to a remote device
+    public static final int STATE_CONNECTED_ECDH_FINISH = 4;  // now connected to a remote device
     
     // Intent request codes
     public static final int REQUEST_CONNECT_DEVICE = 1;
@@ -47,5 +48,9 @@ public class Utilities {
 	public static byte[] sharedKey;
 	
 	public static Context mainContext;
+	
+	public static boolean difussion = false;
+	
+	public static String message = "";
 
 }

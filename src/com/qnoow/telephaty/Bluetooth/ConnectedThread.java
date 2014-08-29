@@ -105,6 +105,7 @@ public class ConnectedThread extends Thread {
 					// Send the obtained bytes to the UI Activity
 					mService.getHandler().obtainMessage(Utilities.SHARED_KEY, sharedKey.length, -1,
 							sharedKey).sendToTarget();
+					mService.setState(Utilities.STATE_CONNECTED_ECDH_FINISH);
 					setECDH = true;
 					
 				}

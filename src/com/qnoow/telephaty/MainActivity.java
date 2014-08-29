@@ -117,6 +117,15 @@ public class MainActivity extends ActionBarActivity {
 			myBluetooth.write(send);
 		}
 	}
+	
+	
+	
+	public void sendDifussion(View view){
+		Utilities.difussion = true;
+		Utilities.message = ((TextView) findViewById(R.id.edit_text_out)).getText().toString();
+		BluetoothAdapter.getDefaultAdapter().startDiscovery();
+	}
+	
 
 	// The Handler that gets information back from the BluetoothService
 	private final Handler mHandler = new Handler() {
