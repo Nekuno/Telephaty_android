@@ -181,14 +181,17 @@ public class Bluetooth {
 	//with all near devices and send a message and later close the connection
 	public void sendDifussion(String msg){
 		for (int i = 0; i < MACs.size(); i++){
+			
 			BluetoothDevice device = mAdapter.getRemoteDevice(MACs.get(i));
 			// Attempt to connect to the device
-			connect(device, false);
+			connect(device, false, true);
 			while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH){
 			}
-			write(msg.getBytes());
-			stop();
+			write(msg.getBytes(), true);
 			setState(Utilities.STATE_NONE);
+			while (mConnectedThread.isAlive()){
+				
+			}
 		}
 	}
 	
@@ -275,7 +278,7 @@ public class Bluetooth {
 	 * @param device
 	 *            The BluetoothDevice to connect
 	 */
-	public synchronized void connect(BluetoothDevice device, Boolean secure) {
+	public synchronized void connect(BluetoothDevice device, Boolean secure, boolean difussion) {
 		if (Utilities.D)
 			Log.d(Utilities.TAG, "connect to: " + device);
 
@@ -294,7 +297,7 @@ public class Bluetooth {
 		}
 
 		// Start the thread to connect with the given device
-		mConnectThread = new ConnectThread(this, device, secure);
+		mConnectThread = new ConnectThread(this, device, secure, difussion);
 		mConnectThread.start();
 		setState(Utilities.STATE_CONNECTING);
 	}
@@ -308,7 +311,7 @@ public class Bluetooth {
 	 *            The BluetoothDevice that has been connected
 	 */
 	public synchronized void connected(BluetoothSocket socket,
-			BluetoothDevice device) {
+			BluetoothDevice device, boolean diffusion) {
 		if (Utilities.D)
 			Log.d(Utilities.TAG, "connected.");
 
@@ -336,7 +339,7 @@ public class Bluetooth {
 		}
 
 		// Start the thread to manage the connection and perform transmissions
-		mConnectedThread = new ConnectedThread(this, socket);
+		mConnectedThread = new ConnectedThread(this, socket, diffusion);
 		mConnectedThread.start();
 
 		// Send the name of the connected device back to the UI Activity
@@ -385,7 +388,7 @@ public class Bluetooth {
 	 *            The bytes to write
 	 * @see ConnectedThread#write(byte[])
 	 */
-	public void write(byte[] out) {
+	public void write(byte[] out, boolean diffusion) {
 		// Create temporary object
 		ConnectedThread r;
 		// Synchronize a copy of the ConnectedThread
@@ -396,7 +399,7 @@ public class Bluetooth {
 		}
 		
 		// Perform the write unsynchronized
-		r.write(out);
+		r.write(out, diffusion);
 	}
 
 	/**

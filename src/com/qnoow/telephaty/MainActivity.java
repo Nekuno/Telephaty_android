@@ -114,7 +114,7 @@ public class MainActivity extends ActionBarActivity {
 		if (message.length() > 0) {
 			// Get the message bytes and tell the BluetoothService to write
 			byte[] send = message.getBytes();
-			myBluetooth.write(send);
+			myBluetooth.write(send, false);
 		}
 	}
 	
@@ -258,7 +258,7 @@ public class MainActivity extends ActionBarActivity {
 		case Utilities.REQUEST_CONNECT_DEVICE:
 			// When DeviceListActivity returns with a device to connect
 			if (resultCode == Activity.RESULT_OK) {
-				connectDevice(data);
+				connectDevice(data, false);
 			}
 			break;
 		case Utilities.REQUEST_ENABLE_BT:
@@ -273,14 +273,14 @@ public class MainActivity extends ActionBarActivity {
 		}
 	}
 
-	private void connectDevice(Intent data) {
+	private void connectDevice(Intent data, boolean difussion) {
 		// Get the device MAC address
 		String address = data.getExtras().getString(
 				DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 		// Get the BluetoothDevice object
 		BluetoothDevice device = mAdapter.getRemoteDevice(address);
 		// Attempt to connect to the device
-		myBluetooth.connect(device, false);
+		myBluetooth.connect(device, false, difussion);
 	}
 
 	

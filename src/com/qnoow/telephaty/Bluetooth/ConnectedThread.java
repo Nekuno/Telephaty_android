@@ -37,15 +37,17 @@ public class ConnectedThread extends Thread {
 	private BluetoothDevice mRemoteDevice;
 	private ECDH ecdh;
 	private byte[] sharedKey;
-
-	public ConnectedThread(Bluetooth service, BluetoothSocket socket) {
+	private boolean mWait;
+	
+	public ConnectedThread(Bluetooth service, BluetoothSocket socket, boolean wait) {
 		Log.d(Utilities.TAG, "create ConnectedThread.");
 		mService = service;
 		mSocket = socket;
 		InputStream tmpIn = null;
 		OutputStream tmpOut = null;
 		mRemoteDevice = mSocket.getRemoteDevice();
-
+		mWait = wait;
+		
 		// Get the BluetoothSocket input and output streams
 		try {
 			tmpIn = socket.getInputStream();
@@ -131,34 +133,54 @@ public class ConnectedThread extends Thread {
 			}
 		}
 		
-		
-		
-		// Keep listening to the InputStream while connected
-		while (true) {
-			try {
-				// Read from the InputStream
-				if (mSocket.getInputStream() != null) {
-					//en escucha para recibir un mensaje
-				ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
-				Object line = ois.readObject();
-				byte[] decryptedData = Support.decrypt(sharedKey,(byte[]) line);
-				
-				// Send the obtained bytes to the UI Activity
-				mService.getHandler().obtainMessage(Utilities.MESSAGE_READ, decryptedData.length, -1,
-						decryptedData).sendToTarget();
+
+		if (mWait){
+
+			// Keep listening to the InputStream while connected
+			while (true) {
+				try {
+					// Read from the InputStream
+					if (mSocket.getInputStream() != null) {
+						//en escucha para recibir un mensaje
+						ObjectInputStream ois = new ObjectInputStream(
+								mSocket.getInputStream());
+						Object line = ois.readObject();
+						byte[] decryptedData = Support.decrypt(sharedKey,
+								(byte[]) line);
+
+						String receivedMsg = decryptedData.toString();
+
+						byte[] originalMsg = receivedMsg.substring(1).getBytes();
+
+						// Send the obtained bytes to the UI Activity
+						mService.getHandler()
+						.obtainMessage(Utilities.MESSAGE_READ,
+								originalMsg.length, -1, originalMsg)
+								.sendToTarget();
+
+						if (receivedMsg.substring(0, 1).equals("1")) {
+							mService.stop();
+							mSocket.close();
+							stop();
+							mService.connectionLost();
+							mService.setState(Utilities.STATE_NONE);
+						}
+
+					}
+
+				} catch (IOException e) {
+					Log.e(Utilities.TAG, "disconnected", e);
+					mService.connectionLost();
+					// Start the service over to restart listening mode
+					mService.start();
+					break;
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (IOException e) {
-				Log.e(Utilities.TAG, "disconnected", e);
-				mService.connectionLost();
-				// Start the service over to restart listening mode
-      			mService.start();
-				break;
-			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			} catch (Exception e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
 			}
 		}
 	}
@@ -168,10 +190,25 @@ public class ConnectedThread extends Thread {
 	 * 
 	 * @param buffer
 	 *            The bytes to write
-	 */
-	public void write(byte[] buffer) {
+	 * @param diffusion
+	 * 			  True = difussion message 
+	 */ 
+	public void write(byte[] buffer, boolean diffusion) {
 		try {
-			byte[] encryptedData = Support.encrypt(sharedKey,buffer);
+			
+			
+			
+			String msg = Utilities.message;
+			
+			if (diffusion == true){
+				msg = "1".concat(msg);
+			}
+			else{
+				msg = "0".concat(msg);
+			}
+		
+			
+			byte[] encryptedData = Support.encrypt(sharedKey, msg.getBytes());
 			
 			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
 			//enviamos al servidor nuestra clave pública

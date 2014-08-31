@@ -13,12 +13,14 @@ public class ConnectThread extends Thread {
 	private final Bluetooth mService;
     private final BluetoothSocket mSocket;
     private final BluetoothDevice mDevice;
-
-    public ConnectThread(Bluetooth service, BluetoothDevice device, boolean secure) {
+    private boolean mDifussion;
+    
+    public ConnectThread(Bluetooth service, BluetoothDevice device, boolean secure, boolean diffusion) {
     	mService = service;
     	mDevice = device;
     	BluetoothSocket tmp = null;
-
+    	mDifussion = diffusion;
+    	
     	// Get a BluetoothSocket for a connection with the
     	// given BluetoothDevice
 
@@ -73,7 +75,12 @@ public class ConnectThread extends Thread {
         }
 
         // Start the connected thread
-        mService.connected(mSocket, mDevice);
+        if (mDifussion == true){
+        	mService.connected(mSocket, mDevice, false);
+        }
+        else{
+        	mService.connected(mSocket, mDevice, true);
+        }
     }
 
     public void cancel() {

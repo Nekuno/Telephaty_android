@@ -69,7 +69,7 @@ public class AcceptThread extends Thread {
 					case Utilities.STATE_LISTEN:
 					case Utilities.STATE_CONNECTING:
 						// Situation normal. Start the connected thread.
-						mService.connected(socket, socket.getRemoteDevice());
+						mService.connected(socket, socket.getRemoteDevice(), true );
 						break;
 					case Utilities.STATE_NONE:
 					case Utilities.STATE_CONNECTED:
