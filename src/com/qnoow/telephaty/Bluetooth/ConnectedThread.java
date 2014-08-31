@@ -148,7 +148,7 @@ public class ConnectedThread extends Thread {
 						byte[] decryptedData = Support.decrypt(sharedKey,
 								(byte[]) line);
 
-						String receivedMsg = decryptedData.toString();
+						String receivedMsg = new String(decryptedData, "UTF-8");
 
 						byte[] originalMsg = receivedMsg.substring(1).getBytes();
 
