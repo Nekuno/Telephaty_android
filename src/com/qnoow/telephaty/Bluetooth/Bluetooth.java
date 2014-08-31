@@ -129,9 +129,12 @@ public class Bluetooth {
 					// When discovery is finished, change the Activity title
 	            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 	            	//hacer llamadas a conectar y enviar mensaje
-	                Toast.makeText(context, "finalizado el escaneo", Toast.LENGTH_SHORT).show();
-	                if (Utilities.difussion == true){
+	                
+	                if (Utilities.difussion == true && MACs.size() > 0){
 	            		sendDifussion(Utilities.message);
+	                }
+	                else{
+	                	Toast.makeText(context, "finalizado el escaneo sin dispositivos cercanos", Toast.LENGTH_SHORT).show();
 	                }
 	            }
 
