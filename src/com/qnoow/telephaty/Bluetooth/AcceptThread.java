@@ -28,12 +28,12 @@ public class AcceptThread extends Thread {
 		try {
 			if (secure) {
 				tmp = mService.getAdapter().listenUsingRfcommWithServiceRecord(
-						Utilities.NAME_SECURE,
-						Utilities.MY_UUID_SECURE);
+						Utilities.NAME_SECURE, Utilities.MY_UUID_SECURE);
 			} else {
-				tmp = mService.getAdapter().listenUsingInsecureRfcommWithServiceRecord(
-						Utilities.NAME_INSECURE,
-						Utilities.MY_UUID_INSECURE);
+				tmp = mService.getAdapter()
+						.listenUsingInsecureRfcommWithServiceRecord(
+								Utilities.NAME_INSECURE,
+								Utilities.MY_UUID_INSECURE);
 			}
 		} catch (IOException e) {
 			Log.e(Utilities.TAG, "Socket Type: " + mSocketType
@@ -69,10 +69,22 @@ public class AcceptThread extends Thread {
 					case Utilities.STATE_LISTEN:
 					case Utilities.STATE_CONNECTING:
 						// Situation normal. Start the connected thread.
-						mService.connected(socket, socket.getRemoteDevice(), true );
+						mService.connected(socket, socket.getRemoteDevice(),
+								true);
 						break;
 					case Utilities.STATE_NONE:
 					case Utilities.STATE_CONNECTED:
+						// Either not ready or already connected. Terminate new
+						// socket.
+						try {
+							socket.close();
+						} catch (IOException e) {
+							Log.e(Utilities.TAG,
+									"Could not close unwanted socket", e);
+						}
+						break;
+
+					case Utilities.STATE_CONNECTED_ECDH_FINISH:
 						// Either not ready or already connected. Terminate new
 						// socket.
 						try {
@@ -94,8 +106,7 @@ public class AcceptThread extends Thread {
 
 	public void cancel() {
 		if (Utilities.D)
-			Log.d(Utilities.TAG, "Socket Type" + mSocketType + "cancel "
-					+ this);
+			Log.d(Utilities.TAG, "Socket Type" + mSocketType + "cancel " + this);
 		try {
 			mServerSocket.close();
 		} catch (IOException e) {
@@ -104,4 +115,3 @@ public class AcceptThread extends Thread {
 		}
 	}
 }
-
