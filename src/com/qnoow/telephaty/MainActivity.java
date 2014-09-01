@@ -249,6 +249,7 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 	public void close(View view) {
+		myBluetooth.stop();
 		finish();
 	}
 	
