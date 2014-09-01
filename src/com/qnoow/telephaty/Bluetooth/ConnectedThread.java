@@ -163,10 +163,9 @@ public class ConnectedThread extends Thread {
 							mSocket.getInputStream().close();
 							mSocket.getOutputStream().close();
 							mSocket.close();
-							mSocket.notifyAll();
-							mSocket = null;
 							mService.connectionLost();
 							mService.setState(Utilities.STATE_NONE);
+							break;
 						}
 
 					}
@@ -221,7 +220,6 @@ public class ConnectedThread extends Thread {
 			mService.getHandler().obtainMessage(Utilities.MESSAGE_WRITE, -1, -1, encryptedData)
 					.sendToTarget();
 			while(!mSocket.getRemoteDevice().equals(null)){
-				notifyAll();
 				
 			}
 		} catch (IOException e) {
