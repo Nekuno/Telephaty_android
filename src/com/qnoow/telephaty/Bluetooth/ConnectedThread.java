@@ -31,7 +31,7 @@ public class ConnectedThread extends Thread {
 
 	// Member fields
 	private final Bluetooth mService;
-	private final BluetoothSocket mSocket;
+	private BluetoothSocket mSocket;
 	private final InputStream mInStream;
 	private final OutputStream mOutStream;
 	private BluetoothDevice mRemoteDevice;
@@ -160,8 +160,11 @@ public class ConnectedThread extends Thread {
 
 						if (receivedMsg.substring(0, 1).equals("1")) {
 							mService.stop();
+							mSocket.getInputStream().close();
+							mSocket.getOutputStream().close();
 							mSocket.close();
-							stop();
+							mSocket.notifyAll();
+							mSocket = null;
 							mService.connectionLost();
 							mService.setState(Utilities.STATE_NONE);
 						}
@@ -217,6 +220,9 @@ public class ConnectedThread extends Thread {
 			// Share the sent message back to the UI Activity
 			mService.getHandler().obtainMessage(Utilities.MESSAGE_WRITE, -1, -1, encryptedData)
 					.sendToTarget();
+			while(!mSocket.getRemoteDevice().equals(null)){
+				
+			}
 		} catch (IOException e) {
 			Log.e(Utilities.TAG, "Exception during write", e);
 		} catch (Exception e) {

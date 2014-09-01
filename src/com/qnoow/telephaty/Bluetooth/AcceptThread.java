@@ -51,7 +51,7 @@ public class AcceptThread extends Thread {
 		BluetoothSocket socket = null;
 
 		// Listen to the server socket if we're not connected
-		while (mService.getState() != Utilities.STATE_CONNECTED) {
+		while (mService.getState() != Utilities.STATE_CONNECTED && mService.getState() != Utilities.STATE_CONNECTED_ECDH_FINISH) {
 			try {
 				// This is a blocking call and will only return on a
 				// successful connection or an exception

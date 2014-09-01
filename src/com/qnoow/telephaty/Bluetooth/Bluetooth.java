@@ -191,8 +191,7 @@ public class Bluetooth {
 			while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH){
 			}
 			write(msg.getBytes(), true);
-			while (mConnectedThread.isAlive()){
-			}
+			
 			
 		}
 	}
