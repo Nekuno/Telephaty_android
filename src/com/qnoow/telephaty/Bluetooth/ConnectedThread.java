@@ -198,7 +198,7 @@ public class ConnectedThread extends Thread {
 			
 			
 			
-			String msg = Utilities.message;
+			String msg =  new String(buffer, "UTF-8");;
 			
 			if (diffusion == true){
 				msg = "1".concat(msg);
