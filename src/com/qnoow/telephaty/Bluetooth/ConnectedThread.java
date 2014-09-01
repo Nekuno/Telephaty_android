@@ -221,6 +221,7 @@ public class ConnectedThread extends Thread {
 			mService.getHandler().obtainMessage(Utilities.MESSAGE_WRITE, -1, -1, encryptedData)
 					.sendToTarget();
 			while(!mSocket.getRemoteDevice().equals(null)){
+				notifyAll();
 				
 			}
 		} catch (IOException e) {
