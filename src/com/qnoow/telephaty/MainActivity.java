@@ -104,7 +104,7 @@ public class MainActivity extends ActionBarActivity {
 
 	public void sendMessage(String message) {
 		// Check that we're actually connected before trying anything
-		if (myBluetooth.getState() != Utilities.STATE_CONNECTED) {
+		if (myBluetooth.getState() != Utilities.STATE_CONNECTED_ECDH_FINISH) {
 			Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
 					.show();
 			return;
@@ -213,8 +213,8 @@ public class MainActivity extends ActionBarActivity {
 		Intent serverIntent = null;
 		mArrayAdapter.clear();
 		BluetoothAdapter.getDefaultAdapter().startDiscovery();
-//		serverIntent = new Intent(this, DeviceListActivity.class);
-//		startActivityForResult(serverIntent, Utilities.REQUEST_CONNECT_DEVICE);
+		serverIntent = new Intent(this, DeviceListActivity.class);
+		startActivityForResult(serverIntent, Utilities.REQUEST_CONNECT_DEVICE);
 
 	}
 
