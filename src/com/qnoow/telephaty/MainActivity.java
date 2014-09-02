@@ -121,6 +121,7 @@ public class MainActivity extends ActionBarActivity {
 	
 	
 	public void sendDifussion(View view){
+		setupService();
 		Utilities.difussion = true;
 		Utilities.message = ((TextView) findViewById(R.id.edit_text_out)).getText().toString();
 		BluetoothAdapter.getDefaultAdapter().startDiscovery();

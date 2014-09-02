@@ -160,12 +160,13 @@ public class ConnectedThread extends Thread {
 
 						if (receivedMsg.substring(0, 1).equals("1")) {
 							mService.stop();
-							mSocket.getInputStream().close();
-							mSocket.getOutputStream().close();
-							mSocket.close();
-							mService.connectionLost();
-							mService.setState(Utilities.STATE_NONE);
-							break;
+							mService.start();
+//							mSocket.getInputStream().close();
+//							mSocket.getOutputStream().close();
+//							mSocket.close();
+//							mService.connectionLost();
+//							mService.setState(Utilities.STATE_NONE);
+//							break;
 						}
 
 					}
@@ -219,11 +220,17 @@ public class ConnectedThread extends Thread {
 			// Share the sent message back to the UI Activity
 			mService.getHandler().obtainMessage(Utilities.MESSAGE_WRITE, -1, -1, encryptedData)
 					.sendToTarget();
-			while(!mSocket.getRemoteDevice().equals(null)){
+			if (diffusion == true && (mSocket.getInputStream() != null) ){
+				ObjectInputStream ois = new ObjectInputStream(
+						mSocket.getInputStream());
 				
 			}
+
 		} catch (IOException e) {
-			Log.e(Utilities.TAG, "Exception during write", e);
+			Log.e(Utilities.TAG, "disconnected", e);
+			mService.connectionLost();
+			// Start the service over to restart listening mode
+			mService.start();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
