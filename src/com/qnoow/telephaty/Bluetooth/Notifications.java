@@ -17,15 +17,19 @@ public class Notifications {
 	Context context;
 	PendingIntent pIntent;
 	Notification mNotification;
-	
+
 	String title = "Nuevo mensaje";
 	String ticker = "Qnoow Notification";
-	
-	public Notifications(NotificationManager basicNotificationManager, Context externalContext) {
+	// to show notifications or not, it depends of your current state
+	Boolean activated;
+
+	public Notifications(NotificationManager basicNotificationManager,
+			Context externalContext) {
 		notificationManager = basicNotificationManager;
 		context = externalContext;
 		Intent intent = new Intent(context, MainActivity.class);
 		pIntent = PendingIntent.getActivity(context, 0, intent, 0);
+		activated = false;
 	}
 
 	public void generateNotification(String msg) {
@@ -33,17 +37,15 @@ public class Notifications {
 			NotificationCompat.Builder builder = new NotificationCompat.Builder(
 					context);
 			builder.setContentIntent(pIntent)
-					.setSmallIcon(R.drawable.ic_launcher)
-					.setTicker(ticker)
+					.setSmallIcon(R.drawable.ic_launcher).setTicker(ticker)
 					.setWhen(System.currentTimeMillis()).setAutoCancel(true)
 					.setDefaults(Notification.DEFAULT_SOUND)
 					.setContentTitle(title).setContentText(msg);
 			mNotification = builder.getNotification();
 		} else {
 			Builder builder = new Builder(context);
-			mNotification = builder.setContentTitle(title)
-					.setContentText(msg).setTicker(ticker)
-					.setWhen(System.currentTimeMillis())
+			mNotification = builder.setContentTitle(title).setContentText(msg)
+					.setTicker(ticker).setWhen(System.currentTimeMillis())
 					.setContentIntent(pIntent)
 					.setDefaults(Notification.DEFAULT_SOUND)
 					.setAutoCancel(true).setSmallIcon(R.drawable.ic_launcher)
@@ -53,7 +55,16 @@ public class Notifications {
 	}
 
 	public void sendNotification() {
-		notificationManager.notify(0, mNotification);
-
+		if (activated) {
+			notificationManager.notify(0, mNotification);
+		}
+	}
+	
+	public void activateNotifications() {
+		activated = true;
+	}
+	
+	public void disableNotifications() {
+		activated = false;
 	}
 }

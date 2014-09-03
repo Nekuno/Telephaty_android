@@ -61,6 +61,7 @@ public class MainActivity extends ActionBarActivity {
 		Log.d("CDA", "onResume Called"+lastmessage);
 		TextView txv = (TextView) findViewById(R.id.textView1);
 		txv.setText(lastmessage);
+		notificationManager.disableNotifications();
 		if (myBluetooth != null && mAdapter.isEnabled()) {
 			// Only if the state is STATE_NONE, do we know that we haven't
 			// started already
@@ -86,20 +87,20 @@ public class MainActivity extends ActionBarActivity {
 
 	@Override
 	public synchronized void onPause() {
+		notificationManager.activateNotifications();
 		super.onPause();
 	}
 
 	@Override
 	public void onStop() {
+		notificationManager.activateNotifications();
 		super.onStop();
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		// // Stop the Bluetooth service
-		// if (myBluetooth != null)
-		// myBluetooth.stop();
+		notificationManager.activateNotifications();
 	}
 
 	public void sendMessage(String message) {
@@ -117,8 +118,6 @@ public class MainActivity extends ActionBarActivity {
 			myBluetooth.write(send, false);
 		}
 	}
-	
-	
 	
 	public void sendDifussion(View view){
 		setupService();
@@ -205,7 +204,6 @@ public class MainActivity extends ActionBarActivity {
 			mAdapter = BluetoothAdapter.getDefaultAdapter();
 			Utilities.mainContext = this;
 			notificationManager = new Notifications((NotificationManager) getSystemService(NOTIFICATION_SERVICE), this);
-
 		}
 	}
 
