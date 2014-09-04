@@ -8,7 +8,9 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,14 +55,14 @@ public class MainActivity extends ActionBarActivity {
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		init();
 		setupCommunication();
+		
 	}
 
 	@Override
 	public synchronized void onResume() {
 		super.onResume();
 		Log.d("CDA", "onResume Called"+lastmessage);
-		TextView txv = (TextView) findViewById(R.id.textView1);
-		txv.setText(lastmessage);
+		loadNotification();
 		notificationManager.disableNotifications();
 		if (myBluetooth != null && mAdapter.isEnabled()) {
 			// Only if the state is STATE_NONE, do we know that we haven't
@@ -298,6 +300,22 @@ public class MainActivity extends ActionBarActivity {
 		});
 
 	}
+	
+	
+	private void loadNotification(){
+		SharedPreferences prefs = getSharedPreferences("Preferences",
+				Context.MODE_PRIVATE);
+			SharedPreferences.Editor editor = prefs.edit();
+			
+			if (prefs.getBoolean("notification", false) == true){
+				TextView tv = (TextView) findViewById(R.id.textView1);
+				tv.setText(prefs.getString("msg", ""));
+			}
+			editor.putBoolean("notification", false);
+			editor.commit();
+	}
+	
+	
 	
 	@Override
 	public void onBackPressed() {

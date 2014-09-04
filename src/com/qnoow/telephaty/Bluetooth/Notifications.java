@@ -5,6 +5,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
@@ -28,11 +29,22 @@ public class Notifications {
 		notificationManager = basicNotificationManager;
 		context = externalContext;
 		Intent intent = new Intent(context, MainActivity.class);
-		pIntent = PendingIntent.getActivity(context, 0, intent, 0);
+		pIntent = PendingIntent.getActivity(context, 0, intent, intent.FLAG_ACTIVITY_CLEAR_TOP);
 		activated = false;
 	}
 
 	public void generateNotification(String msg) {
+		
+		
+		SharedPreferences prefs = context.getSharedPreferences("Preferences",
+				Context.MODE_PRIVATE);
+			SharedPreferences.Editor editor = prefs.edit();
+			
+			editor.putBoolean("notification", true);
+			editor.putString("msg", msg);
+			editor.commit();
+		
+		
 		if (Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.GINGERBREAD_MR1) {
 			NotificationCompat.Builder builder = new NotificationCompat.Builder(
 					context);
@@ -52,10 +64,12 @@ public class Notifications {
 					.build();
 
 		}
+		
+		
 	}
 
 	public void sendNotification() {
-		if (activated) {
+		if (activated) {			
 			notificationManager.notify(0, mNotification);
 		}
 	}
