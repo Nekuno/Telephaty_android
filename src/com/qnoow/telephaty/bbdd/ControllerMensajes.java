@@ -24,13 +24,13 @@ public class ControllerMensajes {
 				+ "' AND mac='" + mac + "'", null, null, null, null);
 		if (cursor != null && !cursor.isClosed()) {
 			// TODO check the cursor 
-			if (cursor.isNull(0)) {
+			if (!cursor.isFirst()) {
 				mensajesDB.insert(id, mac);
 				return true;
 			}
-			cursor.close();
+			
 		}
-
+		cursor.close();
 		return false;
 
 	}
