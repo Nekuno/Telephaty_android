@@ -113,7 +113,6 @@ public class Bluetooth {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
-				// TODO Auto-generated method stub
 				String action = intent.getAction();
 				
 				if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)){
@@ -195,27 +194,6 @@ public class Bluetooth {
 			
 		}
 	}
-	
-	
-	
-	
-	// public void showBlueDialog(Context context) {
-	//
-	// AlertDialog.Builder builder = new AlertDialog.Builder(context);
-	// builder.setTitle("BlueTooth List");
-	//
-	// builder.setItems(bluetoothNames, new DialogInterface.OnClickListener() {
-	//
-	// public void onClick(DialogInterface dialog, int position) {
-	// BluetoothDevice device = mBluetoothAdapter
-	// .getRemoteDevice(devices.get(position).getAddress());
-	// //service.connect(device);
-	// }
-	// });
-	//
-	// builder.create().show();
-	// }
-	
 
 	
 	/**

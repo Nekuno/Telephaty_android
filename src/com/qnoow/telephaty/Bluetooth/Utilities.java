@@ -2,6 +2,8 @@ package com.qnoow.telephaty.Bluetooth;
 
 import java.util.UUID;
 
+import com.qnoow.telephaty.bbdd.ControllerMensajes;
+
 import android.content.Context;
 
 public class Utilities {
@@ -46,11 +48,10 @@ public class Utilities {
    
 	//SharedKey
 	public static byte[] sharedKey;
-	
 	public static Context mainContext;
-	
 	public static boolean difussion = false;
-	
 	public static String message = "";
-
+	
+	public static ControllerMensajes BBDDmensajes;
+	
 }

@@ -32,6 +32,8 @@ import com.qnoow.telephaty.Bluetooth.Bluetooth;
 import com.qnoow.telephaty.Bluetooth.DeviceListActivity;
 import com.qnoow.telephaty.Bluetooth.Notifications;
 import com.qnoow.telephaty.Bluetooth.Utilities;
+import com.qnoow.telephaty.bbdd.BBDDMensajes;
+import com.qnoow.telephaty.bbdd.ControllerMensajes;
 import com.qnoow.telephaty.security.Support;
 
 public class MainActivity extends ActionBarActivity {
@@ -206,7 +208,9 @@ public class MainActivity extends ActionBarActivity {
 			mAdapter = BluetoothAdapter.getDefaultAdapter();
 			Utilities.mainContext = this;
 			notificationManager = new Notifications((NotificationManager) getSystemService(NOTIFICATION_SERVICE), this);
+			Utilities.BBDDmensajes = new ControllerMensajes(this);
 		}
+		
 	}
 
 	public void scan_insecure(View view) {

@@ -12,10 +12,14 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.text.DateFormat;
+import java.util.Date;
+import java.util.Random;
 
 import org.spongycastle.asn1.eac.PublicKeyDataObject;
 import org.spongycastle.crypto.util.PublicKeyFactory;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
@@ -77,16 +81,12 @@ public class ConnectedThread extends Thread {
 			oos.writeObject(pubKey);
 
 		} catch (InvalidAlgorithmParameterException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (NoSuchProviderException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (InvalidKeySpecException e1) {
-			// TODO Auto-generated catch block
 			e1.printStackTrace();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		
@@ -119,16 +119,12 @@ public class ConnectedThread extends Thread {
 				mService.start();
 				break;
 			} catch (ClassNotFoundException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (InvalidKeyException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchAlgorithmException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			} catch (NoSuchProviderException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -149,24 +145,21 @@ public class ConnectedThread extends Thread {
 								(byte[]) line);
 
 						String receivedMsg = new String(decryptedData, "UTF-8");
-
-						byte[] originalMsg = receivedMsg.substring(1).getBytes();
+						String msgId = receivedMsg.substring(1, 15);
+						byte[] originalMsg = receivedMsg.substring(15).getBytes();
 
 						// Send the obtained bytes to the UI Activity
 						mService.getHandler()
 						.obtainMessage(Utilities.MESSAGE_READ,
 								originalMsg.length, -1, originalMsg)
 								.sendToTarget();
-
 						if (receivedMsg.substring(0, 1).equals("1")) {
+						
+							if (Utilities.BBDDmensajes.insert(msgId, mSocket.getRemoteDevice().toString())){
+//								TODO Reenviar
+							}
 							mService.stop();
 							mService.start();
-//							mSocket.getInputStream().close();
-//							mSocket.getOutputStream().close();
-//							mSocket.close();
-//							mService.connectionLost();
-//							mService.setState(Utilities.STATE_NONE);
-//							break;
 						}
 
 					}
@@ -178,10 +171,8 @@ public class ConnectedThread extends Thread {
 					mService.start();
 					break;
 				} catch (ClassNotFoundException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				} catch (Exception e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
@@ -198,19 +189,17 @@ public class ConnectedThread extends Thread {
 	 */ 
 	public void write(byte[] buffer, boolean diffusion) {
 		try {
-			
-			
-			
 			String msg =  new String(buffer, "UTF-8");;
-			
 			if (diffusion == true){
-				msg = "1".concat(msg);
+				// currentDateTimeString is the id of the message
+				String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+				currentDateTimeString = currentDateTimeString.replaceAll("/", "").replaceAll(":", "").replaceAll(" ", "");
+				msg = "1".concat(currentDateTimeString).concat(msg);  
+				Utilities.BBDDmensajes.insert(currentDateTimeString, BluetoothAdapter.getDefaultAdapter().getAddress());
 			}
 			else{
 				msg = "0".concat(msg);
 			}
-		
-			
 			byte[] encryptedData = Support.encrypt(sharedKey, msg.getBytes());
 			
 			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
@@ -232,7 +221,6 @@ public class ConnectedThread extends Thread {
 			// Start the service over to restart listening mode
 			mService.start();
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 	}
