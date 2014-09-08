@@ -23,7 +23,10 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
+import android.widget.TextView;
 
+import com.qnoow.telephaty.MainActivity;
+import com.qnoow.telephaty.R;
 import com.qnoow.telephaty.security.ECDH;
 import com.qnoow.telephaty.security.Support;
 
@@ -42,6 +45,7 @@ public class ConnectedThread extends Thread {
 	private ECDH ecdh;
 	private byte[] sharedKey;
 	private boolean mWait;
+	String JUMP = "5";
 	
 	public ConnectedThread(Bluetooth service, BluetoothSocket socket, boolean wait) {
 		Log.d(Utilities.TAG, "create ConnectedThread.");
@@ -66,15 +70,11 @@ public class ConnectedThread extends Thread {
 
 	public void run() {
 		Log.i(Utilities.TAG, "BEGIN mConnectedThread");
-		byte[] buffer = null;
-		int bytes;
-		
 		Boolean setECDH = false;
 		
 		try {
 			ecdh = new ECDH();
 			PublicKey pubKey = ecdh.getPubKey();
-			
 			PrivateKey privKey = ecdh.getPrivKey();
 			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
 			//enviamos al servidor nuestra clave pública
@@ -146,7 +146,8 @@ public class ConnectedThread extends Thread {
 
 						String receivedMsg = new String(decryptedData, "UTF-8");
 						String msgId = receivedMsg.substring(1, 15);
-						byte[] originalMsg = receivedMsg.substring(15).getBytes();
+						String jump = receivedMsg.substring(15, 16);
+						byte[] originalMsg = receivedMsg.substring(16).getBytes();
 
 						// Send the obtained bytes to the UI Activity
 						mService.getHandler()
@@ -154,9 +155,16 @@ public class ConnectedThread extends Thread {
 								originalMsg.length, -1, originalMsg)
 								.sendToTarget();
 						if (receivedMsg.substring(0, 1).equals("1")) {
-						
-							if (Utilities.BBDDmensajes.insert(msgId, mSocket.getRemoteDevice().toString())){
-//								TODO Reenviar
+							mService.stop();
+							mService.start();
+//							Utilities.BBDDmensajes.insert(msgId, mSocket.getRemoteDevice().toString()) &&
+							if ( Integer.parseInt(jump) >= 1 ){
+								Utilities.identifier = msgId;
+								Utilities.difussion = true;
+								Utilities.jump = Integer.toString(Integer.parseInt(jump)-1);
+								Utilities.message = receivedMsg.substring(16); // TODO 17
+								Utilities.mAdapter.startDiscovery();
+//								write(newMessage.getBytes(), true);
 							}
 							mService.stop();
 							mService.start();
@@ -189,13 +197,16 @@ public class ConnectedThread extends Thread {
 	 */ 
 	public void write(byte[] buffer, boolean diffusion) {
 		try {
-			String msg =  new String(buffer, "UTF-8");;
+			String msg =  new String(buffer, "UTF-8");
 			if (diffusion == true){
-				// currentDateTimeString is the id of the message
-				String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
-				currentDateTimeString = currentDateTimeString.replaceAll("/", "").replaceAll(":", "").replaceAll(" ", "");
-				msg = "1".concat(currentDateTimeString).concat(msg);  
-				Utilities.BBDDmensajes.insert(currentDateTimeString, BluetoothAdapter.getDefaultAdapter().getAddress());
+				if(Utilities.jump.equals(Utilities.MAXJUMP)){
+					// currentDateTimeString is the id of the message
+					String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+					Utilities.identifier = currentDateTimeString.replaceAll("/", "").replaceAll(":", "").replaceAll(" ", "");
+					Utilities.message = msg;
+				}
+				msg = Utilities.difusion.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.message);  
+				Utilities.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
 			}
 			else{
 				msg = "0".concat(msg);
@@ -212,7 +223,6 @@ public class ConnectedThread extends Thread {
 			if (diffusion == true && (mSocket.getInputStream() != null) ){
 				ObjectInputStream ois = new ObjectInputStream(
 						mSocket.getInputStream());
-				
 			}
 
 		} catch (IOException e) {

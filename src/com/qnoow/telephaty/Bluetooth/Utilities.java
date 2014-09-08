@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import com.qnoow.telephaty.bbdd.ControllerMensajes;
 
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 
 public class Utilities {
@@ -50,8 +51,17 @@ public class Utilities {
 	public static byte[] sharedKey;
 	public static Context mainContext;
 	public static boolean difussion = false;
-	public static String message = "";
-	
+    public static final String MAXJUMP = "5";
+
+	public static Bluetooth myBluetooth = null;
+	public static BluetoothAdapter mAdapter = null;
 	public static ControllerMensajes BBDDmensajes;
+	
+	// Messages
+	public static String message = "";
+	public static String jump = "";
+	public static String difusion = "1";
+	public static String identifier = "";
+
 	
 }

@@ -22,7 +22,6 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.qnoow.telephaty.MainActivity;
 import com.qnoow.telephaty.R;
 import com.qnoow.telephaty.security.Support;
@@ -31,28 +30,27 @@ public class Bluetooth {
 
 	public static final int REQ_CODE = 1001;
 	private List<BluetoothDevice> devices = new ArrayList<BluetoothDevice>();
-	
+
 	private AcceptThread mSecureAcceptThread;
 	private AcceptThread mInsecureAcceptThread;
 	private ConnectThread mConnectThread;
 	private ConnectedThread mConnectedThread;
 
 	// Member fields
-	private BluetoothAdapter mAdapter = null;
 	private final Handler mHandler;
 	private int mState;
-	
+
 	private List<String> MACs = new ArrayList<String>();
-	
+
 	public Bluetooth(Context context, Handler handler) {
-		mAdapter = BluetoothAdapter.getDefaultAdapter();
+		Utilities.mAdapter = BluetoothAdapter.getDefaultAdapter();
 		mState = Utilities.STATE_NONE;
 		mHandler = handler;
 	}
 
 	// Function that checks if Bluetooth is supported by a device
 	public Boolean isSupported() {
-		if (mAdapter == null) {
+		if (Utilities.mAdapter == null) {
 			// Device does not support Bluetooth
 			return false;
 		}
@@ -62,7 +60,7 @@ public class Bluetooth {
 
 	// function that allow us to enable Bluetooth
 	public void setEnable(Context context) {
-		if (!mAdapter.isEnabled()) {
+		if (!Utilities.mAdapter.isEnabled()) {
 			Intent enableBtIntent = new Intent(
 					BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			Activity c = (Activity) context;
@@ -74,7 +72,7 @@ public class Bluetooth {
 	public void getPairedDevices(final Context context, final String title) {
 
 		Set<BluetoothDevice> pairedDevices;
-		pairedDevices = mAdapter.getBondedDevices();
+		pairedDevices = Utilities.mAdapter.getBondedDevices();
 		final String[] devices = new String[pairedDevices.size()];
 		final String[] MAC = new String[pairedDevices.size()];
 		// put it's one to the adapter
@@ -106,19 +104,16 @@ public class Bluetooth {
 	// ACTION_DISCOVERY_FINISHED
 	public BroadcastReceiver setBroadcastReceiver(final Context context,
 			final ArrayAdapter mArrayAdapter) {
-		
-			
-			
+
 		BroadcastReceiver mReceiver = new BroadcastReceiver() {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
 				String action = intent.getAction();
-				
-				if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)){
+
+				if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
 					MACs.clear();
-				}
-				else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+				} else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 					BluetoothDevice device = intent
 							.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 					mArrayAdapter.add(device.getName() + "\n"
@@ -126,16 +121,17 @@ public class Bluetooth {
 					MACs.add(device.getAddress());
 					mArrayAdapter.notifyDataSetChanged();
 					// When discovery is finished, change the Activity title
-	            } else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-	            	//hacer llamadas a conectar y enviar mensaje
-	                
-	                if (Utilities.difussion == true && MACs.size() > 0){
-	            		sendDifussion(Utilities.message);
-	                }
-	                else{
-	                	Toast.makeText(context, "finalizado el escaneo sin dispositivos cercanos", Toast.LENGTH_SHORT).show();
-	                }
-	            }
+				} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
+						.equals(action)) {
+					// hacer llamadas a conectar y enviar mensaje
+
+					if (Utilities.difussion == true && MACs.size() > 0) {
+						sendDifussion(Utilities.message);
+					} else {
+						Toast.makeText(context, "Finalizado el escaneo",
+								Toast.LENGTH_SHORT).show();
+					}
+				}
 
 			}
 		};
@@ -175,31 +171,31 @@ public class Bluetooth {
 	}
 
 	public void disableDiscoverability() {
-		mAdapter.cancelDiscovery();
+		Utilities.mAdapter.cancelDiscovery();
 	}
 
-	
-	//Function that allows to the user to send difussion messages, create a new connection
-	//with all near devices and send a message and later close the connection
-	public void sendDifussion(String msg){
-		for (int i = 0; i < MACs.size(); i++){
-			
-			BluetoothDevice device = mAdapter.getRemoteDevice(MACs.get(i));
+	// Function that allows to the user to send difussion messages, create a new
+	// connection
+	// with all near devices and send a message and later close the connection
+	public void sendDifussion(String msg) {
+		for (int i = 0; i < MACs.size(); i++) {
+
+			BluetoothDevice device = Utilities.mAdapter.getRemoteDevice(MACs
+					.get(i));
 			// Attempt to connect to the device
 			connect(device, false, true);
-			while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH){
+			while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH) {
 			}
 			write(msg.getBytes(), true);
-		
-			
+
 		}
 	}
 
-	
 	/**
 	 * Set the current state of the chat connection
+	 * 
 	 * @param state
-	 *  An integer defining the current connection state
+	 *            An integer defining the current connection state
 	 */
 	public synchronized void setState(int state) {
 		if (Utilities.D)
@@ -211,9 +207,8 @@ public class Bluetooth {
 				.sendToTarget();
 	}
 
-	
-	 // Return the current connection state.
-	 
+	// Return the current connection state.
+
 	public synchronized int getState() {
 		return mState;
 	}
@@ -257,7 +252,8 @@ public class Bluetooth {
 	 * @param device
 	 *            The BluetoothDevice to connect
 	 */
-	public synchronized void connect(BluetoothDevice device, Boolean secure, boolean difussion) {
+	public synchronized void connect(BluetoothDevice device, Boolean secure,
+			boolean difussion) {
 		if (Utilities.D)
 			Log.d(Utilities.TAG, "connect to: " + device);
 
@@ -294,28 +290,28 @@ public class Bluetooth {
 		if (Utilities.D)
 			Log.d(Utilities.TAG, "connected.");
 
-//		// Cancel the thread that completed the connection
-//		if (mConnectThread != null) {
-//			mConnectThread.cancel();
-//			mConnectThread = null;
-//		}
-//
-//		// Cancel any thread currently running a connection
-//		if (mConnectedThread != null) {
-//			mConnectedThread.cancel();
-//			mConnectedThread = null;
-//		}
-//
-//		// Cancel the accept thread because we only want to connect to one
-//		// device
-//		if (mSecureAcceptThread != null) {
-//			mSecureAcceptThread.cancel();
-//			mSecureAcceptThread = null;
-//		}
-//		if (mInsecureAcceptThread != null) {
-//			mInsecureAcceptThread.cancel();
-//			mInsecureAcceptThread = null;
-//		}
+		// // Cancel the thread that completed the connection
+		// if (mConnectThread != null) {
+		// mConnectThread.cancel();
+		// mConnectThread = null;
+		// }
+		//
+		// // Cancel any thread currently running a connection
+		// if (mConnectedThread != null) {
+		// mConnectedThread.cancel();
+		// mConnectedThread = null;
+		// }
+		//
+		// // Cancel the accept thread because we only want to connect to one
+		// // device
+		// if (mSecureAcceptThread != null) {
+		// mSecureAcceptThread.cancel();
+		// mSecureAcceptThread = null;
+		// }
+		// if (mInsecureAcceptThread != null) {
+		// mInsecureAcceptThread.cancel();
+		// mInsecureAcceptThread = null;
+		// }
 
 		// Start the thread to manage the connection and perform transmissions
 		mConnectedThread = new ConnectedThread(this, socket, diffusion);
@@ -376,7 +372,7 @@ public class Bluetooth {
 				return;
 			r = mConnectedThread;
 		}
-		
+
 		// Perform the write unsynchronized
 		r.write(out, diffusion);
 	}
@@ -388,7 +384,8 @@ public class Bluetooth {
 		// Send a failure message back to the Activity
 		Message msg = mHandler.obtainMessage(Utilities.MESSAGE_TOAST);
 		Bundle bundle = new Bundle();
-		bundle.putString(Utilities.TOAST, "No se puede conectar con dispositivo.");
+		bundle.putString(Utilities.TOAST,
+				"No se puede conectar con dispositivo.");
 		msg.setData(bundle);
 		mHandler.sendMessage(msg);
 
@@ -416,7 +413,7 @@ public class Bluetooth {
 	}
 
 	public BluetoothAdapter getAdapter() {
-		return mAdapter;
+		return Utilities.mAdapter;
 	}
 
 	public void setConnectThread(ConnectThread connectThread) {
@@ -426,7 +423,5 @@ public class Bluetooth {
 	public Handler getHandler() {
 		return mHandler;
 	}
-	
-	
-	
+
 }

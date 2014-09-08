@@ -40,10 +40,7 @@ public class MainActivity extends ActionBarActivity {
 
 	private static final String TAG = "En MAIN";
 	private ArrayAdapter mArrayAdapter;
-	private Bluetooth myBluetooth = null;
-	private ListView listDevicesFound;
 	private Boolean discoverability;
-	private BluetoothAdapter mAdapter = null;
 	// Name of the connected device
 	private String mConnectedDeviceName = null;
 	private Button mSendButton;
@@ -66,12 +63,12 @@ public class MainActivity extends ActionBarActivity {
 		Log.d("CDA", "onResume Called"+lastmessage);
 		loadNotification();
 		notificationManager.disableNotifications();
-		if (myBluetooth != null && mAdapter.isEnabled()) {
+		if (Utilities.myBluetooth != null && Utilities.mAdapter.isEnabled()) {
 			// Only if the state is STATE_NONE, do we know that we haven't
 			// started already
-			if (myBluetooth.getState() == Utilities.STATE_NONE) {
+			if (Utilities.myBluetooth.getState() == Utilities.STATE_NONE) {
 				// Start the Bluetooth service
-				myBluetooth.start();
+				Utilities.myBluetooth.start();
 			}
 		}
 	}
@@ -86,7 +83,7 @@ public class MainActivity extends ActionBarActivity {
 	private void setupService() {
 		Log.d(TAG, "setupService()");
 		// Initialize the BluetoothService to perform bluetooth connections
-		myBluetooth = new Bluetooth(this, mHandler);
+		Utilities.myBluetooth = new Bluetooth(this, mHandler);
 	}
 
 	@Override
@@ -109,7 +106,7 @@ public class MainActivity extends ActionBarActivity {
 
 	public void sendMessage(String message) {
 		// Check that we're actually connected before trying anything
-		if (myBluetooth.getState() != Utilities.STATE_CONNECTED_ECDH_FINISH) {
+		if (Utilities.myBluetooth.getState() != Utilities.STATE_CONNECTED_ECDH_FINISH) {
 			Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT)
 					.show();
 			return;
@@ -119,15 +116,16 @@ public class MainActivity extends ActionBarActivity {
 		if (message.length() > 0) {
 			// Get the message bytes and tell the BluetoothService to write
 			byte[] send = message.getBytes();
-			myBluetooth.write(send, false);
+			Utilities.myBluetooth.write(send, false);
 		}
 	}
 	
 	public void sendDifussion(View view){
 		setupService();
+		Utilities.jump = Utilities.MAXJUMP;
 		Utilities.difussion = true;
 		Utilities.message = ((TextView) findViewById(R.id.edit_text_out)).getText().toString();
-		BluetoothAdapter.getDefaultAdapter().startDiscovery();
+		Utilities.mAdapter.startDiscovery();
 	}
 	
 
@@ -189,23 +187,21 @@ public class MainActivity extends ActionBarActivity {
 	};
 
 	private void init() {
-		if (myBluetooth == null)
+		if (Utilities.myBluetooth == null)
 			setupService();
-		if (!myBluetooth.isSupported()) {
+		if (!Utilities.myBluetooth.isSupported()) {
 			Toast.makeText(this, "Bluetooth no supported", Toast.LENGTH_LONG)
 					.show();
 			finish();
 		} else {
 			discoverability = false;
-			myBluetooth.setEnable(this);
-			// listDevicesFound = (ListView) findViewById(R.id.devicesfound);
+			Utilities.myBluetooth.setEnable(this);
 			mArrayAdapter = new ArrayAdapter<String>(this,
 					android.R.layout.simple_list_item_1);
-			// listDevicesFound.setAdapter(mArrayAdapter);
-			myBluetooth.registerBroadcastReceiver(getApplicationContext(),
-					myBluetooth.setBroadcastReceiver(getApplicationContext(),
+			Utilities.myBluetooth.registerBroadcastReceiver(getApplicationContext(),
+					Utilities.myBluetooth.setBroadcastReceiver(getApplicationContext(),
 							mArrayAdapter));
-			mAdapter = BluetoothAdapter.getDefaultAdapter();
+			Utilities.mAdapter = BluetoothAdapter.getDefaultAdapter();
 			Utilities.mainContext = this;
 			notificationManager = new Notifications((NotificationManager) getSystemService(NOTIFICATION_SERVICE), this);
 			Utilities.BBDDmensajes = new ControllerMensajes(this);
@@ -234,7 +230,7 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	public void paired(View view) {
-		myBluetooth.getPairedDevices(this,
+		Utilities.myBluetooth.getPairedDevices(this,
 				"Dispositivos emparejados anteriormente");
 	}
 
@@ -243,18 +239,18 @@ public class MainActivity extends ActionBarActivity {
 			discoverability = false;
 			Toast.makeText(this, "Disabling Discoverability",
 					Toast.LENGTH_SHORT).show();
-			startActivity(myBluetooth.enableDiscoverability(1));
+			startActivity(Utilities.myBluetooth.enableDiscoverability(1));
 
 		} else {
 			discoverability = true;
 			Toast.makeText(this, "Enabling Discoverability", Toast.LENGTH_SHORT)
 					.show();
-			startActivity(myBluetooth.enableDiscoverability(0));
+			startActivity(Utilities.myBluetooth.enableDiscoverability(0));
 		}
 	}
 	
 	public void close(View view) {
-		myBluetooth.stop();
+		Utilities.myBluetooth.stop();
 		finish();
 	}
 	
@@ -284,9 +280,9 @@ public class MainActivity extends ActionBarActivity {
 		String address = data.getExtras().getString(
 				DeviceListActivity.EXTRA_DEVICE_ADDRESS);
 		// Get the BluetoothDevice object
-		BluetoothDevice device = mAdapter.getRemoteDevice(address);
+		BluetoothDevice device = Utilities.mAdapter.getRemoteDevice(address);
 		// Attempt to connect to the device
-		myBluetooth.connect(device, false, difussion);
+		Utilities.myBluetooth.connect(device, false, difussion);
 	}
 
 	
