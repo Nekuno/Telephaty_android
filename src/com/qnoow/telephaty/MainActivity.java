@@ -138,7 +138,9 @@ public class MainActivity extends ActionBarActivity {
 				break;
 			case Utilities.MESSAGE_WRITE:
 				byte[] writeBuf = (byte[]) msg.obj;
-				// construct a string from the buffer
+				
+				// construct a string from the buffer 
+				
 				String writeMessage = new String(writeBuf);
 				Log.i(TAG, "WRITE:" + writeMessage + "!!!");
 				break;
