@@ -163,11 +163,11 @@ public class ConnectedThread extends Thread {
 								Utilities.difussion = true;
 								Utilities.jump = Integer.toString(Integer.parseInt(jump)-1);
 								Utilities.message = receivedMsg.substring(16); // TODO 17
-								Utilities.mAdapter.startDiscovery();
+								//Utilities.mAdapter.startDiscovery();
 //								write(newMessage.getBytes(), true);
 							}
-							mService.stop();
-							mService.start();
+//							mService.stop();
+//							mService.start();
 						}
 
 					}

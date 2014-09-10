@@ -136,7 +136,7 @@ public class DeviceListActivity extends Activity {
      */
     private void doDiscovery() {
         Log.d(TAG, "doDiscovery()");
-
+        
         // Indicate scanning in the title
         setProgressBarIndeterminateVisibility(true);
         setTitle(R.string.scanning);

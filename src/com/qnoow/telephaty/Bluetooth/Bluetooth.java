@@ -290,28 +290,28 @@ public class Bluetooth {
 		if (Utilities.D)
 			Log.d(Utilities.TAG, "connected.");
 
-		// // Cancel the thread that completed the connection
-		// if (mConnectThread != null) {
-		// mConnectThread.cancel();
-		// mConnectThread = null;
-		// }
-		//
-		// // Cancel any thread currently running a connection
-		// if (mConnectedThread != null) {
-		// mConnectedThread.cancel();
-		// mConnectedThread = null;
-		// }
-		//
-		// // Cancel the accept thread because we only want to connect to one
-		// // device
-		// if (mSecureAcceptThread != null) {
-		// mSecureAcceptThread.cancel();
-		// mSecureAcceptThread = null;
-		// }
-		// if (mInsecureAcceptThread != null) {
-		// mInsecureAcceptThread.cancel();
-		// mInsecureAcceptThread = null;
-		// }
+		 // Cancel the thread that completed the connection
+		 if (mConnectThread != null) {
+		 mConnectThread.cancel();
+		 mConnectThread = null;
+		 }
+		
+		 // Cancel any thread currently running a connection
+		 if (mConnectedThread != null) {
+		 mConnectedThread.cancel();
+		 mConnectedThread = null;
+		 }
+		
+		 // Cancel the accept thread because we only want to connect to one
+		 // device
+		 if (mSecureAcceptThread != null) {
+		 mSecureAcceptThread.cancel();
+		 mSecureAcceptThread = null;
+		 }
+		 if (mInsecureAcceptThread != null) {
+		 mInsecureAcceptThread.cancel();
+		 mInsecureAcceptThread = null;
+		 }
 
 		// Start the thread to manage the connection and perform transmissions
 		mConnectedThread = new ConnectedThread(this, socket, diffusion);

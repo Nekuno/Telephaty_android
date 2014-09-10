@@ -215,7 +215,6 @@ public class MainActivity extends ActionBarActivity {
 		Toast.makeText(this, "Insecure connection", Toast.LENGTH_SHORT).show();
 		Intent serverIntent = null;
 		mArrayAdapter.clear();
-		BluetoothAdapter.getDefaultAdapter().startDiscovery();
 		serverIntent = new Intent(this, DeviceListActivity.class);
 		startActivityForResult(serverIntent, Utilities.REQUEST_CONNECT_DEVICE);
 
@@ -225,7 +224,6 @@ public class MainActivity extends ActionBarActivity {
 		Toast.makeText(this, "Secure connection", Toast.LENGTH_SHORT).show();
 		Intent serverIntent = null;
 		mArrayAdapter.clear();
-		BluetoothAdapter.getDefaultAdapter().startDiscovery();
 		serverIntent = new Intent(this, DeviceListActivity.class);
 		startActivityForResult(serverIntent, Utilities.REQUEST_CONNECT_DEVICE);
 
