@@ -147,7 +147,7 @@ public class ConnectedThread extends Thread {
 						String receivedMsg = new String(decryptedData, "UTF-8");
 						String msgId = receivedMsg.substring(1, 15);
 						String jump = receivedMsg.substring(15, 16);
-						byte[] originalMsg = receivedMsg.substring(16).getBytes();
+						byte[] originalMsg = receivedMsg.substring(15).getBytes();
 
 						// Send the obtained bytes to the UI Activity
 						mService.getHandler()
@@ -163,8 +163,7 @@ public class ConnectedThread extends Thread {
 								Utilities.difussion = true;
 								Utilities.jump = Integer.toString(Integer.parseInt(jump)-1);
 								Utilities.message = receivedMsg.substring(16); // TODO 17
-								//Utilities.mAdapter.startDiscovery();
-//								write(newMessage.getBytes(), true);
+								Utilities.mAdapter.startDiscovery();
 							}
 //							mService.stop();
 //							mService.start();
