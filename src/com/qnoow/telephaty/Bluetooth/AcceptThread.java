@@ -23,6 +23,7 @@ public class AcceptThread extends Thread {
 		mService = service;
 		BluetoothServerSocket tmp = null;
 		mSocketType = secure ? "Secure" : "Insecure";
+		Log.d("DEBUGGING", "Entrando en Acceptthread");
 
 		// Create a new listening server socket
 		try {
@@ -49,9 +50,12 @@ public class AcceptThread extends Thread {
 		setName("AcceptThread" + mSocketType);
 
 		BluetoothSocket socket = null;
+		
+		Log.d("DEBUGGING", "Antes de while Acceptthread");
 
 		// Listen to the server socket if we're not connected
 		while (mService.getState() != Utilities.STATE_CONNECTED && mService.getState() != Utilities.STATE_CONNECTED_ECDH_FINISH && !Utilities.busy) {
+			Log.d("DEBUGGING", "Dentro de while Acceptthread");
 			try {
 				// This is a blocking call and will only return on a
 				// successful connection or an exception
@@ -98,6 +102,8 @@ public class AcceptThread extends Thread {
 				}
 			}
 		}
+		
+		Log.d("DEBUGGING", "Fuera de while en Acceptthread");
 		if (Utilities.D)
 			Log.i(Utilities.TAG, "END mAcceptThread, socket Type: "
 					+ mSocketType);

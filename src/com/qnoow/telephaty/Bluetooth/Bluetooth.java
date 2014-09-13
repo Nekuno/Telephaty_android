@@ -126,6 +126,7 @@ public class Bluetooth {
 					// hacer llamadas a conectar y enviar mensaje
 
 					if (Utilities.difussion == true && MACs.size() > 0) {
+						Log.d("DEBUGGING", "En receiver enviando msg");
 						sendDifussion(Utilities.message);
 					} else {
 						Toast.makeText(context, "Finalizado el escaneo",

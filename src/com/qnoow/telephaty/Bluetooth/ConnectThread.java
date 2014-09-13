@@ -23,7 +23,8 @@ public class ConnectThread extends Thread {
     	
     	// Get a BluetoothSocket for a connection with the
     	// given BluetoothDevice
-
+    	Log.d("DEBUGGING", "Entrando en Connectthread");
+    	
     	if (secure){
     		try {
     			tmp = device.createRfcommSocketToServiceRecord(
@@ -81,6 +82,8 @@ public class ConnectThread extends Thread {
         else{
         	mService.connected(mSocket, mDevice, true);
         }
+    	Log.d("DEBUGGING", "Saliendo de Connectthread");
+
     }
 
     public void cancel() {

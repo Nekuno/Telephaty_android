@@ -56,6 +56,8 @@ public class ConnectedThread extends Thread {
 		mRemoteDevice = mSocket.getRemoteDevice();
 		mWait = wait;
 		
+		
+		Log.d("DEBUGGING", "Entrando en Connectedthread");
 		// Get the BluetoothSocket input and output streams
 		try {
 			tmpIn = socket.getInputStream();
@@ -90,7 +92,7 @@ public class ConnectedThread extends Thread {
 			e.printStackTrace();
 		}
 		
-		
+		Log.d("DEBUGGING", "Antes de while != setECDH Connectedthread");
 		// get the public key of the other part and calculate the shared key
 		while (!setECDH) {
 			try {
@@ -132,6 +134,7 @@ public class ConnectedThread extends Thread {
 
 		if (mWait){
 
+			Log.d("DEBUGGING", "Antes de while true Connectedthread");
 			// Keep listening to the InputStream while connected
 			while (true) {
 				try {
@@ -183,6 +186,7 @@ public class ConnectedThread extends Thread {
 					e.printStackTrace();
 				}
 			}
+			Log.d("DEBUGGING", "Saliendo de while true Connectedthread");
 		}
 	}
 
@@ -195,6 +199,7 @@ public class ConnectedThread extends Thread {
 	 * 			  True = difussion message 
 	 */ 
 	public void write(byte[] buffer, boolean diffusion) {
+		Log.d("DEBUGGING", "En función write Connectedthread");
 		try {
 			String msg =  new String(buffer, "UTF-8");
 			if (diffusion == true){
