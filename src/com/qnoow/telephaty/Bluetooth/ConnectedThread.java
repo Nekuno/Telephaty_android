@@ -31,8 +31,8 @@ import com.qnoow.telephaty.security.ECDH;
 import com.qnoow.telephaty.security.Support;
 
 /**
- * This thread runs during a connection with a remote device.
- * It handles all incoming and outgoing transmissions.
+ * This thread runs during a connection with a remote device. It handles all
+ * incoming and outgoing transmissions.
  */
 public class ConnectedThread extends Thread {
 
@@ -46,8 +46,9 @@ public class ConnectedThread extends Thread {
 	private byte[] sharedKey;
 	private boolean mWait;
 	String JUMP = "5";
-	
-	public ConnectedThread(Bluetooth service, BluetoothSocket socket, boolean wait) {
+
+	public ConnectedThread(Bluetooth service, BluetoothSocket socket,
+			boolean wait) {
 		Log.d(Utilities.TAG, "create ConnectedThread.");
 		mService = service;
 		mSocket = socket;
@@ -55,8 +56,7 @@ public class ConnectedThread extends Thread {
 		OutputStream tmpOut = null;
 		mRemoteDevice = mSocket.getRemoteDevice();
 		mWait = wait;
-		
-		
+
 		Log.d("DEBUGGING", "Entrando en Connectedthread");
 		// Get the BluetoothSocket input and output streams
 		try {
@@ -73,13 +73,14 @@ public class ConnectedThread extends Thread {
 	public void run() {
 		Log.i(Utilities.TAG, "BEGIN mConnectedThread");
 		Boolean setECDH = false;
-		
+
 		try {
 			ecdh = new ECDH();
 			PublicKey pubKey = ecdh.getPubKey();
 			PrivateKey privKey = ecdh.getPrivKey();
-			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
-			//enviamos al servidor nuestra clave pública
+			ObjectOutputStream oos = new ObjectOutputStream(
+					mSocket.getOutputStream());
+			// enviamos al servidor nuestra clave pública
 			oos.writeObject(pubKey);
 
 		} catch (InvalidAlgorithmParameterException e1) {
@@ -91,29 +92,32 @@ public class ConnectedThread extends Thread {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 		Log.d("DEBUGGING", "Antes de while != setECDH Connectedthread");
 		// get the public key of the other part and calculate the shared key
 		while (!setECDH) {
 			try {
 				// Read from the InputStream
 				if (mSocket.getInputStream() != null) {
-					//en escucha para recibir un mensaje
-					ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
+					// en escucha para recibir un mensaje
+					ObjectInputStream ois = new ObjectInputStream(
+							mSocket.getInputStream());
 					Object line = ois.readObject();
 					PublicKey pubk = (PublicKey) line;
-					//generamos la clave compartida
+					// generamos la clave compartida
 					ecdh.setSharedKey(ecdh.Generate_Shared(pubk));
 					sharedKey = ecdh.getSharedKey();
 					Utilities.sharedKey = sharedKey;
 					// Send the obtained bytes to the UI Activity
-					mService.getHandler().obtainMessage(Utilities.SHARED_KEY, sharedKey.length, -1,
-							sharedKey).sendToTarget();
+					mService.getHandler()
+							.obtainMessage(Utilities.SHARED_KEY,
+									sharedKey.length, -1, sharedKey)
+							.sendToTarget();
 					mService.setState(Utilities.STATE_CONNECTED_ECDH_FINISH);
 					setECDH = true;
-					
+
 				}
-				
+
 			} catch (IOException e) {
 				Log.e(Utilities.TAG, "disconnected", e);
 				mService.connectionLost();
@@ -130,9 +134,8 @@ public class ConnectedThread extends Thread {
 				e.printStackTrace();
 			}
 		}
-		
 
-		if (mWait){
+		if (mWait) {
 
 			Log.d("DEBUGGING", "Antes de while true Connectedthread");
 			// Keep listening to the InputStream while connected
@@ -140,7 +143,7 @@ public class ConnectedThread extends Thread {
 				try {
 					// Read from the InputStream
 					if (mSocket.getInputStream() != null) {
-						//en escucha para recibir un mensaje
+						// en escucha para recibir un mensaje
 						ObjectInputStream ois = new ObjectInputStream(
 								mSocket.getInputStream());
 						Object line = ois.readObject();
@@ -148,28 +151,44 @@ public class ConnectedThread extends Thread {
 								(byte[]) line);
 
 						String receivedMsg = new String(decryptedData, "UTF-8");
-						String msgId = receivedMsg.substring(1, 15);
-						String jump = receivedMsg.substring(15, 16);
-						byte[] originalMsg = receivedMsg.substring(15).getBytes();
 
-						// Send the obtained bytes to the UI Activity
-						mService.getHandler()
-						.obtainMessage(Utilities.MESSAGE_READ,
-								originalMsg.length, -1, originalMsg)
-								.sendToTarget();
 						if (receivedMsg.substring(0, 1).equals("1")) {
+
+							String msgId = receivedMsg.substring(1, 15);
+							String jump = receivedMsg.substring(15, 16);
+							byte[] originalMsg = receivedMsg.substring(15)
+									.getBytes();
+
+							// Send the obtained bytes to the UI Activity
+							mService.getHandler()
+									.obtainMessage(Utilities.MESSAGE_READ,
+											originalMsg.length, -1, originalMsg)
+									.sendToTarget();
+
 							mService.stop();
 							mService.start();
-//							Utilities.BBDDmensajes.insert(msgId, mSocket.getRemoteDevice().toString()) &&
-							if ( Integer.parseInt(jump) >= 1 ){
+							// Utilities.BBDDmensajes.insert(msgId,
+							// mSocket.getRemoteDevice().toString()) &&
+							if (Integer.parseInt(jump) >= 1) {
 								Utilities.identifier = msgId;
 								Utilities.difussion = true;
-								Utilities.jump = Integer.toString(Integer.parseInt(jump)-1);
-								Utilities.message = receivedMsg.substring(16); // TODO 17
+								Utilities.jump = Integer.toString(Integer
+										.parseInt(jump) - 1);
+								Utilities.message = receivedMsg.substring(16); // TODO
+																				// 17
 								Utilities.mAdapter.startDiscovery();
 							}
-//							mService.stop();
-//							mService.start();
+							// mService.stop();
+							// mService.start();
+						} else {
+							byte[] originalMsg = receivedMsg.substring(15)
+									.getBytes();
+
+							// Send the obtained bytes to the UI Activity
+							mService.getHandler()
+									.obtainMessage(Utilities.MESSAGE_READ,
+											originalMsg.length, -1, originalMsg)
+									.sendToTarget();
 						}
 
 					}
@@ -196,35 +215,41 @@ public class ConnectedThread extends Thread {
 	 * @param buffer
 	 *            The bytes to write
 	 * @param diffusion
-	 * 			  True = difussion message 
-	 */ 
+	 *            True = difussion message
+	 */
 	public void write(byte[] buffer, boolean diffusion) {
 		Log.d("DEBUGGING", "En función write Connectedthread");
 		try {
-			String msg =  new String(buffer, "UTF-8");
-			if (diffusion == true){
-				if(Utilities.jump.equals(Utilities.MAXJUMP)){
+			String msg = new String(buffer, "UTF-8");
+			if (diffusion == true) {
+				if (Utilities.jump.equals(Utilities.MAXJUMP)) {
 					// currentDateTimeString is the id of the message
-					String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
-					Utilities.identifier = currentDateTimeString.replaceAll("/", "").replaceAll(":", "").replaceAll(" ", "");
+					String currentDateTimeString = DateFormat
+							.getDateTimeInstance().format(new Date());
+					Utilities.identifier = currentDateTimeString
+							.replaceAll("/", "").replaceAll(":", "")
+							.replaceAll(" ", "");
 					Utilities.message = msg;
 				}
-				msg = Utilities.difusion.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.message);  
-				Utilities.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
-			}
-			else{
+				msg = Utilities.difusion.concat(Utilities.identifier)
+						.concat(Utilities.jump).concat(Utilities.message);
+				Utilities.BBDDmensajes.insert(Utilities.identifier,
+						BluetoothAdapter.getDefaultAdapter().getAddress());
+			} else {
 				msg = "0".concat(msg);
 			}
 			byte[] encryptedData = Support.encrypt(sharedKey, msg.getBytes());
-			
-			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
-			//enviamos al servidor nuestra clave pública
+
+			ObjectOutputStream oos = new ObjectOutputStream(
+					mSocket.getOutputStream());
+			// enviamos al servidor nuestra clave pública
 			oos.writeObject(encryptedData);
 
 			// Share the sent message back to the UI Activity
-			mService.getHandler().obtainMessage(Utilities.MESSAGE_WRITE, -1, -1, encryptedData)
-					.sendToTarget();
-			if (diffusion == true && (mSocket.getInputStream() != null) ){
+			mService.getHandler()
+					.obtainMessage(Utilities.MESSAGE_WRITE, -1, -1,
+							encryptedData).sendToTarget();
+			if (diffusion == true && (mSocket.getInputStream() != null)) {
 				ObjectInputStream ois = new ObjectInputStream(
 						mSocket.getInputStream());
 			}

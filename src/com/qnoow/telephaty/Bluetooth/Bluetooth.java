@@ -180,7 +180,7 @@ public class Bluetooth {
 	// with all near devices and send a message and later close the connection
 	public void sendDifussion(String msg) {
 		for (int i = 0; i < MACs.size(); i++) {
-			Utilities.busy = true;
+//			Utilities.busy = true;
 			BluetoothDevice device = Utilities.mAdapter.getRemoteDevice(MACs
 					.get(i));
 			// Attempt to connect to the device
@@ -190,7 +190,7 @@ public class Bluetooth {
 			write(msg.getBytes(), true);
 
 		}
-		Utilities.busy = false;
+//		Utilities.busy = false;
 	}
 
 	/**

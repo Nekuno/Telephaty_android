@@ -63,5 +63,5 @@ public class Utilities {
 	public static String difusion = "1";
 	public static String identifier = "";
 
-	public static boolean busy = false;
+//	public static boolean busy = false;
 }

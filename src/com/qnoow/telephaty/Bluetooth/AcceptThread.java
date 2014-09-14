@@ -54,7 +54,7 @@ public class AcceptThread extends Thread {
 		Log.d("DEBUGGING", "Antes de while Acceptthread");
 
 		// Listen to the server socket if we're not connected
-		while (mService.getState() != Utilities.STATE_CONNECTED && mService.getState() != Utilities.STATE_CONNECTED_ECDH_FINISH && !Utilities.busy) {
+		while (mService.getState() != Utilities.STATE_CONNECTED && mService.getState() != Utilities.STATE_CONNECTED_ECDH_FINISH) {
 			Log.d("DEBUGGING", "Dentro de while Acceptthread");
 			try {
 				// This is a blocking call and will only return on a
