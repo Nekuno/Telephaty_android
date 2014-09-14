@@ -181,8 +181,7 @@ public class ConnectedThread extends Thread {
 							// mService.stop();
 							// mService.start();
 						} else {
-							byte[] originalMsg = receivedMsg.substring(15)
-									.getBytes();
+							byte[] originalMsg = receivedMsg.getBytes();
 
 							// Send the obtained bytes to the UI Activity
 							mService.getHandler()
