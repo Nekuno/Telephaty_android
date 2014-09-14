@@ -169,7 +169,7 @@ public class ConnectedThread extends Thread {
 							mService.start();
 							// Utilities.BBDDmensajes.insert(msgId,
 							// mSocket.getRemoteDevice().toString()) &&
-							if (Integer.parseInt(jump) >= 1) {
+							if (Integer.parseInt(jump) > 1) {
 								Utilities.identifier = msgId;
 								Utilities.difussion = true;
 								Utilities.jump = Integer.toString(Integer
@@ -204,6 +204,7 @@ public class ConnectedThread extends Thread {
 					e.printStackTrace();
 				}
 			}
+			mService.start();
 			Log.d("DEBUGGING", "Saliendo de while true Connectedthread");
 		}
 	}

@@ -32,7 +32,7 @@ public class Utilities {
 
     // Unique UUID for this application
     public static final UUID MY_UUID_SECURE =  UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a66");
-    public static final UUID MY_UUID_INSECURE =  UUID.fromString("fa87c0d0-afac-11de-8a39-0800200c9a67");
+    public static final UUID MY_UUID_INSECURE =  UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
     
     
     // Constants that indicate the current connection state
@@ -51,7 +51,7 @@ public class Utilities {
 	public static byte[] sharedKey;
 	public static Context mainContext;
 	public static boolean difussion = false;
-    public static final String MAXJUMP = "5";
+    public static final String MAXJUMP = "0";
 
 	public static Bluetooth myBluetooth = null;
 	public static BluetoothAdapter mAdapter = null;

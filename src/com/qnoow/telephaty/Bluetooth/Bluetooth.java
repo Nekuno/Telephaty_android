@@ -185,11 +185,14 @@ public class Bluetooth {
 					.get(i));
 			// Attempt to connect to the device
 			connect(device, false, true);
-			while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH) {
+			long time = System.currentTimeMillis();
+			
+			while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH && System.currentTimeMillis() - time < 5000) {
 			}
 			write(msg.getBytes(), true);
 
 		}
+		start();
 //		Utilities.busy = false;
 	}
 
