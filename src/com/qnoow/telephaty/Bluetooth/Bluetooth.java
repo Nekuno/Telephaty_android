@@ -192,7 +192,7 @@ public class Bluetooth {
 			write(msg.getBytes(), true);
 
 		}
-		start();
+//		start();
 //		Utilities.busy = false;
 	}
 

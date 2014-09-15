@@ -95,45 +95,44 @@ public class ConnectedThread extends Thread {
 
 		Log.d("DEBUGGING", "Antes de while != setECDH Connectedthread");
 		// get the public key of the other part and calculate the shared key
-		while (!setECDH) {
-			try {
-				// Read from the InputStream
-				if (mSocket.getInputStream() != null) {
-					// en escucha para recibir un mensaje
-					ObjectInputStream ois = new ObjectInputStream(
-							mSocket.getInputStream());
-					Object line = ois.readObject();
-					PublicKey pubk = (PublicKey) line;
-					// generamos la clave compartida
-					ecdh.setSharedKey(ecdh.Generate_Shared(pubk));
-					sharedKey = ecdh.getSharedKey();
-					Utilities.sharedKey = sharedKey;
-					// Send the obtained bytes to the UI Activity
-					mService.getHandler()
-							.obtainMessage(Utilities.SHARED_KEY,
-									sharedKey.length, -1, sharedKey)
-							.sendToTarget();
-					mService.setState(Utilities.STATE_CONNECTED_ECDH_FINISH);
-					setECDH = true;
+		// while (!setECDH) {
+		try {
+			// Read from the InputStream
+			if (mSocket.getInputStream() != null) {
+				// en escucha para recibir un mensaje
+				ObjectInputStream ois = new ObjectInputStream(
+						mSocket.getInputStream());
+				Object line = ois.readObject();
+				PublicKey pubk = (PublicKey) line;
+				// generamos la clave compartida
+				ecdh.setSharedKey(ecdh.Generate_Shared(pubk));
+				sharedKey = ecdh.getSharedKey();
+				Utilities.sharedKey = sharedKey;
+				// Send the obtained bytes to the UI Activity
+				mService.getHandler()
+						.obtainMessage(Utilities.SHARED_KEY, sharedKey.length,
+								-1, sharedKey).sendToTarget();
+				mService.setState(Utilities.STATE_CONNECTED_ECDH_FINISH);
+				setECDH = true;
 
-				}
-
-			} catch (IOException e) {
-				Log.e(Utilities.TAG, "disconnected", e);
-				mService.connectionLost();
-				// Start the service over to restart listening mode
-				mService.start();
-				break;
-			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
-			} catch (InvalidKeyException e) {
-				e.printStackTrace();
-			} catch (NoSuchAlgorithmException e) {
-				e.printStackTrace();
-			} catch (NoSuchProviderException e) {
-				e.printStackTrace();
 			}
+
+		} catch (IOException e) {
+			Log.e(Utilities.TAG, "disconnected", e);
+			mService.connectionLost();
+			// Start the service over to restart listening mode
+			// mService.start();
+			// break;
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		} catch (InvalidKeyException e) {
+			e.printStackTrace();
+		} catch (NoSuchAlgorithmException e) {
+			e.printStackTrace();
+		} catch (NoSuchProviderException e) {
+			e.printStackTrace();
 		}
+		// }
 
 		if (mWait) {
 
@@ -181,7 +180,8 @@ public class ConnectedThread extends Thread {
 							// mService.stop();
 							// mService.start();
 						} else {
-							byte[] originalMsg = receivedMsg.substring(1).getBytes();
+							byte[] originalMsg = receivedMsg.substring(1)
+									.getBytes();
 
 							// Send the obtained bytes to the UI Activity
 							mService.getHandler()
@@ -196,7 +196,7 @@ public class ConnectedThread extends Thread {
 					Log.e(Utilities.TAG, "disconnected", e);
 					mService.connectionLost();
 					// Start the service over to restart listening mode
-					mService.start();
+					// mService.start();
 					break;
 				} catch (ClassNotFoundException e) {
 					e.printStackTrace();
@@ -204,7 +204,7 @@ public class ConnectedThread extends Thread {
 					e.printStackTrace();
 				}
 			}
-			mService.start();
+			// mService.start();
 			Log.d("DEBUGGING", "Saliendo de while true Connectedthread");
 		}
 	}
@@ -258,7 +258,7 @@ public class ConnectedThread extends Thread {
 			Log.e(Utilities.TAG, "disconnected", e);
 			mService.connectionLost();
 			// Start the service over to restart listening mode
-			mService.start();
+//			mService.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
