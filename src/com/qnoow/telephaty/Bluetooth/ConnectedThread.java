@@ -176,6 +176,9 @@ public class ConnectedThread extends Thread {
 								Utilities.message = receivedMsg.substring(16); // TODO
 																				// 17
 								Utilities.mAdapter.startDiscovery();
+								
+							}else{
+								Utilities.difussion = false;
 							}
 							// mService.stop();
 							// mService.start();
