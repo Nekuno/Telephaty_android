@@ -163,7 +163,7 @@ public class ConnectedThread extends Thread {
 									.obtainMessage(Utilities.MESSAGE_READ,
 											originalMsg.length, -1, originalMsg)
 									.sendToTarget();
-
+							
 							mService.stop();
 							mService.start();
 							// Utilities.BBDDmensajes.insert(msgId,

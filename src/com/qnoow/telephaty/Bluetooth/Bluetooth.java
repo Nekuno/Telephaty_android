@@ -118,7 +118,8 @@ public class Bluetooth {
 							.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 					mArrayAdapter.add(device.getName() + "\n"
 							+ device.getAddress());
-					MACs.add(device.getAddress());
+					if(!MACs.contains(device.getAddress()))
+						MACs.add(device.getAddress());
 					mArrayAdapter.notifyDataSetChanged();
 					// When discovery is finished, change the Activity title
 				} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED
