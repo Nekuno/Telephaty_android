@@ -1,6 +1,8 @@
 package com.qnoow.telephaty.Bluetooth;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
@@ -184,20 +186,25 @@ public class Bluetooth {
 			// Utilities.busy = true;
 			BluetoothDevice device = Utilities.mAdapter.getRemoteDevice(MACs
 					.get(i));
-			// Attempt to connect to the device
-			connect(device, false, true);
-			long time = System.currentTimeMillis();
+			if (!Utilities.BBDDmensajes.search(Utilities.identifier,
+					MACs.get(i)) || Utilities.jump == Utilities.MAXJUMP) {
+				// Attempt to connect to the device
+				connect(device, false, true);
+				long time = System.currentTimeMillis();
 
-			while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH
-					&& System.currentTimeMillis() - time < 5000) {
+				while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH
+						&& System.currentTimeMillis() - time < 5000) {
+				}
+				if (getState() == Utilities.STATE_CONNECTED_ECDH_FINISH) {
+					Log.w("Antes del write",
+							"Conectado con mac = " + MACs.get(i));
+					write(msg.getBytes(), true);
+				} else {
+					Log.w("disconnected", "Esta petando el otro movil!");
+					connectionFailed();
+				}
 			}
-			if(getState() == Utilities.STATE_CONNECTED_ECDH_FINISH){
-				Log.w("Antes del write", "Conectado con mac = " + MACs.get(i));
-				write(msg.getBytes(), true);
-			}else{
-				Log.w("disconnected", "Esta petando el otro movil!");
-				connectionFailed();
-			}
+
 		}
 		Utilities.difussion = false;
 		// start();

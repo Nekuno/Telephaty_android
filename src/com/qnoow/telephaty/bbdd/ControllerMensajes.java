@@ -21,7 +21,7 @@ public class ControllerMensajes {
 
 	public boolean insert(String id, String mac) {
 		db = mensajesDB.getWritableDatabase();
-		if (db != null && !search(id, mac)) {
+		if (db != null && !internalsearch(id, mac)) {
 			Log.w("BBDD", "Inseertamos  id = " + id + "mac = " + mac);
 			db.execSQL("INSERT INTO Mensajes (id, mac) " + "VALUES ('" + id
 					+ "', '" + mac + "')");
@@ -33,7 +33,7 @@ public class ControllerMensajes {
 	}
 
 
-	private boolean search(String id, String mac) {
+	private boolean internalsearch(String id, String mac) {
 
 		Cursor c = db.query("Mensajes", campos, null, null, null, null, null);
 
@@ -45,6 +45,22 @@ public class ControllerMensajes {
 				}
 			} while (c.moveToNext());
 		}
+		Log.w("BBDD", "No tenemos a id = " + id + "mac = " + mac);
+		return false;
+	}
+
+	public boolean search(String id, String mac) {
+		db = mensajesDB.getWritableDatabase();
+		Cursor c = db.query("Mensajes", campos, null, null, null, null, null);
+		if (c.moveToFirst()) {
+			do {
+				if (c.getString(0).equals(id) && c.getString(1).equals(mac)){
+					Log.w("BBDD", "YA TENEMOS A  id = " + id + "mac = " + mac);
+					return true;
+				}
+			} while (c.moveToNext());
+		}
+		db.close();
 		Log.w("BBDD", "No tenemos a id = " + id + "mac = " + mac);
 		return false;
 	}
