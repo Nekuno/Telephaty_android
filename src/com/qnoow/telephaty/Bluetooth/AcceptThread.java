@@ -107,7 +107,7 @@ public class AcceptThread extends Thread {
 		if (Utilities.D)
 			Log.i(Utilities.TAG, "END mAcceptThread, socket Type: "
 					+ mSocketType);
-
+		
 	}
 
 	public void cancel() {

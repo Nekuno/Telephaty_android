@@ -118,7 +118,7 @@ public class Bluetooth {
 							.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 					mArrayAdapter.add(device.getName() + "\n"
 							+ device.getAddress());
-					if(!MACs.contains(device.getAddress()))
+					if (!MACs.contains(device.getAddress()))
 						MACs.add(device.getAddress());
 					mArrayAdapter.notifyDataSetChanged();
 					// When discovery is finished, change the Activity title
@@ -181,20 +181,27 @@ public class Bluetooth {
 	// with all near devices and send a message and later close the connection
 	public void sendDifussion(String msg) {
 		for (int i = 0; i < MACs.size(); i++) {
-//			Utilities.busy = true;
+			// Utilities.busy = true;
 			BluetoothDevice device = Utilities.mAdapter.getRemoteDevice(MACs
 					.get(i));
 			// Attempt to connect to the device
 			connect(device, false, true);
 			long time = System.currentTimeMillis();
-			
-			while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH && System.currentTimeMillis() - time < 5000) {
-			}
-			write(msg.getBytes(), true);
 
+			while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH
+					&& System.currentTimeMillis() - time < 5000) {
+			}
+			if(getState() == Utilities.STATE_CONNECTED_ECDH_FINISH){
+				Log.e("Antes del write", "Conectado con mac = " + MACs.get(i));
+				write(msg.getBytes(), true);
+			}else{
+				Log.w("disconnected", "Esta petando el otro movil!");
+//				connectionFailed();
+			}
 		}
-//		start();
-//		Utilities.busy = false;
+		Utilities.difussion = false;
+		// start();
+		// Utilities.busy = false;
 	}
 
 	/**
@@ -296,28 +303,28 @@ public class Bluetooth {
 		if (Utilities.D)
 			Log.d(Utilities.TAG, "connected.");
 
-		 // Cancel the thread that completed the connection
-		 if (mConnectThread != null) {
-		 mConnectThread.cancel();
-		 mConnectThread = null;
-		 }
-		
-		 // Cancel any thread currently running a connection
-		 if (mConnectedThread != null) {
-		 mConnectedThread.cancel();
-		 mConnectedThread = null;
-		 }
-		
-		 // Cancel the accept thread because we only want to connect to one
-		 // device
-		 if (mSecureAcceptThread != null) {
-		 mSecureAcceptThread.cancel();
-		 mSecureAcceptThread = null;
-		 }
-		 if (mInsecureAcceptThread != null) {
-		 mInsecureAcceptThread.cancel();
-		 mInsecureAcceptThread = null;
-		 }
+		// Cancel the thread that completed the connection
+		if (mConnectThread != null) {
+			mConnectThread.cancel();
+			mConnectThread = null;
+		}
+
+		// Cancel any thread currently running a connection
+		if (mConnectedThread != null) {
+			mConnectedThread.cancel();
+			mConnectedThread = null;
+		}
+
+		// Cancel the accept thread because we only want to connect to one
+		// device
+		if (mSecureAcceptThread != null) {
+			mSecureAcceptThread.cancel();
+			mSecureAcceptThread = null;
+		}
+		if (mInsecureAcceptThread != null) {
+			mInsecureAcceptThread.cancel();
+			mInsecureAcceptThread = null;
+		}
 
 		// Start the thread to manage the connection and perform transmissions
 		mConnectedThread = new ConnectedThread(this, socket, diffusion);

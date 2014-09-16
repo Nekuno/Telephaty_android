@@ -51,7 +51,7 @@ public class Utilities {
 	public static byte[] sharedKey;
 	public static Context mainContext;
 	public static boolean difussion = false;
-    public static final String MAXJUMP = "0";
+    public static final String MAXJUMP = "5";
 
 	public static Bluetooth myBluetooth = null;
 	public static BluetoothAdapter mAdapter = null;

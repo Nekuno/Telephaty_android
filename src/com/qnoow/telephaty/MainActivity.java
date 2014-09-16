@@ -46,7 +46,7 @@ public class MainActivity extends ActionBarActivity {
 	private Button mSendButton;
 	private Notifications notificationManager;
 	String lastmessage;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -54,13 +54,13 @@ public class MainActivity extends ActionBarActivity {
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		init();
 		setupCommunication();
-		
+
 	}
 
 	@Override
 	public synchronized void onResume() {
 		super.onResume();
-		Log.d("CDA", "onResume Called"+lastmessage);
+		Log.d("CDA", "onResume Called" + lastmessage);
 		loadNotification();
 		notificationManager.disableNotifications();
 		if (Utilities.myBluetooth != null && Utilities.mAdapter.isEnabled()) {
@@ -119,15 +119,15 @@ public class MainActivity extends ActionBarActivity {
 			Utilities.myBluetooth.write(send, false);
 		}
 	}
-	
-	public void sendDifussion(View view){
+
+	public void sendDifussion(View view) {
 		setupService();
 		Utilities.jump = Utilities.MAXJUMP;
 		Utilities.difussion = true;
-		Utilities.message = ((TextView) findViewById(R.id.edit_text_out)).getText().toString();
+		Utilities.message = ((TextView) findViewById(R.id.edit_text_out))
+				.getText().toString();
 		Utilities.mAdapter.startDiscovery();
 	}
-	
 
 	// The Handler that gets information back from the BluetoothService
 	private final Handler mHandler = new Handler() {
@@ -138,9 +138,6 @@ public class MainActivity extends ActionBarActivity {
 				break;
 			case Utilities.MESSAGE_WRITE:
 				byte[] writeBuf = (byte[]) msg.obj;
-				
-				// construct a string from the buffer 
-				
 				String writeMessage = new String(writeBuf);
 				Log.i(TAG, "WRITE:" + writeMessage + "!!!");
 				break;
@@ -149,8 +146,8 @@ public class MainActivity extends ActionBarActivity {
 				byte[] readBuf = (byte[]) msg.obj;
 				// construct a string from the valid bytes in the buffer
 				String readMessage = new String(readBuf, 0, msg.arg1);
-				Toast.makeText(MainActivity.this, readMessage,
-						Toast.LENGTH_LONG).show();
+//				Toast.makeText(MainActivity.this, readMessage,
+//						Toast.LENGTH_LONG).show();
 				TextView tx = (TextView) findViewById(R.id.textView1);
 				tx.setText(readMessage);
 				lastmessage = readMessage;
@@ -161,7 +158,7 @@ public class MainActivity extends ActionBarActivity {
 				byte[] readBuff = (byte[]) msg.obj;
 				// construct a string from the valid bytes in the buffer
 				String readString = new String(readBuff, 0, readBuff.length);
-				Toast.makeText(MainActivity.this, readString, Toast.LENGTH_LONG)
+				Toast.makeText(MainActivity.this, readString, Toast.LENGTH_SHORT)
 						.show();
 				TextView txv = (TextView) findViewById(R.id.textView1);
 				txv.setText(readString);
@@ -200,15 +197,18 @@ public class MainActivity extends ActionBarActivity {
 			Utilities.myBluetooth.setEnable(this);
 			mArrayAdapter = new ArrayAdapter<String>(this,
 					android.R.layout.simple_list_item_1);
-			Utilities.myBluetooth.registerBroadcastReceiver(getApplicationContext(),
-					Utilities.myBluetooth.setBroadcastReceiver(getApplicationContext(),
-							mArrayAdapter));
+			Utilities.myBluetooth.registerBroadcastReceiver(
+					getApplicationContext(), Utilities.myBluetooth
+							.setBroadcastReceiver(getApplicationContext(),
+									mArrayAdapter));
 			Utilities.mAdapter = BluetoothAdapter.getDefaultAdapter();
 			Utilities.mainContext = this;
-			notificationManager = new Notifications((NotificationManager) getSystemService(NOTIFICATION_SERVICE), this);
+			notificationManager = new Notifications(
+					(NotificationManager) getSystemService(NOTIFICATION_SERVICE),
+					this);
 			Utilities.BBDDmensajes = new ControllerMensajes(this);
 		}
-		
+
 	}
 
 	public void scan_insecure(View view) {
@@ -248,12 +248,12 @@ public class MainActivity extends ActionBarActivity {
 			startActivity(Utilities.myBluetooth.enableDiscoverability(0));
 		}
 	}
-	
+
 	public void close(View view) {
 		Utilities.myBluetooth.stop();
 		finish();
 	}
-	
+
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult " + resultCode);
 		switch (requestCode) {
@@ -285,7 +285,6 @@ public class MainActivity extends ActionBarActivity {
 		Utilities.myBluetooth.connect(device, false, difussion);
 	}
 
-	
 	private void setupCommunication() {
 		Log.d(TAG, "setupCommunication");
 		// Initialize the send button with a listener that for click events
@@ -300,39 +299,36 @@ public class MainActivity extends ActionBarActivity {
 		});
 
 	}
-	
-	
-	private void loadNotification(){
+
+	private void loadNotification() {
 		SharedPreferences prefs = getSharedPreferences("Preferences",
 				Context.MODE_PRIVATE);
-			SharedPreferences.Editor editor = prefs.edit();
-			
-			if (prefs.getBoolean("notification", false) == true){
-				TextView tv = (TextView) findViewById(R.id.textView1);
-				tv.setText(prefs.getString("msg", ""));
-			}
-			editor.putBoolean("notification", false);
-			editor.commit();
+		SharedPreferences.Editor editor = prefs.edit();
+
+		if (prefs.getBoolean("notification", false) == true) {
+			TextView tv = (TextView) findViewById(R.id.textView1);
+			tv.setText(prefs.getString("msg", ""));
+		}
+		editor.putBoolean("notification", false);
+		editor.commit();
 	}
-	
-	
-	
+
 	@Override
 	public void onBackPressed() {
-	   Log.d("CDA", "onBackPressed Called");
-	   Intent setIntent = new Intent(Intent.ACTION_MAIN);
-	   setIntent.addCategory(Intent.CATEGORY_HOME);
-	   setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-	   startActivity(setIntent);
+		Log.d("CDA", "onBackPressed Called");
+		Intent setIntent = new Intent(Intent.ACTION_MAIN);
+		setIntent.addCategory(Intent.CATEGORY_HOME);
+		setIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+		startActivity(setIntent);
 	}
-	
+
 	/**
 	 * This is a wrapper around the new startForeground method, using the older
 	 * APIs if it is not available.
 	 */
 	void startForegroundCompat(int id, Notification notification) {
-	    // If we have the new startForeground API, then use it.
-		   Log.d("startForegroundCompat", "startForegroundCompat Called");
+		// If we have the new startForeground API, then use it.
+		Log.d("startForegroundCompat", "startForegroundCompat Called");
 	}
 
 }

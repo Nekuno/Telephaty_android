@@ -72,7 +72,7 @@ public class ConnectedThread extends Thread {
 
 	public void run() {
 		Log.i(Utilities.TAG, "BEGIN mConnectedThread");
-		Boolean setECDH = false;
+//		Boolean setECDH = false;
 
 		try {
 			ecdh = new ECDH();
@@ -113,7 +113,7 @@ public class ConnectedThread extends Thread {
 						.obtainMessage(Utilities.SHARED_KEY, sharedKey.length,
 								-1, sharedKey).sendToTarget();
 				mService.setState(Utilities.STATE_CONNECTED_ECDH_FINISH);
-				setECDH = true;
+//				setECDH = true;
 
 			}
 
@@ -165,7 +165,7 @@ public class ConnectedThread extends Thread {
 									.sendToTarget();
 							
 							mService.stop();
-							mService.start();
+//							mService.start();
 							// Utilities.BBDDmensajes.insert(msgId,
 							// mSocket.getRemoteDevice().toString()) &&
 							if (Integer.parseInt(jump) > 1) {
@@ -209,6 +209,9 @@ public class ConnectedThread extends Thread {
 			}
 			// mService.start();
 			Log.d("DEBUGGING", "Saliendo de while true Connectedthread");
+		}else{
+			Log.d("ConnectedThread", "mWait is false");
+
 		}
 	}
 
