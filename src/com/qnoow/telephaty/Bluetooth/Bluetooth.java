@@ -192,11 +192,11 @@ public class Bluetooth {
 					&& System.currentTimeMillis() - time < 5000) {
 			}
 			if(getState() == Utilities.STATE_CONNECTED_ECDH_FINISH){
-				Log.e("Antes del write", "Conectado con mac = " + MACs.get(i));
+				Log.w("Antes del write", "Conectado con mac = " + MACs.get(i));
 				write(msg.getBytes(), true);
 			}else{
 				Log.w("disconnected", "Esta petando el otro movil!");
-//				connectionFailed();
+				connectionFailed();
 			}
 		}
 		Utilities.difussion = false;

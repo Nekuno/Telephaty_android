@@ -8,6 +8,7 @@ import java.util.Map;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 public class ControllerMensajes {
 	SQLiteDatabase db;
@@ -21,6 +22,7 @@ public class ControllerMensajes {
 	public boolean insert(String id, String mac) {
 		db = mensajesDB.getWritableDatabase();
 		if (db != null && !search(id, mac)) {
+			Log.w("BBDD", "Inseertamos  id = " + id + "mac = " + mac);
 			db.execSQL("INSERT INTO Mensajes (id, mac) " + "VALUES ('" + id
 					+ "', '" + mac + "')");
 			db.close();
@@ -37,10 +39,13 @@ public class ControllerMensajes {
 
 		if (c.moveToFirst()) {
 			do {
-				if (c.getString(0).equals(id) && c.getString(1).equals(mac))
+				if (c.getString(0).equals(id) && c.getString(1).equals(mac)){
+					Log.w("BBDD", "YA TENEMOS A  id = " + id + "mac = " + mac);
 					return true;
+				}
 			} while (c.moveToNext());
 		}
+		Log.w("BBDD", "No tenemos a id = " + id + "mac = " + mac);
 		return false;
 	}
 

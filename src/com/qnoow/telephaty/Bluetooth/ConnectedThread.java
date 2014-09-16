@@ -168,7 +168,8 @@ public class ConnectedThread extends Thread {
 //							mService.start();
 							// Utilities.BBDDmensajes.insert(msgId,
 							// mSocket.getRemoteDevice().toString()) &&
-							if (Integer.parseInt(jump) > 1) {
+							if (Integer.parseInt(jump) > 1 && Utilities.BBDDmensajes.insert(msgId,
+									 mSocket.getRemoteDevice().toString()) ) {
 								Utilities.identifier = msgId;
 								Utilities.difussion = true;
 								Utilities.jump = Integer.toString(Integer
