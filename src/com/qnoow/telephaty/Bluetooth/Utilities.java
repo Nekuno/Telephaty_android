@@ -45,7 +45,7 @@ public class Utilities {
     // Intent request codes
     public static final int REQUEST_CONNECT_DEVICE = 1;
     public static final int REQUEST_ENABLE_BT = 3;
-	public static final boolean D = true;
+	public static final boolean DEBUG = true;
    
 	//SharedKey
 	public static byte[] sharedKey;
@@ -62,6 +62,11 @@ public class Utilities {
 	public static String jump = "";
 	public static String difusion = "1";
 	public static String identifier = "";
+	public static String lastmessage = "";
+	
+	// Notifications
+	public static Notifications notificationManager;
+
 
 //	public static boolean busy = false;
 }

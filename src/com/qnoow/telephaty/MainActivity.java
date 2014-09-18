@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qnoow.telephaty.Bluetooth.Bluetooth;
+import com.qnoow.telephaty.Bluetooth.CustomHandler;
 import com.qnoow.telephaty.Bluetooth.DeviceListActivity;
 import com.qnoow.telephaty.Bluetooth.Notifications;
 import com.qnoow.telephaty.Bluetooth.Utilities;
@@ -44,13 +45,14 @@ public class MainActivity extends ActionBarActivity {
 	// Name of the connected device
 	private String mConnectedDeviceName = null;
 	private Button mSendButton;
-	private Notifications notificationManager;
-	String lastmessage;
+	CustomHandler mHandler;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		// The Handler that gets information back from the BluetoothService
+		mHandler = new CustomHandler(this);
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		init();
 		setupCommunication();
@@ -60,9 +62,8 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	public synchronized void onResume() {
 		super.onResume();
-		Log.d("CDA", "onResume Called" + lastmessage);
 		loadNotification();
-		notificationManager.disableNotifications();
+		Utilities.notificationManager.disableNotifications();
 		if (Utilities.myBluetooth != null && Utilities.mAdapter.isEnabled()) {
 			// Only if the state is STATE_NONE, do we know that we haven't
 			// started already
@@ -88,20 +89,20 @@ public class MainActivity extends ActionBarActivity {
 
 	@Override
 	public synchronized void onPause() {
-		notificationManager.activateNotifications();
+		Utilities.notificationManager.activateNotifications();
 		super.onPause();
 	}
 
 	@Override
 	public void onStop() {
-		notificationManager.activateNotifications();
+		Utilities.notificationManager.activateNotifications();
 		super.onStop();
 	}
 
 	@Override
 	public void onDestroy() {
 		super.onDestroy();
-		notificationManager.activateNotifications();
+		Utilities.notificationManager.activateNotifications();
 	}
 
 	public void sendMessage(String message) {
@@ -129,62 +130,6 @@ public class MainActivity extends ActionBarActivity {
 		Utilities.mAdapter.startDiscovery();
 	}
 
-	// The Handler that gets information back from the BluetoothService
-	private final Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case Utilities.MESSAGE_STATE_CHANGE:
-				break;
-			case Utilities.MESSAGE_WRITE:
-				byte[] writeBuf = (byte[]) msg.obj;
-				String writeMessage = new String(writeBuf);
-				Log.i(TAG, "WRITE:" + writeMessage + "!!!");
-				break;
-
-			case Utilities.SHARED_KEY:
-				byte[] readBuf = (byte[]) msg.obj;
-				// construct a string from the valid bytes in the buffer
-				String readMessage = new String(readBuf, 0, msg.arg1);
-//				Toast.makeText(MainActivity.this, readMessage,
-//						Toast.LENGTH_LONG).show();
-				TextView tx = (TextView) findViewById(R.id.textView1);
-				tx.setText(readMessage);
-				lastmessage = readMessage;
-				Log.i(TAG, "SHARED_KEY READ:" + readMessage + "!!!");
-				break;
-
-			case Utilities.MESSAGE_READ:
-				byte[] readBuff = (byte[]) msg.obj;
-				// construct a string from the valid bytes in the buffer
-				String readString = new String(readBuff, 0, readBuff.length);
-				Toast.makeText(MainActivity.this, readString, Toast.LENGTH_SHORT)
-						.show();
-				TextView txv = (TextView) findViewById(R.id.textView1);
-				txv.setText(readString);
-				Log.i(TAG, "READ:" + readString + "!!!");
-				// build notification
-				notificationManager.generateNotification(readString);
-				notificationManager.sendNotification();
-
-				break;
-			case Utilities.MESSAGE_DEVICE_NAME:
-				// save the connected device's name
-				mConnectedDeviceName = msg.getData().getString(
-						Utilities.DEVICE_NAME);
-				Toast.makeText(getApplicationContext(),
-						"Conectado con " + mConnectedDeviceName,
-						Toast.LENGTH_SHORT).show();
-				break;
-			case Utilities.MESSAGE_TOAST:
-				Toast.makeText(getApplicationContext(),
-						msg.getData().getString(Utilities.TOAST),
-						Toast.LENGTH_SHORT).show();
-				break;
-			}
-		}
-	};
-
 	private void init() {
 		if (Utilities.myBluetooth == null)
 			setupService();
@@ -203,7 +148,7 @@ public class MainActivity extends ActionBarActivity {
 									mArrayAdapter));
 			Utilities.mAdapter = BluetoothAdapter.getDefaultAdapter();
 			Utilities.mainContext = this;
-			notificationManager = new Notifications(
+			Utilities.notificationManager = new Notifications(
 					(NotificationManager) getSystemService(NOTIFICATION_SERVICE),
 					this);
 			Utilities.BBDDmensajes = new ControllerMensajes(this);

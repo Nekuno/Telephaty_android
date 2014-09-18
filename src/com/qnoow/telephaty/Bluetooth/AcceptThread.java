@@ -44,25 +44,28 @@ public class AcceptThread extends Thread {
 	}
 
 	public void run() {
-		if (Utilities.D)
+		if (Utilities.DEBUG)
 			Log.d(Utilities.TAG, "Socket Type: " + mSocketType
 					+ "BEGIN mAcceptThread" + this);
 		setName("AcceptThread" + mSocketType);
 
 		BluetoothSocket socket = null;
-		
+
 		Log.d("DEBUGGING", "Antes de while Acceptthread");
 
 		// Listen to the server socket if we're not connected
-		while (mService.getState() != Utilities.STATE_CONNECTED && mService.getState() != Utilities.STATE_CONNECTED_ECDH_FINISH) {
-			Log.d("DEBUGGING", "Dentro de while Acceptthread");
+		while (mService.getState() != Utilities.STATE_CONNECTED
+				&& mService.getState() != Utilities.STATE_CONNECTED_ECDH_FINISH) {
+			if (Utilities.DEBUG)
+				Log.d("DEBUGGING", "Dentro de while Acceptthread");
 			try {
 				// This is a blocking call and will only return on a
 				// successful connection or an exception
 				socket = mServerSocket.accept();
 			} catch (IOException e) {
-				Log.e(Utilities.TAG, "Socket Type: " + mSocketType
-						+ "accept() failed", e);
+				if (Utilities.DEBUG)
+					Log.e(Utilities.TAG, "Socket Type: " + mSocketType
+							+ "accept() failed", e);
 				break;
 			}
 
@@ -102,16 +105,16 @@ public class AcceptThread extends Thread {
 				}
 			}
 		}
-		
+
 		Log.d("DEBUGGING", "Fuera de while en Acceptthread");
-		if (Utilities.D)
+		if (Utilities.DEBUG)
 			Log.i(Utilities.TAG, "END mAcceptThread, socket Type: "
 					+ mSocketType);
-		
+
 	}
 
 	public void cancel() {
-		if (Utilities.D)
+		if (Utilities.DEBUG)
 			Log.d(Utilities.TAG, "Socket Type" + mSocketType + "cancel " + this);
 		try {
 			mServerSocket.close();

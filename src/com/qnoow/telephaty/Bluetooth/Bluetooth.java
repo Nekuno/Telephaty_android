@@ -218,7 +218,7 @@ public class Bluetooth {
 	 *            An integer defining the current connection state
 	 */
 	public synchronized void setState(int state) {
-		if (Utilities.D)
+		if (Utilities.DEBUG)
 			Log.d(Utilities.TAG, "setState() " + mState + " -> " + state);
 		mState = state;
 
@@ -238,7 +238,7 @@ public class Bluetooth {
 	 * session in listening (server) mode. Called by the Activity onResume()
 	 */
 	public synchronized void start() {
-		if (Utilities.D)
+		if (Utilities.DEBUG)
 			Log.d(Utilities.TAG, "start");
 
 		// Cancel any thread attempting to make a connection
@@ -274,7 +274,7 @@ public class Bluetooth {
 	 */
 	public synchronized void connect(BluetoothDevice device, Boolean secure,
 			boolean difussion) {
-		if (Utilities.D)
+		if (Utilities.DEBUG)
 			Log.d(Utilities.TAG, "connect to: " + device);
 
 		// Cancel any thread attempting to make a connection
@@ -307,7 +307,7 @@ public class Bluetooth {
 	 */
 	public synchronized void connected(BluetoothSocket socket,
 			BluetoothDevice device, boolean diffusion) {
-		if (Utilities.D)
+		if (Utilities.DEBUG)
 			Log.d(Utilities.TAG, "connected.");
 
 		// Cancel the thread that completed the connection
@@ -351,7 +351,7 @@ public class Bluetooth {
 	 * Stop all threads
 	 */
 	public synchronized void stop() {
-		if (Utilities.D)
+		if (Utilities.DEBUG)
 			Log.d(Utilities.TAG, "stop");
 
 		if (mConnectThread != null) {
