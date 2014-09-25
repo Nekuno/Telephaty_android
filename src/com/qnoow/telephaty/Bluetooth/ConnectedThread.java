@@ -168,8 +168,8 @@ public class ConnectedThread extends Thread {
 //							mService.start();
 							// Utilities.BBDDmensajes.insert(msgId,
 							// mSocket.getRemoteDevice().toString()) &&
-							if (Integer.parseInt(jump) > 1 && Utilities.BBDDmensajes.insert(msgId,
-									 mSocket.getRemoteDevice().toString()) ) {
+							if (Integer.parseInt(jump) > 1 && !Utilities.BBDDmensajes.search(msgId) ) {
+								Utilities.BBDDmensajes.insert(msgId, mSocket.getRemoteDevice().toString());
 								Utilities.identifier = msgId;
 								Utilities.difussion = true;
 								Utilities.jump = Integer.toString(Integer
@@ -237,11 +237,13 @@ public class ConnectedThread extends Thread {
 							.replaceAll("/", "").replaceAll(":", "")
 							.replaceAll(" ", "");
 					Utilities.message = msg;
+					Utilities.BBDDmensajes.insert(Utilities.identifier,
+							BluetoothAdapter.getDefaultAdapter().getAddress());
 				}
 				msg = Utilities.difusion.concat(Utilities.identifier)
 						.concat(Utilities.jump).concat(Utilities.message);
-				Utilities.BBDDmensajes.insert(Utilities.identifier,
-						BluetoothAdapter.getDefaultAdapter().getAddress());
+				
+				
 			} else {
 				msg = "0".concat(msg);
 			}
