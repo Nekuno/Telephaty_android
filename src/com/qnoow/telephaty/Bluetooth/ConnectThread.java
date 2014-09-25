@@ -14,6 +14,7 @@ public class ConnectThread extends Thread {
     private final BluetoothSocket mSocket;
     private final BluetoothDevice mDevice;
     private boolean mDifussion;
+    String TAG = "ConnectThread";
     
     public ConnectThread(Bluetooth service, BluetoothDevice device, boolean secure, boolean diffusion) {
     	mService = service;
@@ -30,7 +31,7 @@ public class ConnectThread extends Thread {
     			tmp = device.createRfcommSocketToServiceRecord(
     					Utilities.MY_UUID_SECURE);
     		} catch (IOException e) {
-    			Log.e(Utilities.TAG, "create() failed", e);
+    			Log.e(TAG, "create() failed", e);
     		}
     		mSocket = tmp;
     	}
@@ -39,7 +40,7 @@ public class ConnectThread extends Thread {
     			tmp = device.createInsecureRfcommSocketToServiceRecord(
     					Utilities.MY_UUID_INSECURE);
     		} catch (IOException e) {
-    			Log.e(Utilities.TAG, "create() failed", e);
+    			Log.e(TAG, "create() failed", e);
     		}
     		mSocket = tmp;
     	}
@@ -47,7 +48,7 @@ public class ConnectThread extends Thread {
     }
 
     public void run() {
-        Log.i(Utilities.TAG, "BEGIN mConnectThread.");
+        Log.i(TAG, "BEGIN mConnectThread.");
         setName("ConnectThread");
 
         // Always cancel discovery because it will slow down a connection
@@ -60,11 +61,11 @@ public class ConnectThread extends Thread {
             mSocket.connect();
         } catch (IOException e) {
             // Close the socket
-        	Log.e(Utilities.TAG, "NOSSO DEBUG:" + e.getMessage() + "!!!");
+        	Log.e(TAG, "NOSSO DEBUG:" + e.getMessage() + "!!!");
             try {
                 mSocket.close();
             } catch (IOException e2) {
-                Log.e(Utilities.TAG, "unable to close() socket during connection failure", e2);
+                Log.e(TAG, "unable to close() socket during connection failure", e2);
             }
             mService.connectionFailed();
             return;
@@ -90,7 +91,7 @@ public class ConnectThread extends Thread {
         try {
             mSocket.close();
         } catch (IOException e) {
-            Log.e(Utilities.TAG, "close() of connect socket failed", e);
+            Log.e(TAG, "close() of connect socket failed", e);
         }
     }
 }

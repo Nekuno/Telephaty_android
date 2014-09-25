@@ -31,8 +31,7 @@ import com.qnoow.telephaty.security.ECDH;
 import com.qnoow.telephaty.security.Support;
 
 /**
- * This thread runs during a connection with a remote device. It handles all
- * incoming and outgoing transmissions.
+ * This thread runs during a connection with a remote device. It handles all incoming and outgoing transmissions.
  */
 public class ConnectedThread extends Thread {
 
@@ -45,11 +44,10 @@ public class ConnectedThread extends Thread {
 	private ECDH ecdh;
 	private byte[] sharedKey;
 	private boolean mWait;
-	String JUMP = "5";
-
-	public ConnectedThread(Bluetooth service, BluetoothSocket socket,
-			boolean wait) {
-		Log.d(Utilities.TAG, "create ConnectedThread.");
+	String TAG = "ConnectedThread";
+	
+	public ConnectedThread(Bluetooth service, BluetoothSocket socket, boolean wait) {
+		Log.d(TAG, "create ConnectedThread.");
 		mService = service;
 		mSocket = socket;
 		InputStream tmpIn = null;
@@ -63,7 +61,7 @@ public class ConnectedThread extends Thread {
 			tmpIn = socket.getInputStream();
 			tmpOut = socket.getOutputStream();
 		} catch (IOException e) {
-			Log.e(Utilities.TAG, "temp sockets not created", e);
+			Log.e(TAG, "temp sockets not created", e);
 		}
 
 		mInStream = tmpIn;
@@ -71,15 +69,14 @@ public class ConnectedThread extends Thread {
 	}
 
 	public void run() {
-		Log.i(Utilities.TAG, "BEGIN mConnectedThread");
-//		Boolean setECDH = false;
+		Log.i(TAG, "BEGIN mConnectedThread");
+		// Boolean setECDH = false;
 
 		try {
 			ecdh = new ECDH();
 			PublicKey pubKey = ecdh.getPubKey();
 			PrivateKey privKey = ecdh.getPrivKey();
-			ObjectOutputStream oos = new ObjectOutputStream(
-					mSocket.getOutputStream());
+			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
 			// enviamos al servidor nuestra clave pública
 			oos.writeObject(pubKey);
 
@@ -100,8 +97,7 @@ public class ConnectedThread extends Thread {
 			// Read from the InputStream
 			if (mSocket.getInputStream() != null) {
 				// en escucha para recibir un mensaje
-				ObjectInputStream ois = new ObjectInputStream(
-						mSocket.getInputStream());
+				ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
 				Object line = ois.readObject();
 				PublicKey pubk = (PublicKey) line;
 				// generamos la clave compartida
@@ -109,16 +105,14 @@ public class ConnectedThread extends Thread {
 				sharedKey = ecdh.getSharedKey();
 				Utilities.sharedKey = sharedKey;
 				// Send the obtained bytes to the UI Activity
-				mService.getHandler()
-						.obtainMessage(Utilities.SHARED_KEY, sharedKey.length,
-								-1, sharedKey).sendToTarget();
+				mService.getHandler().obtainMessage(Utilities.getMessageSharedKey(), sharedKey.length, -1, sharedKey).sendToTarget();
 				mService.setState(Utilities.STATE_CONNECTED_ECDH_FINISH);
-//				setECDH = true;
+				// setECDH = true;
 
 			}
 
 		} catch (IOException e) {
-			Log.e(Utilities.TAG, "disconnected", e);
+			Log.e(TAG, "disconnected", e);
 			mService.connectionLost();
 			// Start the service over to restart listening mode
 			// mService.start();
@@ -143,11 +137,9 @@ public class ConnectedThread extends Thread {
 					// Read from the InputStream
 					if (mSocket.getInputStream() != null) {
 						// en escucha para recibir un mensaje
-						ObjectInputStream ois = new ObjectInputStream(
-								mSocket.getInputStream());
+						ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
 						Object line = ois.readObject();
-						byte[] decryptedData = Support.decrypt(sharedKey,
-								(byte[]) line);
+						byte[] decryptedData = Support.decrypt(sharedKey, (byte[]) line);
 
 						String receivedMsg = new String(decryptedData, "UTF-8");
 
@@ -155,49 +147,40 @@ public class ConnectedThread extends Thread {
 
 							String msgId = receivedMsg.substring(1, 15);
 							String jump = receivedMsg.substring(15, 16);
-							byte[] originalMsg = receivedMsg.substring(15)
-									.getBytes();
+							byte[] originalMsg = receivedMsg.substring(15).getBytes();
 
 							// Send the obtained bytes to the UI Activity
-							mService.getHandler()
-									.obtainMessage(Utilities.MESSAGE_READ,
-											originalMsg.length, -1, originalMsg)
-									.sendToTarget();
-							
+							mService.getHandler().obtainMessage(Utilities.getMessageRead(), originalMsg.length, -1, originalMsg).sendToTarget();
+
 							mService.stop();
-//							mService.start();
+							// mService.start();
 							// Utilities.BBDDmensajes.insert(msgId,
 							// mSocket.getRemoteDevice().toString()) &&
-							if (Integer.parseInt(jump) > 1 && !Utilities.BBDDmensajes.search(msgId) ) {
+							if (Integer.parseInt(jump) > 1 && !Utilities.BBDDmensajes.search(msgId)) {
 								Utilities.BBDDmensajes.insert(msgId, mSocket.getRemoteDevice().toString());
 								Utilities.identifier = msgId;
 								Utilities.difussion = true;
-								Utilities.jump = Integer.toString(Integer
-										.parseInt(jump) - 1);
+								Utilities.jump = Integer.toString(Integer.parseInt(jump) - 1);
 								Utilities.message = receivedMsg.substring(16); // TODO
 																				// 17
 								Utilities.mAdapter.startDiscovery();
-								
-							}else{
+
+							} else {
 								Utilities.difussion = false;
 							}
 							// mService.stop();
 							// mService.start();
 						} else {
-							byte[] originalMsg = receivedMsg.substring(1)
-									.getBytes();
+							byte[] originalMsg = receivedMsg.substring(1).getBytes();
 
 							// Send the obtained bytes to the UI Activity
-							mService.getHandler()
-									.obtainMessage(Utilities.MESSAGE_READ,
-											originalMsg.length, -1, originalMsg)
-									.sendToTarget();
+							mService.getHandler().obtainMessage(Utilities.getMessageRead(), originalMsg.length, -1, originalMsg).sendToTarget();
 						}
 
 					}
 
 				} catch (IOException e) {
-					Log.e(Utilities.TAG, "disconnected", e);
+					Log.e(TAG, "disconnected", e);
 					mService.connectionLost();
 					// Start the service over to restart listening mode
 					// mService.start();
@@ -210,7 +193,7 @@ public class ConnectedThread extends Thread {
 			}
 			// mService.start();
 			Log.d("DEBUGGING", "Saliendo de while true Connectedthread");
-		}else{
+		} else {
 			Log.d("ConnectedThread", "mWait is false");
 
 		}
@@ -231,43 +214,33 @@ public class ConnectedThread extends Thread {
 			if (diffusion == true) {
 				if (Utilities.jump.equals(Utilities.MAXJUMP)) {
 					// currentDateTimeString is the id of the message
-					String currentDateTimeString = DateFormat
-							.getDateTimeInstance().format(new Date());
-					Utilities.identifier = currentDateTimeString
-							.replaceAll("/", "").replaceAll(":", "")
-							.replaceAll(" ", "");
+					String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+					Utilities.identifier = currentDateTimeString.replaceAll("/", "").replaceAll(":", "").replaceAll(" ", "");
 					Utilities.message = msg;
-					Utilities.BBDDmensajes.insert(Utilities.identifier,
-							BluetoothAdapter.getDefaultAdapter().getAddress());
+					Utilities.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
 				}
-				msg = Utilities.difusion.concat(Utilities.identifier)
-						.concat(Utilities.jump).concat(Utilities.message);
-				
-				
+				msg = Utilities.difusion.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.message);
+
 			} else {
 				msg = "0".concat(msg);
 			}
 			byte[] encryptedData = Support.encrypt(sharedKey, msg.getBytes());
 
-			ObjectOutputStream oos = new ObjectOutputStream(
-					mSocket.getOutputStream());
+			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
 			// enviamos al servidor nuestra clave pública
 			oos.writeObject(encryptedData);
 
 			// Share the sent message back to the UI Activity
-			mService.getHandler()
-					.obtainMessage(Utilities.MESSAGE_WRITE, -1, -1,
-							encryptedData).sendToTarget();
+			mService.getHandler().obtainMessage(Utilities.getMessageWrite(), -1, -1, encryptedData).sendToTarget();
 			if (diffusion == true && (mSocket.getInputStream() != null)) {
-				ObjectInputStream ois = new ObjectInputStream(
-						mSocket.getInputStream());
+				ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
 			}
 
 		} catch (IOException e) {
-			Log.e(Utilities.TAG, "disconnected", e);
+			Log.e(TAG, "disconnected", e);
 			mService.connectionLost();
 			// Start the service over to restart listening mode
-//			mService.start();
+			// mService.start();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -277,7 +250,7 @@ public class ConnectedThread extends Thread {
 		try {
 			mSocket.close();
 		} catch (IOException e) {
-			Log.e(Utilities.TAG, "close() of connect socket failed", e);
+			Log.e(TAG, "close() of connect socket failed", e);
 		}
 	}
 

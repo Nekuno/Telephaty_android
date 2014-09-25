@@ -41,8 +41,9 @@ public class Bluetooth {
 	// Member fields
 	private final CustomHandler mHandler;
 	private int mState;
+	private String TAG = "Bluetooth";
 
-	private List<String> MACs = new ArrayList<String>();
+	
 
 	public Bluetooth(Context context, CustomHandler customHandler) {
 		Utilities.mAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -109,18 +110,18 @@ public class Bluetooth {
 				String action = intent.getAction();
 
 				if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
-					MACs.clear();
+					Utilities.MACs.clear();
 				} else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 					BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
 					mArrayAdapter.add(device.getName() + "\n" + device.getAddress());
-					if (!MACs.contains(device.getAddress()))
-						MACs.add(device.getAddress());
+					if (!Utilities.MACs.contains(device.getAddress()))
+						Utilities.MACs.add(device.getAddress());
 					mArrayAdapter.notifyDataSetChanged();
 					// When discovery is finished, change the Activity title
 				} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 					// hacer llamadas a conectar y enviar mensaje
 
-					if (Utilities.difussion == true && MACs.size() > 0) {
+					if (Utilities.difussion == true && Utilities.MACs.size() > 0) {
 						Log.d("DEBUGGING", "En receiver enviando msg");
 						sendDifussion(Utilities.message);
 					} else {
@@ -153,12 +154,8 @@ public class Bluetooth {
 	// disable it
 	public Intent enableDiscoverability(int time) {
 		Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-		discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, time); // 0 means
-																							// the
-																							// device
-																							// is
-																							// always
-																							// discoverable
+		discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, time);
+		// 0 means the device is always discoverable
 		return discoverableIntent;
 	}
 
@@ -170,10 +167,10 @@ public class Bluetooth {
 	// connection
 	// with all near devices and send a message and later close the connection
 	public void sendDifussion(String msg) {
-		for (int i = 0; i < MACs.size(); i++) {
+		for (int i = 0; i < Utilities.MACs.size(); i++) {
 			// Utilities.busy = true;
-			BluetoothDevice device = Utilities.mAdapter.getRemoteDevice(MACs.get(i));
-			if (!Utilities.BBDDmensajes.search(Utilities.identifier, MACs.get(i))) {
+			BluetoothDevice device = Utilities.mAdapter.getRemoteDevice(Utilities.MACs.get(i));
+			if (!Utilities.BBDDmensajes.search(Utilities.identifier, Utilities.MACs.get(i))) {
 
 				// Attempt to connect to the device
 				connect(device, false, true);
@@ -182,7 +179,7 @@ public class Bluetooth {
 				while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH && System.currentTimeMillis() - time < 5000) {
 				}
 				if (getState() == Utilities.STATE_CONNECTED_ECDH_FINISH) {
-					Log.w("Antes del write", "Conectado con mac = " + MACs.get(i));
+					Log.w("Antes del write", "Conectado con mac = " + Utilities.MACs.get(i));
 					write(msg.getBytes(), true);
 				} else {
 					Log.w("disconnected", "Esta petando el otro movil!");
@@ -190,7 +187,6 @@ public class Bluetooth {
 				}
 				Utilities.BBDDmensajes.insert(Utilities.identifier, device.getAddress());
 			}
-			
 
 		}
 		Utilities.difussion = false;
@@ -206,11 +202,11 @@ public class Bluetooth {
 	 */
 	public synchronized void setState(int state) {
 		if (Utilities.DEBUG)
-			Log.d(Utilities.TAG, "setState() " + mState + " -> " + state);
+			Log.d(TAG, "setState() " + mState + " -> " + state);
 		mState = state;
 
 		// Give the new state to the Handler so the UI Activity can update
-		mHandler.obtainMessage(Utilities.MESSAGE_STATE_CHANGE, state, -1).sendToTarget();
+		mHandler.obtainMessage(Utilities.getMessageStateChange(), state, -1).sendToTarget();
 	}
 
 	// Return the current connection state.
@@ -224,7 +220,7 @@ public class Bluetooth {
 	 */
 	public synchronized void start() {
 		if (Utilities.DEBUG)
-			Log.d(Utilities.TAG, "start");
+			Log.d(TAG, "start");
 
 		// Cancel any thread attempting to make a connection
 		if (mConnectThread != null) {
@@ -259,7 +255,7 @@ public class Bluetooth {
 	 */
 	public synchronized void connect(BluetoothDevice device, Boolean secure, boolean difussion) {
 		if (Utilities.DEBUG)
-			Log.d(Utilities.TAG, "connect to: " + device);
+			Log.d(TAG, "connect to: " + device);
 
 		// Cancel any thread attempting to make a connection
 		if (mState == Utilities.STATE_CONNECTING) {
@@ -291,7 +287,7 @@ public class Bluetooth {
 	 */
 	public synchronized void connected(BluetoothSocket socket, BluetoothDevice device, boolean diffusion) {
 		if (Utilities.DEBUG)
-			Log.d(Utilities.TAG, "connected.");
+			Log.d(TAG, "connected.");
 
 		// Cancel the thread that completed the connection
 		if (mConnectThread != null) {
@@ -321,7 +317,7 @@ public class Bluetooth {
 		mConnectedThread.start();
 
 		// Send the name of the connected device back to the UI Activity
-		Message msg = mHandler.obtainMessage(Utilities.MESSAGE_DEVICE_NAME);
+		Message msg = mHandler.obtainMessage(Utilities.getMessageDeviceName());
 		Bundle bundle = new Bundle();
 		bundle.putString(Utilities.DEVICE_NAME, device.getName());
 		msg.setData(bundle);
@@ -335,7 +331,7 @@ public class Bluetooth {
 	 */
 	public synchronized void stop() {
 		if (Utilities.DEBUG)
-			Log.d(Utilities.TAG, "stop");
+			Log.d(TAG, "stop");
 
 		if (mConnectThread != null) {
 			mConnectThread.cancel();
@@ -385,7 +381,7 @@ public class Bluetooth {
 	 */
 	void connectionFailed() {
 		// Send a failure message back to the Activity
-		Message msg = mHandler.obtainMessage(Utilities.MESSAGE_TOAST);
+		Message msg = mHandler.obtainMessage(Utilities.getMessageToast());
 		Bundle bundle = new Bundle();
 		bundle.putString(Utilities.TOAST, "No se puede conectar con dispositivo.");
 		msg.setData(bundle);
@@ -400,7 +396,7 @@ public class Bluetooth {
 	 */
 	void connectionLost() {
 		// Send a failure message back to the Activity
-		Message msg = mHandler.obtainMessage(Utilities.MESSAGE_TOAST);
+		Message msg = mHandler.obtainMessage(Utilities.getMessageToast());
 		Bundle bundle = new Bundle();
 		bundle.putString(Utilities.TOAST, "Conexion perdida.");
 		msg.setData(bundle);
