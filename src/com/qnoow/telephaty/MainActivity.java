@@ -122,6 +122,7 @@ public class MainActivity extends ActionBarActivity {
 		setupService();
 		Utilities.jump = Utilities.MAXJUMP;
 		Utilities.difussion = true;
+		Utilities.identifier = Utilities.generateIdentifier();
 		Utilities.message = ((TextView) findViewById(R.id.edit_text_out)).getText().toString();
 		Utilities.mAdapter.startDiscovery();
 	}

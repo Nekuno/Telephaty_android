@@ -1,6 +1,8 @@
 package com.qnoow.telephaty.Bluetooth;
 
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -93,5 +95,10 @@ public class Utilities {
 		return MESSAGE_SHARED_KEY;
 	}
 
+	public static String generateIdentifier(){
+		// currentDateTimeString is the id of the message
+		String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+		return currentDateTimeString.replaceAll("/", "").replaceAll(":", "").replaceAll(" ", "");
+	}
 	// public static boolean busy = false;
 }

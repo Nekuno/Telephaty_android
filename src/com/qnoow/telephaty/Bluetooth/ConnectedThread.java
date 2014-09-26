@@ -213,9 +213,6 @@ public class ConnectedThread extends Thread {
 			String msg = new String(buffer, "UTF-8");
 			if (diffusion == true) {
 				if (Utilities.jump.equals(Utilities.MAXJUMP)) {
-					// currentDateTimeString is the id of the message
-					String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
-					Utilities.identifier = currentDateTimeString.replaceAll("/", "").replaceAll(":", "").replaceAll(" ", "");
 					Utilities.message = msg;
 					Utilities.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
 				}
