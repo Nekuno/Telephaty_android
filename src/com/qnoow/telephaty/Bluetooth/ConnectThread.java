@@ -53,7 +53,7 @@ public class ConnectThread extends Thread {
 
         // Always cancel discovery because it will slow down a connection
         mService.getAdapter().cancelDiscovery();
-        Utilities.myBluetooth.getAdapter().cancelDiscovery();
+        Connection.myBluetooth.getAdapter().cancelDiscovery();
         // Make a connection to the BluetoothSocket
         try {
             // This is a blocking call and will only return on a

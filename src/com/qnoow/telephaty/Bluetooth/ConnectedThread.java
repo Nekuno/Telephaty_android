@@ -103,7 +103,7 @@ public class ConnectedThread extends Thread {
 				// generamos la clave compartida
 				ecdh.setSharedKey(ecdh.Generate_Shared(pubk));
 				sharedKey = ecdh.getSharedKey();
-				Utilities.sharedKey = sharedKey;
+				Connection.sharedKey = sharedKey;
 				// Send the obtained bytes to the UI Activity
 				mService.getHandler().obtainMessage(Utilities.getMessageSharedKey(), sharedKey.length, -1, sharedKey).sendToTarget();
 				mService.setState(Utilities.STATE_CONNECTED_ECDH_FINISH);
@@ -156,17 +156,17 @@ public class ConnectedThread extends Thread {
 							// mService.start();
 							// Utilities.BBDDmensajes.insert(msgId,
 							// mSocket.getRemoteDevice().toString()) &&
-							if (Integer.parseInt(jump) > 1 && !Utilities.BBDDmensajes.search(msgId)) {
-								Utilities.BBDDmensajes.insert(msgId, mSocket.getRemoteDevice().toString());
+							if (Integer.parseInt(jump) > 1 && !Connection.BBDDmensajes.search(msgId)) {
+								Connection.BBDDmensajes.insert(msgId, mSocket.getRemoteDevice().toString());
 								Utilities.identifier = msgId;
-								Utilities.difussion = true;
+								Connection.difussion = true;
 								Utilities.jump = Integer.toString(Integer.parseInt(jump) - 1);
 								Utilities.message = receivedMsg.substring(16); // TODO
 																				// 17
-								Utilities.mAdapter.startDiscovery();
+								Connection.mAdapter.startDiscovery();
 
 							} else {
-								Utilities.difussion = false;
+								Connection.difussion = false;
 							}
 							// mService.stop();
 							// mService.start();
@@ -212,9 +212,9 @@ public class ConnectedThread extends Thread {
 		try {
 			String msg = new String(buffer, "UTF-8");
 			if (diffusion == true) {
-				if (Utilities.jump.equals(Utilities.MAXJUMP)) {
+				if (Utilities.jump.equals(Connection.MAXJUMP)) {
 					Utilities.message = msg;
-					Utilities.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
+					Connection.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
 				}
 				msg = Utilities.difusion.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.message);
 

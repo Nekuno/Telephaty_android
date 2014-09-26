@@ -26,20 +26,13 @@ public class CustomHandler extends Handler {
 			String writeMessage = new String(writeBuf);
 			Log.i(TAG, "WRITE:" + writeMessage + "!!!");
 		} else if (msg.what == Utilities.getMessageSharedKey()) {
-			byte[] readBuf = (byte[]) msg.obj;
-			// construct a string from the valid bytes in the buffer
-			String readMessage = new String(readBuf, 0, msg.arg1);
-			// Toast.makeText(MainActivity.this, readMessage,
-			// Toast.LENGTH_LONG).show();
-			// TextView tx = (TextView) mMainActivity.findViewById(R.id.textView1);
-			// tx.setText(readMessage);
-			Utilities.lastmessage = readMessage;
-			Log.i(TAG, "SHARED_KEY READ:" + readMessage + "!!!");
+			byte[] readBuf = (byte[]) msg.obj; // construct a string from the valid bytes in the buffer
+			Utilities.lastmessage = new String(readBuf, 0, msg.arg1);
+			Log.i(TAG, "SHARED_KEY READ:" + Utilities.lastmessage + "!!!");
 		} else if (msg.what == Utilities.getMessageRead()) {
 			byte[] readBuff = (byte[]) msg.obj;
-			// construct a string from the valid bytes in the buffer
-			String readString = new String(readBuff, 0, readBuff.length);
-			Toast.makeText(Utilities.mainContext, readString, Toast.LENGTH_SHORT).show();
+			String readString = new String(readBuff, 0, readBuff.length); // construct a string from the valid bytes in the buffer
+			Toast.makeText(Connection.mainContext, readString, Toast.LENGTH_SHORT).show();
 			TextView txv = (TextView) mMainActivity.findViewById(R.id.textView1);
 			txv.setText(readString);
 			Log.i(TAG, "READ:" + readString + "!!!");
@@ -48,11 +41,9 @@ public class CustomHandler extends Handler {
 			Utilities.notificationManager.sendNotification();
 		} else if (msg.what == Utilities.getMessageDeviceName()) {
 			// save the connected device's name
-			String mConnectedDeviceName = msg.getData().getString(Utilities.DEVICE_NAME);
-			Toast.makeText(Utilities.mainContext, "Conectado con " + mConnectedDeviceName, Toast.LENGTH_SHORT).show();
-
+			Toast.makeText(Connection.mainContext, "Conectado con " + msg.getData().getString(Utilities.DEVICE_NAME), Toast.LENGTH_SHORT).show();
 		} else if (msg.what == Utilities.getMessageToast()) {
-			Toast.makeText(Utilities.mainContext, msg.getData().getString(Utilities.TOAST), Toast.LENGTH_SHORT).show();
+			Toast.makeText(Connection.mainContext, msg.getData().getString(Utilities.TOAST), Toast.LENGTH_SHORT).show();
 
 		}
 

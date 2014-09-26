@@ -46,14 +46,14 @@ public class Bluetooth {
 	
 
 	public Bluetooth(Context context, CustomHandler customHandler) {
-		Utilities.mAdapter = BluetoothAdapter.getDefaultAdapter();
+		Connection.mAdapter = BluetoothAdapter.getDefaultAdapter();
 		mState = Utilities.STATE_NONE;
 		mHandler = customHandler;
 	}
 
 	// Function that checks if Bluetooth is supported by a device
 	public Boolean isSupported() {
-		if (Utilities.mAdapter == null) {
+		if (Connection.mAdapter == null) {
 			// Device does not support Bluetooth
 			return false;
 		}
@@ -63,7 +63,7 @@ public class Bluetooth {
 
 	// function that allow us to enable Bluetooth
 	public void setEnable(Context context) {
-		if (!Utilities.mAdapter.isEnabled()) {
+		if (!Connection.mAdapter.isEnabled()) {
 			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
 			Activity c = (Activity) context;
 			c.startActivityForResult(enableBtIntent, REQ_CODE);
@@ -74,7 +74,7 @@ public class Bluetooth {
 	public void getPairedDevices(final Context context, final String title) {
 
 		Set<BluetoothDevice> pairedDevices;
-		pairedDevices = Utilities.mAdapter.getBondedDevices();
+		pairedDevices = Connection.mAdapter.getBondedDevices();
 		final String[] devices = new String[pairedDevices.size()];
 		final String[] MAC = new String[pairedDevices.size()];
 		// put it's one to the adapter
@@ -121,7 +121,7 @@ public class Bluetooth {
 				} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
 					// hacer llamadas a conectar y enviar mensaje
 
-					if (Utilities.difussion == true && Utilities.MACs.size() > 0) {
+					if (Connection.difussion == true && Utilities.MACs.size() > 0) {
 						Log.d("DEBUGGING", "En receiver enviando msg");
 						sendDifussion(Utilities.message);
 					} else {
@@ -160,7 +160,7 @@ public class Bluetooth {
 	}
 
 	public void disableDiscoverability() {
-		Utilities.mAdapter.cancelDiscovery();
+		Connection.mAdapter.cancelDiscovery();
 	}
 
 	// Function that allows to the user to send difussion messages, create a new
@@ -169,8 +169,8 @@ public class Bluetooth {
 	public void sendDifussion(String msg) {
 		for (int i = 0; i < Utilities.MACs.size(); i++) {
 			// Utilities.busy = true;
-			BluetoothDevice device = Utilities.mAdapter.getRemoteDevice(Utilities.MACs.get(i));
-			if (!Utilities.BBDDmensajes.search(Utilities.identifier, Utilities.MACs.get(i))) {
+			BluetoothDevice device = Connection.mAdapter.getRemoteDevice(Utilities.MACs.get(i));
+			if (!Connection.BBDDmensajes.search(Utilities.identifier, Utilities.MACs.get(i))) {
 
 				// Attempt to connect to the device
 				connect(device, false, true);
@@ -185,11 +185,11 @@ public class Bluetooth {
 					Log.w("disconnected", "Esta petando el otro movil!");
 					connectionFailed();
 				}
-				Utilities.BBDDmensajes.insert(Utilities.identifier, device.getAddress());
+				Connection.BBDDmensajes.insert(Utilities.identifier, device.getAddress());
 			}
 
 		}
-		Utilities.difussion = false;
+		Connection.difussion = false;
 		// start();
 		// Utilities.busy = false;
 	}
@@ -411,7 +411,7 @@ public class Bluetooth {
 	}
 
 	public BluetoothAdapter getAdapter() {
-		return Utilities.mAdapter;
+		return Connection.mAdapter;
 	}
 
 	public void setConnectThread(ConnectThread connectThread) {

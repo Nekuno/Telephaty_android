@@ -101,10 +101,10 @@ public class DeviceListActivity extends Activity {
         this.registerReceiver(mReceiver, filter);
 
         // Get the local Bluetooth adapter
-        Utilities.mAdapter = BluetoothAdapter.getDefaultAdapter();
+        Connection.mAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Get a set of currently paired devices
-        Set<BluetoothDevice> pairedDevices = Utilities.mAdapter.getBondedDevices();
+        Set<BluetoothDevice> pairedDevices = Connection.mAdapter.getBondedDevices();
 
         // If there are paired devices, add each one to the ArrayAdapter
         if (pairedDevices.size() > 0) {
@@ -123,8 +123,8 @@ public class DeviceListActivity extends Activity {
         super.onDestroy();
 
         // Make sure we're not doing discovery anymore
-        if (Utilities.mAdapter != null) {
-        	Utilities.mAdapter.cancelDiscovery();
+        if (Connection.mAdapter != null) {
+        	Connection.mAdapter.cancelDiscovery();
         }
 
         // Unregister broadcast listeners
@@ -145,19 +145,19 @@ public class DeviceListActivity extends Activity {
         findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
 
         // If we're already discovering, stop it
-        if (Utilities.mAdapter.isDiscovering()) {
-        	Utilities.mAdapter.cancelDiscovery();
+        if (Connection.mAdapter.isDiscovering()) {
+        	Connection.mAdapter.cancelDiscovery();
         }
 
         // Request discover from BluetoothAdapter
-        Utilities.mAdapter.startDiscovery();
+        Connection.mAdapter.startDiscovery();
     }
 
     // The on-click listener for all devices in the ListViews
     private OnItemClickListener mDeviceClickListener = new OnItemClickListener() {
         public void onItemClick(AdapterView<?> av, View v, int arg2, long arg3) {
             // Cancel discovery because it's costly and we're about to connect
-        	Utilities.mAdapter.cancelDiscovery();
+        	Connection.mAdapter.cancelDiscovery();
 
             // Get the device MAC address, which is the last 17 chars in the View
             String info = ((TextView) v).getText().toString();

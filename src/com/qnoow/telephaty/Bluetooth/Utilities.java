@@ -6,16 +6,14 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-import com.qnoow.telephaty.bbdd.ControllerMensajes;
-
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+
+
 
 public class Utilities {
 
 	// Debugging
 	private static final String ID_PROJECT = "QnoowBluetoothConnection";
-//	public static final String TAG = "BluetoothConnection Telephaty";
 
 	// Message types sent from the Bluetooth Handler
 	private static final int MESSAGE_STATE_CHANGE = 1;
@@ -51,16 +49,8 @@ public class Utilities {
 
 	public static List<String> MACs = new ArrayList<String>();
 
-	// SharedKey
-	public static byte[] sharedKey;
 	public static Context mainContext;
-	public static boolean difussion = false;
-	public static final String MAXJUMP = "5";
-
-	public static Bluetooth myBluetooth = null;
-	public static BluetoothAdapter mAdapter = null;
-	public static ControllerMensajes BBDDmensajes;
-
+	
 	// Messages
 	public static String message = "";
 	public static String jump = "";
@@ -100,5 +90,4 @@ public class Utilities {
 		String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
 		return currentDateTimeString.replaceAll("/", "").replaceAll(":", "").replaceAll(" ", "");
 	}
-	// public static boolean busy = false;
 }

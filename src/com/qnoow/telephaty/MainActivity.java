@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.qnoow.telephaty.Bluetooth.Bluetooth;
+import com.qnoow.telephaty.Bluetooth.Connection;
 import com.qnoow.telephaty.Bluetooth.CustomHandler;
 import com.qnoow.telephaty.Bluetooth.DeviceListActivity;
 import com.qnoow.telephaty.Bluetooth.Notifications;
@@ -62,14 +63,7 @@ public class MainActivity extends ActionBarActivity {
 		super.onResume();
 		loadNotification();
 		Utilities.notificationManager.disableNotifications();
-		if (Utilities.myBluetooth != null && Utilities.mAdapter.isEnabled()) {
-			// Only if the state is STATE_NONE, do we know that we haven't
-			// started already
-			if (Utilities.myBluetooth.getState() == Utilities.STATE_NONE) {
-				// Start the Bluetooth service
-				Utilities.myBluetooth.start();
-			}
-		}
+		Connection.start();
 	}
 
 	@Override
@@ -82,7 +76,7 @@ public class MainActivity extends ActionBarActivity {
 	private void setupService() {
 		Log.d(TAG, "setupService()");
 		// Initialize the BluetoothService to perform bluetooth connections
-		Utilities.myBluetooth = new Bluetooth(this, mHandler);
+		Connection.myBluetooth = new Bluetooth(this, mHandler);
 	}
 
 	@Override
@@ -104,44 +98,31 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	public void sendMessage(String message) {
-		// Check that we're actually connected before trying anything
-		if (Utilities.myBluetooth.getState() != Utilities.STATE_CONNECTED_ECDH_FINISH) {
-			Toast.makeText(this, R.string.not_connected, Toast.LENGTH_SHORT).show();
-			return;
-		}
-
-		// Check that there's actually something to send
-		if (message.length() > 0) {
-			// Get the message bytes and tell the BluetoothService to write
-			byte[] send = message.getBytes();
-			Utilities.myBluetooth.write(send, false);
-		}
+		Connection.sendMessage(message);
 	}
 
 	public void sendDifussion(View view) {
 		setupService();
-		Utilities.jump = Utilities.MAXJUMP;
-		Utilities.difussion = true;
-		Utilities.identifier = Utilities.generateIdentifier();
-		Utilities.message = ((TextView) findViewById(R.id.edit_text_out)).getText().toString();
-		Utilities.mAdapter.startDiscovery();
+		Connection.sendDifussion(((TextView) findViewById(R.id.edit_text_out)).getText().toString());
+
 	}
 
 	private void init() {
-		if (Utilities.myBluetooth == null)
+		if (Connection.myBluetooth == null)
 			setupService();
-		if (!Utilities.myBluetooth.isSupported()) {
+		if (!Connection.myBluetooth.isSupported()) {
 			Toast.makeText(this, "Bluetooth no supported", Toast.LENGTH_LONG).show();
 			finish();
 		} else {
-			discoverability = false;
-			Utilities.myBluetooth.setEnable(this);
-			mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-			Utilities.myBluetooth.registerBroadcastReceiver(getApplicationContext(), Utilities.myBluetooth.setBroadcastReceiver(getApplicationContext(), mArrayAdapter));
-			Utilities.mAdapter = BluetoothAdapter.getDefaultAdapter();
 			Utilities.mainContext = this;
+			discoverability = false;
+			Connection.myBluetooth.setEnable(this);
+			mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
+			Connection.myBluetooth.registerBroadcastReceiver(getApplicationContext(), Connection.myBluetooth.setBroadcastReceiver(getApplicationContext(), mArrayAdapter));
+			Connection.mAdapter = BluetoothAdapter.getDefaultAdapter();
+			Connection.mainContext = this;
 			Utilities.notificationManager = new Notifications((NotificationManager) getSystemService(NOTIFICATION_SERVICE), this);
-			Utilities.BBDDmensajes = new ControllerMensajes(this);
+			Connection.BBDDmensajes = new ControllerMensajes(this);
 		}
 
 	}
@@ -165,55 +146,35 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	public void paired(View view) {
-		Utilities.myBluetooth.getPairedDevices(this, "Dispositivos emparejados anteriormente");
+		Connection.myBluetooth.getPairedDevices(this, "Dispositivos emparejados anteriormente");
 	}
 
 	public void setEnableDiscoverability(View view) {
 		if (discoverability == true) {
 			discoverability = false;
 			Toast.makeText(this, "Disabling Discoverability", Toast.LENGTH_SHORT).show();
-			startActivity(Utilities.myBluetooth.enableDiscoverability(1));
+			startActivity(Connection.enableDiscoverability());
 
 		} else {
 			discoverability = true;
 			Toast.makeText(this, "Enabling Discoverability", Toast.LENGTH_SHORT).show();
-			startActivity(Utilities.myBluetooth.enableDiscoverability(0));
+			startActivity(Connection.disableDiscoverability());
 		}
 	}
 
 	public void close(View view) {
-		Utilities.myBluetooth.stop();
+		Connection.stopBluetooth(); 
 		finish();
 	}
 
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		Log.d(TAG, "onActivityResult " + resultCode);
-		switch (requestCode) {
-			case Utilities.REQUEST_CONNECT_DEVICE :
-				// When DeviceListActivity returns with a device to connect
-				if (resultCode == Activity.RESULT_OK) {
-					connectDevice(data, false);
-				}
-				break;
-			case Utilities.REQUEST_ENABLE_BT :
-				// When the request to enable Bluetooth returns
-				if (resultCode != Activity.RESULT_OK) {
-					// User did not enable Bluetooth or an error occurred
-					Log.d(TAG, "BT not enabled");
-					Toast.makeText(this, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
-					finish();
-				}
+		if (!Connection.requestConnection(requestCode, resultCode, data)){
+			// if you have some problem, app will close
+			finish();
 		}
 	}
 
-	private void connectDevice(Intent data, boolean difussion) {
-		// Get the device MAC address
-		String address = data.getExtras().getString(Utilities.DEVICE_NAME);
-		// Get the BluetoothDevice object
-		BluetoothDevice device = Utilities.mAdapter.getRemoteDevice(address);
-		// Attempt to connect to the device
-		Utilities.myBluetooth.connect(device, false, difussion);
-	}
 
 	private void setupCommunication() {
 		Log.d(TAG, "setupCommunication");
