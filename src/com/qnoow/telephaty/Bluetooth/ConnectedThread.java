@@ -12,6 +12,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
+import java.sql.Timestamp;
 import java.text.DateFormat;
 import java.util.Date;
 import java.util.Random;
@@ -26,6 +27,7 @@ import android.util.Log;
 import android.widget.TextView;
 
 import com.qnoow.telephaty.MainActivity;
+import com.qnoow.telephaty.Msg;
 import com.qnoow.telephaty.R;
 import com.qnoow.telephaty.security.ECDH;
 import com.qnoow.telephaty.security.Support;
@@ -149,9 +151,11 @@ public class ConnectedThread extends Thread {
 							String jump = receivedMsg.substring(15, 16);
 							byte[] originalMsg = receivedMsg.substring(15).getBytes();
 
+							
+							Utilities.lastMsg = new Msg(mService.getRemoteDevice().toString(), new String(originalMsg), new Timestamp(new java.util.Date().getTime()));
 							// Send the obtained bytes to the UI Activity
 							mService.getHandler().obtainMessage(Utilities.getMessageRead(), originalMsg.length, -1, originalMsg).sendToTarget();
-
+							
 							mService.stop();
 							// mService.start();
 							// Utilities.BBDDmensajes.insert(msgId,
@@ -209,6 +213,9 @@ public class ConnectedThread extends Thread {
 	 */
 	public void write(byte[] buffer, boolean diffusion) {
 		Log.d("DEBUGGING", "En función write Connectedthread");
+		Utilities.lastMsg = new Msg("me", new String(buffer), new Timestamp(new java.util.Date().getTime()));
+		// Send the obtained bytes to the UI Activity
+		mService.getHandler().obtainMessage(Utilities.getMessageRead(), buffer.length, -1, buffer).sendToTarget();
 		try {
 			String msg = new String(buffer, "UTF-8");
 			if (diffusion == true) {

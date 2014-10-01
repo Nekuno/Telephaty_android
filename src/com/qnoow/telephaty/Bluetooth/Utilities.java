@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
+import com.qnoow.telephaty.Msg;
+
 import android.content.Context;
 
 
@@ -90,4 +92,7 @@ public class Utilities {
 		String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
 		return currentDateTimeString.replaceAll("/", "").replaceAll(":", "").replaceAll(" ", "");
 	}
+	
+	public static Msg lastMsg;
+	public static List<Msg> AllMsgs;
 }

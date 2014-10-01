@@ -37,7 +37,7 @@ public class MsgArrayAdapter  extends ArrayAdapter<Msg> {
 		TextView mac = (TextView) rowView.findViewById(R.id.MAC);
 		
 		message.setText(data.get(position).getMessage());
-		time.setText(data.get(position).getTime());
+		time.setText(data.get(position).getTime().toGMTString());
 		mac.setText(data.get(position).getMac());
 
 		return rowView;

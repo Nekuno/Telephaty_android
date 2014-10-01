@@ -29,6 +29,7 @@ import com.qnoow.telephaty.Bluetooth.DeviceListActivity;
 import com.qnoow.telephaty.Bluetooth.Notifications;
 import com.qnoow.telephaty.Bluetooth.Utilities;
 import com.qnoow.telephaty.bbdd.ControllerMensajes;
+import com.qnoow.telephaty.bbdd.ControllerMensajesCollection;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -43,20 +44,26 @@ public class MainActivity extends ActionBarActivity {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		
-		final ListView list = (ListView) this.findViewById(R.id.listView);
-
-		List<Msg> items = new ArrayList<Msg>();
-//		items.add(new Msg("mac 1", "lalalala", "ahora"));
-//		items.add(new Msg("mac 1", "lalalala", "ahora"));
-//		items.add(new Msg("mac 1", "lalalala", "ahora"));
-//		items.add(new Msg("mac 1", "lalalala", "ahora"));
-//		// fill the list with data
-		
-		list.setAdapter(new MsgArrayAdapter(this, items));
-		
 		
 		// The Handler that gets information back from the BluetoothService
 		mHandler = new CustomHandler(this);
+		
+		
+		final ListView list = (ListView) this.findViewById(R.id.listView);
+		
+		
+		Utilities.AllMsgs = new ControllerMensajesCollection(getApplicationContext()).search();
+		
+//		items.add(new Msg("mac 1", "lalalala", "ahora"));
+//		items.add(new Msg("mac 1", "lalalala", "ahora"));
+//		items.add(new Msg("mac 1", "lalalala", "ahora"));
+//		items.add(new Msg("mac 1", "lalalala", "ahora"));
+		// fill the list with data
+		
+		list.setAdapter(new MsgArrayAdapter(this, Utilities.AllMsgs));
+		
+		
+		
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		init();
 		
@@ -114,7 +121,8 @@ public class MainActivity extends ActionBarActivity {
 	public void sendDifussion(View view) {
 		setupService();
 		Connection.sendDifussion(((TextView) findViewById(R.id.edit_text_out)).getText().toString());
-
+		TextView tx = (TextView) findViewById(R.id.edit_text_out);
+		tx.setText("");
 	}
 
 	private void init() {

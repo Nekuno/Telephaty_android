@@ -1,21 +1,36 @@
 package com.qnoow.telephaty.Bluetooth;
 
-import com.qnoow.telephaty.R;
+import java.sql.Timestamp;
+import java.util.ArrayList;
+import java.util.List;
 
 import android.app.Activity;
 import android.os.Handler;
 import android.os.Message;
+import android.sax.TextElementListener;
 import android.util.Log;
+import android.widget.ListAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.qnoow.telephaty.Msg;
+import com.qnoow.telephaty.MsgArrayAdapter;
+import com.qnoow.telephaty.R;
+import com.qnoow.telephaty.bbdd.ControllerMensajesCollection;
 
 public class CustomHandler extends Handler {
 
 	private static final String TAG = "Handler";
 	private Activity mMainActivity;
-
+	private ControllerMensajesCollection Msgs;
+	 
+	
+	
 	public CustomHandler(Activity mainActivity) {
 		mMainActivity = mainActivity;
+		Utilities.AllMsgs = new ArrayList<Msg>();
+		Msgs = new ControllerMensajesCollection(mMainActivity);
 	}
 
 	public void handleMessage(Message msg) {
@@ -33,8 +48,20 @@ public class CustomHandler extends Handler {
 			byte[] readBuff = (byte[]) msg.obj;
 			String readString = new String(readBuff, 0, readBuff.length); // construct a string from the valid bytes in the buffer
 			Toast.makeText(Connection.mainContext, readString, Toast.LENGTH_SHORT).show();
-			TextView txv = (TextView) mMainActivity.findViewById(R.id.textView1);
-			txv.setText(readString);
+//			TextView txv = (TextView) mMainActivity.findViewById(R.id.textView1);
+//			txv.setText(readString);
+			// get a reference to the listview, needed in order
+			// to call setItemActionListener on it
+			final ListView list = (ListView) mMainActivity.findViewById(R.id.listView);
+			Msgs.insert(Utilities.lastMsg);
+			Utilities.AllMsgs.add(Utilities.lastMsg);
+			final MsgArrayAdapter msgs = new MsgArrayAdapter(mMainActivity, Utilities.AllMsgs);
+			
+			// fill the list with data
+			
+			msgs.notifyDataSetChanged();
+			list.setAdapter(msgs);
+			
 			Log.i(TAG, "READ:" + readString + "!!!");
 			// build notification
 			Utilities.notificationManager.generateNotification(readString);

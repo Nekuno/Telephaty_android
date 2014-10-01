@@ -9,6 +9,7 @@ public class BBDDMensajes extends SQLiteOpenHelper {
 
 	
 	String sqlCreate = "CREATE TABLE Mensajes (id TEXT, mac TEXT)";
+	String sqlCreate2 = "CREATE TABLE MensajesCollection (mac TEXT, msg TEXT, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 
 	public BBDDMensajes(Context contexto, String nombre, CursorFactory factory,
 			int version) {
@@ -19,20 +20,7 @@ public class BBDDMensajes extends SQLiteOpenHelper {
 	public void onCreate(SQLiteDatabase db) {
 		// Se ejecuta la sentencia SQL de creación de la tabla
 		db.execSQL(sqlCreate);
-	}
-
-	public boolean insert(String id, String mac) {
-
-		SQLiteDatabase db = this.getWritableDatabase();
-
-		if (db != null) {
-			db.execSQL("INSERT INTO Mensajes (id, mac) "
-					+ "VALUES ('" + id + "', '" + mac + "')");
-			db.close();
-		}
-		
-		return true;
-
+		db.execSQL(sqlCreate2);
 	}
 
 	@Override

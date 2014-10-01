@@ -1,14 +1,16 @@
 package com.qnoow.telephaty;
 
+import java.sql.Timestamp;
+
 public class Msg {
 
 	private String Mac;
 	private String message;
-	private String time;
+	private Timestamp time;
 	
 	
 	
-	public Msg(String mac, String message, String time) {
+	public Msg(String mac, String message, Timestamp time) {
 		super();
 		Mac = mac;
 		this.message = message;
@@ -32,11 +34,11 @@ public class Msg {
 		this.message = message;
 	}
 	
-	public String getTime() {
+	public Timestamp getTime() {
 		return time;
 	}
 	
-	public void setTime(String time) {
+	public void setTime(Timestamp time) {
 		this.time = time;
 	}
 	
