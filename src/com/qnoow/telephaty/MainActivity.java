@@ -1,32 +1,26 @@
 package com.qnoow.telephaty;
 
-import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
-import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
-import android.app.PendingIntent;
 import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 
 import com.qnoow.telephaty.Bluetooth.Bluetooth;
 import com.qnoow.telephaty.Bluetooth.Connection;
@@ -34,9 +28,7 @@ import com.qnoow.telephaty.Bluetooth.CustomHandler;
 import com.qnoow.telephaty.Bluetooth.DeviceListActivity;
 import com.qnoow.telephaty.Bluetooth.Notifications;
 import com.qnoow.telephaty.Bluetooth.Utilities;
-import com.qnoow.telephaty.bbdd.BBDDMensajes;
 import com.qnoow.telephaty.bbdd.ControllerMensajes;
-import com.qnoow.telephaty.security.Support;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -50,12 +42,30 @@ public class MainActivity extends ActionBarActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		final ListView list = (ListView) this.findViewById(R.id.listView);
+
+		List<Msg> items = new ArrayList<Msg>();
+//		items.add(new Msg("mac 1", "lalalala", "ahora"));
+//		items.add(new Msg("mac 1", "lalalala", "ahora"));
+//		items.add(new Msg("mac 1", "lalalala", "ahora"));
+//		items.add(new Msg("mac 1", "lalalala", "ahora"));
+//		// fill the list with data
+		
+		list.setAdapter(new MsgArrayAdapter(this, items));
+		
+		
 		// The Handler that gets information back from the BluetoothService
 		mHandler = new CustomHandler(this);
 		// Initialize the BluetoothChatService to perform bluetooth connections
 		init();
-		setupCommunication();
+		
+		//setupCommunication();
 
+		
+		
+		
+		
 	}
 
 	@Override
@@ -176,29 +186,29 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 
-	private void setupCommunication() {
-		Log.d(TAG, "setupCommunication");
-		// Initialize the send button with a listener that for click events
-		mSendButton = (Button) findViewById(R.id.button_send);
-		mSendButton.setOnClickListener(new OnClickListener() {
-			public void onClick(View v) {
-				// Send a message using content of the edit text widget
-				TextView view = (TextView) findViewById(R.id.edit_text_out);
-				String message = view.getText().toString();
-				sendMessage(message);
-			}
-		});
-
-	}
+//	private void setupCommunication() {
+//		Log.d(TAG, "setupCommunication");
+//		// Initialize the send button with a listener that for click events
+//		mSendButton = (Button) findViewById(R.id.button_send);
+//		mSendButton.setOnClickListener(new OnClickListener() {
+//			public void onClick(View v) {
+//				// Send a message using content of the edit text widget
+//				TextView view = (TextView) findViewById(R.id.edit_text_out);
+//				String message = view.getText().toString();
+//				sendMessage(message);
+//			}
+//		});
+//
+//	}
 
 	private void loadNotification() {
 		SharedPreferences prefs = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 
-		if (prefs.getBoolean("notification", false) == true) {
-			TextView tv = (TextView) findViewById(R.id.textView1);
-			tv.setText(prefs.getString("msg", ""));
-		}
+//		if (prefs.getBoolean("notification", false) == true) {
+//			TextView tv = (TextView) findViewById(R.id.textView1);
+//			tv.setText(prefs.getString("msg", ""));
+//		}
 		editor.putBoolean("notification", false);
 		editor.commit();
 	}
