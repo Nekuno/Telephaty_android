@@ -1,8 +1,5 @@
 package com.qnoow.telephaty;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.bluetooth.BluetoothAdapter;
@@ -14,13 +11,14 @@ import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.view.View.OnClickListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 
 import com.qnoow.telephaty.Bluetooth.Bluetooth;
 import com.qnoow.telephaty.Bluetooth.Connection;
@@ -62,6 +60,28 @@ public class MainActivity extends ActionBarActivity {
 		
 		list.setAdapter(new MsgArrayAdapter(this, Utilities.AllMsgs));
 		
+		list.setOnItemClickListener(new OnItemClickListener()
+		   {
+		      @Override
+		      public void onItemClick(AdapterView<?> adapter, View v, int position,
+		            long arg3) 
+		      {
+		    	    setupService();
+		  		    Connection.sendDifussion(Utilities.AllMsgs.get(position).getMessage());
+		            
+		      }
+		   });
+		
+		list.setOnItemLongClickListener(new OnItemLongClickListener() {
+			  public boolean onItemLongClick(AdapterView parent, View view, int position, long id) {
+			
+				  Utilities.AllMsgs.remove(position);
+				  final MsgArrayAdapter msgs = new MsgArrayAdapter(MainActivity.this, Utilities.AllMsgs);				
+				  msgs.notifyDataSetChanged();
+				  list.setAdapter(msgs);
+				  return true;
+			  }
+		});
 		
 		
 		// Initialize the BluetoothChatService to perform bluetooth connections
