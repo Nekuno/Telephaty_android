@@ -44,5 +44,11 @@ public class ControllerMensajesCollection {
 	}
 
 	
+	public void delete(Msg msg){
+		db = mensajesDB.getWritableDatabase();
+		db.delete("MensajesCollection", "mac = '" + msg.getMac() + "' AND msg = '" + msg.getMessage() + "' AND time = '" + msg.getTime() + "'", null);
+		db.close();
+	}
+	
 
 }

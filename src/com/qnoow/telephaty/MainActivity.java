@@ -51,13 +51,7 @@ public class MainActivity extends ActionBarActivity {
 		
 		
 		Utilities.AllMsgs = new ControllerMensajesCollection(getApplicationContext()).search();
-		
-//		items.add(new Msg("mac 1", "lalalala", "ahora"));
-//		items.add(new Msg("mac 1", "lalalala", "ahora"));
-//		items.add(new Msg("mac 1", "lalalala", "ahora"));
-//		items.add(new Msg("mac 1", "lalalala", "ahora"));
-		// fill the list with data
-		
+			
 		list.setAdapter(new MsgArrayAdapter(this, Utilities.AllMsgs));
 		
 		list.setOnItemClickListener(new OnItemClickListener()
@@ -74,7 +68,8 @@ public class MainActivity extends ActionBarActivity {
 		
 		list.setOnItemLongClickListener(new OnItemLongClickListener() {
 			  public boolean onItemLongClick(AdapterView parent, View view, int position, long id) {
-			
+				  
+				  new ControllerMensajesCollection(getApplicationContext()).delete(Utilities.AllMsgs.get(position));
 				  Utilities.AllMsgs.remove(position);
 				  final MsgArrayAdapter msgs = new MsgArrayAdapter(MainActivity.this, Utilities.AllMsgs);				
 				  msgs.notifyDataSetChanged();
