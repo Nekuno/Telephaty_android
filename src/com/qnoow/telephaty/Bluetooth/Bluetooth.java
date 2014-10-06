@@ -8,6 +8,7 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
@@ -16,6 +17,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -123,7 +125,7 @@ public class Bluetooth {
 
 					if (Connection.difussion == true && Utilities.MACs.size() > 0) {
 						Log.d("DEBUGGING", "En receiver enviando msg");
-						sendDifussion(Utilities.message);
+						new sendDifussionAsync().execute(Utilities.message);
 					} else {
 						Toast.makeText(context, "Finalizado el escaneo", Toast.LENGTH_SHORT).show();
 					}
@@ -192,6 +194,27 @@ public class Bluetooth {
 		Connection.difussion = false;
 		// start();
 		// Utilities.busy = false;
+	}
+	
+	
+	
+	private class sendDifussionAsync extends AsyncTask<String, Void, Void> {
+
+	
+
+		
+
+		@Override
+		protected Void doInBackground(String... params) {
+			// TODO Auto-generated method stub
+			sendDifussion(params[0]);
+			return null;
+		}
+		
+		@Override
+		protected void onPostExecute(Void result) {
+			super.onPostExecute(result);
+		}
 	}
 
 	/**

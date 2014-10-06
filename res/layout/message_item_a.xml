@@ -21,15 +21,17 @@
             android:id="@+id/MACa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="top|left"
             android:paddingLeft="10dip"
             android:text="mac"
-            android:textSize="10sp"
-            android:textColor="@android:color/darker_gray" />
+            android:textColor="@android:color/darker_gray"
+            android:textSize="10sp" />
 
         <TextView
             android:id="@+id/singleMessagea"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="left"
             android:maxLines="2"
             android:paddingLeft="10dip"
             android:text="msgd msg"
@@ -39,11 +41,12 @@
             android:id="@+id/horaa"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="right"
+            android:layout_gravity="right|bottom"
             android:maxLines="2"
             android:text="hora"
-            android:textSize="10sp"
-            android:textColor="@android:color/darker_gray"/>
+            android:textColor="@android:color/darker_gray"
+            android:textSize="10sp" />
+
     </LinearLayout>
 
 </RelativeLayout>
