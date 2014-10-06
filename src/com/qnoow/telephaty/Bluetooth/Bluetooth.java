@@ -127,7 +127,7 @@ public class Bluetooth {
 						Log.d("DEBUGGING", "En receiver enviando msg");
 						new sendDifussionAsync().execute(Utilities.message);
 					} else {
-						Toast.makeText(context, "Finalizado el escaneo", Toast.LENGTH_SHORT).show();
+						Toast.makeText(context, R.string.scan_finished, Toast.LENGTH_SHORT).show();
 					}
 				}
 
