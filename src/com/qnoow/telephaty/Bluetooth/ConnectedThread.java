@@ -149,7 +149,7 @@ public class ConnectedThread extends Thread {
 
 							String msgId = receivedMsg.substring(1, 15);
 							String jump = receivedMsg.substring(15, 16);
-							byte[] originalMsg = receivedMsg.substring(15).getBytes();
+							byte[] originalMsg = receivedMsg.substring(16).getBytes();
 
 							
 							Utilities.lastMsg = new Msg(mService.getRemoteDevice().toString(), new String(originalMsg), new Timestamp(new java.util.Date().getTime()));
@@ -165,7 +165,7 @@ public class ConnectedThread extends Thread {
 								Utilities.identifier = msgId;
 								Connection.difussion = true;
 								Utilities.jump = Integer.toString(Integer.parseInt(jump) - 1);
-								Utilities.message = receivedMsg.substring(16); // TODO
+								Utilities.message = receivedMsg.substring(17); // TODO
 																				// 17
 								Connection.mAdapter.startDiscovery();
 
