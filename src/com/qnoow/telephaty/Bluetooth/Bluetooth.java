@@ -30,6 +30,9 @@ import com.qnoow.telephaty.MainActivity;
 import com.qnoow.telephaty.R;
 import com.qnoow.telephaty.security.Support;
 
+/*
+ * The Main Class of the Bluetooth connection 
+ */
 public class Bluetooth {
 
 	public static final int REQ_CODE = 1001;
@@ -45,8 +48,7 @@ public class Bluetooth {
 	private int mState;
 	private String TAG = "Bluetooth";
 
-	
-
+	// The constructor need a Handler to share the information
 	public Bluetooth(Context context, CustomHandler customHandler) {
 		Connection.mAdapter = BluetoothAdapter.getDefaultAdapter();
 		mState = Utilities.STATE_NONE;
@@ -63,7 +65,7 @@ public class Bluetooth {
 
 	}
 
-	// function that allow us to enable Bluetooth
+	// Function that allow us to enable Bluetooth
 	public void setEnable(Context context) {
 		if (!Connection.mAdapter.isEnabled()) {
 			Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -86,11 +88,10 @@ public class Bluetooth {
 			MAC[i] = device.getAddress();
 			i++;
 		}
-		Toast.makeText(context, "Show Paired Devices", Toast.LENGTH_SHORT).show();
 
+		Toast.makeText(context, context.getString(R.string.show_paired_devices), Toast.LENGTH_SHORT).show();
 		AlertDialog.Builder builder = new AlertDialog.Builder(context).setCancelable(true);
 		builder.setTitle(title);
-
 		builder.setItems(devices, new DialogInterface.OnClickListener() {
 			public void onClick(DialogInterface dialog, int item) {
 				// Do anything (connect) when a device is selected
@@ -101,8 +102,8 @@ public class Bluetooth {
 		alert.show();
 	}
 
-	// Create a BroadcastReceiver for ACTION_FOUND, ACTION_DISCOVERY_STARTED and
-	// ACTION_DISCOVERY_FINISHED
+	// A BroadcastReceiver for ACTION_FOUND, ACTION_DISCOVERY_STARTED and
+	// ACTION_DISCOVERY_FINISHED.
 	public BroadcastReceiver setBroadcastReceiver(final Context context, final ArrayAdapter mArrayAdapter) {
 
 		BroadcastReceiver mReceiver = new BroadcastReceiver() {
@@ -121,10 +122,10 @@ public class Bluetooth {
 					mArrayAdapter.notifyDataSetChanged();
 					// When discovery is finished, change the Activity title
 				} else if (BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
-					// hacer llamadas a conectar y enviar mensaje
-
+					// to make calls to connect and send messages 
 					if (Connection.difussion == true && Utilities.MACs.size() > 0) {
-						Log.d("DEBUGGING", "En receiver enviando msg");
+						if(Utilities.DEBUG)
+							Log.d("DEBUGGING", "En receiver enviando msg");
 						new sendDifussionAsync().execute(Utilities.message);
 					} else {
 						Toast.makeText(context, R.string.scan_finished, Toast.LENGTH_SHORT).show();
@@ -140,11 +141,9 @@ public class Bluetooth {
 	// Register the BroadcastReceiver
 	public void registerBroadcastReceiver(Context context, BroadcastReceiver mReceiver) {
 		IntentFilter filter = new IntentFilter();
-
 		filter.addAction(BluetoothDevice.ACTION_FOUND);
 		filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
 		filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
-
 		context.registerReceiver(mReceiver, filter);
 
 	}
@@ -165,82 +164,61 @@ public class Bluetooth {
 		Connection.mAdapter.cancelDiscovery();
 	}
 
-	// Function that allows to the user to send difussion messages, create a new
-	// connection
-	// with all near devices and send a message and later close the connection
+	// Function that allows user to send difussion messages, create a new
+	// connection with all near devices and send a message and later close the connection
 	public void sendDifussion(String msg) {
 		for (int i = 0; i < Utilities.MACs.size(); i++) {
-			// Utilities.busy = true;
+
 			BluetoothDevice device = Connection.mAdapter.getRemoteDevice(Utilities.MACs.get(i));
 			if (!Connection.BBDDmensajes.search(Utilities.identifier, Utilities.MACs.get(i))) {
-
 				// Attempt to connect to the device
 				connect(device, false, true);
 				long time = System.currentTimeMillis();
-
 				while (getState() != Utilities.STATE_CONNECTED_ECDH_FINISH && System.currentTimeMillis() - time < 5000) {
 				}
 				if (getState() == Utilities.STATE_CONNECTED_ECDH_FINISH) {
-					Log.w("Antes del write", "Conectado con mac = " + Utilities.MACs.get(i));
+					if(Utilities.DEBUG)
+						Log.w("Antes del write", "Conectado con mac = " + Utilities.MACs.get(i));
 					write(msg.getBytes(), true);
 				} else {
-					Log.w("disconnected", "Esta petando el otro movil!");
+					if(Utilities.DEBUG)
+						Log.w("disconnected", "Esta petando el otro movil!");
 					connectionFailed();
 				}
 				Connection.BBDDmensajes.insert(Utilities.identifier, device.getAddress());
 			}
-
 		}
 		Connection.difussion = false;
-		// start();
-		// Utilities.busy = false;
 	}
-	
-	
-	
+
 	private class sendDifussionAsync extends AsyncTask<String, Void, Void> {
-
-	
-
-		
-
 		@Override
 		protected Void doInBackground(String... params) {
-			// TODO Auto-generated method stub
 			sendDifussion(params[0]);
 			return null;
 		}
-		
+
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
 		}
 	}
 
-	/**
-	 * Set the current state of the chat connection
-	 * 
-	 * @param state
-	 *            An integer defining the current connection state
-	 */
+	//Set the current state of the chat connection. State is an integer defining the current connection state
 	public synchronized void setState(int state) {
 		if (Utilities.DEBUG)
 			Log.d(TAG, "setState() " + mState + " -> " + state);
 		mState = state;
-
 		// Give the new state to the Handler so the UI Activity can update
 		mHandler.obtainMessage(Utilities.getMessageStateChange(), state, -1).sendToTarget();
 	}
 
 	// Return the current connection state.
-
 	public synchronized int getState() {
 		return mState;
 	}
 
-	/**
-	 * Start the chat service. Specifically start AcceptThread to begin a session in listening (server) mode. Called by the Activity onResume()
-	 */
+	// Start the chat service. Specifically start AcceptThread to begin a session in listening (server) mode. Called by the Activity onResume()
 	public synchronized void start() {
 		if (Utilities.DEBUG)
 			Log.d(TAG, "start");
@@ -270,16 +248,11 @@ public class Bluetooth {
 		}
 	}
 
-	/**
-	 * Start the ConnectThread to initiate a connection to a remote device.
-	 * 
-	 * @param device
-	 *            The BluetoothDevice to connect
-	 */
+	// Start the ConnectThread to initiate a connection to a remote device.
+	// Device is the bluetooth device to connect
 	public synchronized void connect(BluetoothDevice device, Boolean secure, boolean difussion) {
 		if (Utilities.DEBUG)
 			Log.d(TAG, "connect to: " + device);
-
 		// Cancel any thread attempting to make a connection
 		if (mState == Utilities.STATE_CONNECTING) {
 			if (mConnectThread != null) {
@@ -300,14 +273,9 @@ public class Bluetooth {
 		setState(Utilities.STATE_CONNECTING);
 	}
 
-	/**
-	 * Start the ConnectedThread to begin managing a Bluetooth connection
-	 * 
-	 * @param socket
-	 *            The BluetoothSocket on which the connection was made
-	 * @param device
-	 *            The BluetoothDevice that has been connected
-	 */
+	// Start the ConnectedThread to begin managing a Bluetooth connection
+	// Socket is the bluetooth socket on which the connection was made
+	// Device is the bluetooth device that has been connected
 	public synchronized void connected(BluetoothSocket socket, BluetoothDevice device, boolean diffusion) {
 		if (Utilities.DEBUG)
 			Log.d(TAG, "connected.");
@@ -349,9 +317,7 @@ public class Bluetooth {
 		setState(Utilities.STATE_CONNECTED);
 	}
 
-	/**
-	 * Stop all threads
-	 */
+	// To Stop all threads
 	public synchronized void stop() {
 		if (Utilities.DEBUG)
 			Log.d(TAG, "stop");
@@ -378,13 +344,8 @@ public class Bluetooth {
 		setState(Utilities.STATE_NONE);
 	}
 
-	/**
-	 * Write to the ConnectedThread in an unsynchronized manner
-	 * 
-	 * @param out
-	 *            The bytes to write
-	 * @see ConnectedThread#write(byte[])
-	 */
+	// Write to the ConnectedThread in an unsynchronized manner
+	// Out has the bytes to write
 	public void write(byte[] out, boolean diffusion) {
 		// Create temporary object
 		ConnectedThread r;
@@ -399,32 +360,26 @@ public class Bluetooth {
 		r.write(out, diffusion);
 	}
 
-	/**
-	 * Indicate that the connection attempt failed and notify the UI Activity.
-	 */
+	// Indicate that the connection attempt failed and notify the UI Activity.
 	void connectionFailed() {
 		// Send a failure message back to the Activity
 		Message msg = mHandler.obtainMessage(Utilities.getMessageToast());
 		Bundle bundle = new Bundle();
-		bundle.putString(Utilities.TOAST, "No se puede conectar con dispositivo.");
+		bundle.putString(Utilities.TOAST, Utilities.mainContext.getString(R.string.can_not_connect));
 		msg.setData(bundle);
 		mHandler.sendMessage(msg);
-
 		// Start the service over to restart listening mode
 		Bluetooth.this.start();
 	}
 
-	/**
-	 * Indicate that the connection was lost and notify the UI Activity.
-	 */
+	// Indicate that the connection was lost and notify the UI Activity.
 	void connectionLost() {
 		// Send a failure message back to the Activity
 		Message msg = mHandler.obtainMessage(Utilities.getMessageToast());
 		Bundle bundle = new Bundle();
-		bundle.putString(Utilities.TOAST, "Conexion perdida.");
+		bundle.putString(Utilities.TOAST, Utilities.mainContext.getString(R.string.lost_connection));
 		msg.setData(bundle);
 		mHandler.sendMessage(msg);
-
 		// Start the service over to restart listening mode
 		Bluetooth.this.start();
 	}

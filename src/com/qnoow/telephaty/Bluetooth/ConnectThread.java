@@ -6,7 +6,10 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
-
+/**
+ * This thread tries to establishing connection . It behaves like a server-side client.
+ *  It runs until a connection is accepted (or until cancelled).
+ */
 public class ConnectThread extends Thread {
 	
 	// Member fields
@@ -21,11 +24,9 @@ public class ConnectThread extends Thread {
     	mDevice = device;
     	BluetoothSocket tmp = null;
     	mDifussion = diffusion;
-    	
-    	// Get a BluetoothSocket for a connection with the
-    	// given BluetoothDevice
-    	Log.d("DEBUGGING", "Entrando en Connectthread");
-    	
+    	// Get a BluetoothSocket for a connection with the given BluetoothDevice
+    	if(Utilities.DEBUG)
+    		Log.d("DEBUGGING", "Entrando en Connectthread");
     	if (secure){
     		try {
     			tmp = device.createRfcommSocketToServiceRecord(
@@ -48,9 +49,9 @@ public class ConnectThread extends Thread {
     }
 
     public void run() {
-        Log.i(TAG, "BEGIN mConnectThread.");
+    	if(Utilities.DEBUG)
+    		Log.i(TAG, "BEGIN mConnectThread.");
         setName("ConnectThread");
-
         // Always cancel discovery because it will slow down a connection
         mService.getAdapter().cancelDiscovery();
         Connection.myBluetooth.getAdapter().cancelDiscovery();
@@ -61,7 +62,8 @@ public class ConnectThread extends Thread {
             mSocket.connect();
         } catch (IOException e) {
             // Close the socket
-        	Log.e(TAG, "NOSSO DEBUG:" + e.getMessage() + "!!!");
+        	if(Utilities.DEBUG)
+        		Log.e(TAG, "Connection DEBUG:" + e.getMessage() + "!!!");
             try {
                 mSocket.close();
             } catch (IOException e2) {
@@ -83,7 +85,8 @@ public class ConnectThread extends Thread {
         else{
         	mService.connected(mSocket, mDevice, true);
         }
-    	Log.d("DEBUGGING", "Saliendo de Connectthread");
+    	if(Utilities.DEBUG)
+    		Log.d("DEBUGGING", "Saliendo de Connectthread");
 
     }
 

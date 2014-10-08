@@ -50,9 +50,6 @@ public class DeviceListActivity extends Activity {
 	// Debugging
     private static final String TAG = "DeviceListActivity";
 
-    // Return Intent extra
- //   public static String EXTRA_DEVICE_ADDRESS = "device_address";
-
     // Member fields
     private ArrayAdapter<String> mPairedDevicesArrayAdapter;
     private ArrayAdapter<String> mNewDevicesArrayAdapter;
@@ -131,24 +128,19 @@ public class DeviceListActivity extends Activity {
         this.unregisterReceiver(mReceiver);
     }
 
-    /**
-     * Start device discover with the BluetoothAdapter
-     */
+    // Start device discover with the BluetoothAdapter
     private void doDiscovery() {
-        Log.d(TAG, "doDiscovery()");
-        
+    	if(Utilities.DEBUG)
+    		Log.d(TAG, "doDiscovery()");
         // Indicate scanning in the title
         setProgressBarIndeterminateVisibility(true);
         setTitle(R.string.scanning);
-
         // Turn on sub-title for new devices
         findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
-
         // If we're already discovering, stop it
         if (Connection.mAdapter.isDiscovering()) {
         	Connection.mAdapter.cancelDiscovery();
         }
-
         // Request discover from BluetoothAdapter
         Connection.mAdapter.startDiscovery();
     }

@@ -44,65 +44,50 @@ public class ECDH {
 	
 	public ECDH() throws InvalidAlgorithmParameterException, NoSuchProviderException, InvalidKeySpecException {
 		
-		/* Generamos una curva según los parámetros de la curva  secp128r1 */
+		/*  A curve is genereted as the curve parameters secp128r1 */
 		ECGenParameterSpec ecParamSpec = new ECGenParameterSpec("secp128r1");
 		try {
 			KeyPairGenerator kpg = KeyPairGenerator.getInstance("ECDH", "SC");
 			kpg.initialize(ecParamSpec);
 			KeyPair kp = kpg.generateKeyPair();
 			KeyFactory kf = KeyFactory.getInstance("ECDH", "SC");
-			/* Generamos la clave pública*/ 
+			/* The shared key is generated*/ 
 			pubKey = kf.generatePublic(new X509EncodedKeySpec(kp.getPublic().getEncoded()));	
-			/* Generamos la clave privada*/ 
+			/* The privated key is generated*/ 
 			privKey = kf.generatePrivate(new PKCS8EncodedKeySpec(kp.getPrivate().getEncoded()));
 		} catch (NoSuchAlgorithmException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
 	}
-
-	
 	
 	public PublicKey getPubKey() {
 		return pubKey;
 	}
 
-
-
 	public void setPubKey(PublicKey pubKey) {
 		this.pubKey = pubKey;
 	}
-
-
 
 	public PrivateKey getPrivKey() {
 		return privKey;
 	}
 
-
-
 	public void setPrivKey(PrivateKey privKey) {
 		this.privKey = privKey;
 	}
-
-
 
 	public byte[] getSharedKey() {
 		return sharedKey;
 	}
 
-
-
 	public void setSharedKey(byte[] sharedKey) {
 		this.sharedKey = sharedKey;
 	}
 
-
-	/* Función encargada de generar la clave compartida entre 2 usuarios
-	 * input: Public Key
-	 * output: Shared key
-	 * */
+	// Function to generate the key shared between users
+	// input: Public Key
+	// output: Shared key
 	public byte[] Generate_Shared(PublicKey PubK) throws NoSuchAlgorithmException, NoSuchProviderException, InvalidKeyException{
 		KeyAgreement KA = KeyAgreement.getInstance("ECDH", "SC");
 		KA.init(privKey);

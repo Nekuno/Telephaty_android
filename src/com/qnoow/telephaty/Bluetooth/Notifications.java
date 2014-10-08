@@ -35,11 +35,10 @@ public class Notifications {
 
 	public void generateNotification(String msg) {
 		
-		
 		SharedPreferences prefs = context.getSharedPreferences("Preferences",
 				Context.MODE_PRIVATE);
 			SharedPreferences.Editor editor = prefs.edit();
-			
+	
 			editor.putBoolean("notification", true);
 			editor.putString("msg", msg);
 			editor.commit();
@@ -62,10 +61,7 @@ public class Notifications {
 					.setDefaults(Notification.DEFAULT_SOUND)
 					.setAutoCancel(true).setSmallIcon(R.drawable.ic_launcher)
 					.build();
-
 		}
-		
-		
 	}
 
 	public void sendNotification() {

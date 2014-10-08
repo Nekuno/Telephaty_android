@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.qnoow.telephaty.Bluetooth.Utilities;
+
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,7 +24,8 @@ public class ControllerMensajes {
 	public boolean insert(String id, String mac) {
 		db = mensajesDB.getWritableDatabase();
 		if (db != null && !internalsearch(id, mac)) {
-			Log.w("BBDD", "Inseertamos  id = " + id + "mac = " + mac);
+			if (Utilities.DEBUG)
+				Log.w("BBDD", "Inseertamos  id = " + id + "mac = " + mac);
 			db.execSQL("INSERT INTO Mensajes (id, mac) " + "VALUES ('" + id + "', '" + mac + "')");
 			db.close();
 			return true;
@@ -38,12 +41,14 @@ public class ControllerMensajes {
 		if (c.moveToFirst()) {
 			do {
 				if (c.getString(0).equals(id) && c.getString(1).equals(mac)) {
-					Log.w("BBDD", "YA TENEMOS A  id = " + id + "mac = " + mac);
+					if (Utilities.DEBUG)
+						Log.w("BBDD", "YA TENEMOS A  id = " + id + "mac = " + mac);
 					return true;
 				}
 			} while (c.moveToNext());
 		}
-		Log.w("BBDD", "No tenemos a id = " + id + "mac = " + mac);
+		if (Utilities.DEBUG)
+			Log.w("BBDD", "No tenemos a id = " + id + "mac = " + mac);
 		return false;
 	}
 
@@ -53,13 +58,15 @@ public class ControllerMensajes {
 		if (c.moveToFirst()) {
 			do {
 				if (c.getString(0).equals(id) && c.getString(1).equals(mac)) {
-					Log.w("BBDD", "YA TENEMOS A  id = " + id + "mac = " + mac);
+					if (Utilities.DEBUG)
+						Log.w("BBDD", "YA TENEMOS A  id = " + id + "mac = " + mac);
 					return true;
 				}
 			} while (c.moveToNext());
 		}
 		db.close();
-		Log.w("BBDD", "No tenemos a id = " + id + "mac = " + mac);
+		if (Utilities.DEBUG)
+			Log.w("BBDD", "No tenemos a id = " + id + "mac = " + mac);
 		return false;
 	}
 
@@ -69,13 +76,15 @@ public class ControllerMensajes {
 		if (c.moveToFirst()) {
 			do {
 				if (c.getString(0).equals(id)) {
-					Log.w("BBDD", "YA TENEMOS A  id = " + id);
+					if (Utilities.DEBUG)
+						Log.w("BBDD", "YA TENEMOS A  id = " + id);
 					return true;
 				}
 			} while (c.moveToNext());
 		}
 		db.close();
-		Log.w("BBDD", "No tenemos a id = " + id);
+		if (Utilities.DEBUG)
+			Log.w("BBDD", "No tenemos a id = " + id);
 		return false;
 	}
 

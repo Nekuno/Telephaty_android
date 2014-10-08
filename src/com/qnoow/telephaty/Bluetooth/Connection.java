@@ -83,21 +83,19 @@ public class Connection {
 				// When DeviceListActivity returns with a device to connect
 				if (resultCode == Activity.RESULT_OK) {
 					Connection.connectDevice(data);
-					// connectDevice(data, false);
 				}
 				break;
 			case Utilities.REQUEST_ENABLE_BT :
 				// When the request to enable Bluetooth returns
 				if (resultCode != Activity.RESULT_OK) {
 					// User did not enable Bluetooth or an error occurred
-					Log.d(TAG, "BT not enabled");
+					if(Utilities.DEBUG)
+						Log.d(TAG, "BT not enabled");
 					Toast.makeText(Utilities.mainContext, R.string.bt_not_enabled_leaving, Toast.LENGTH_SHORT).show();
 					return false;
-
 				}
 		}
 		return true;
-
 	}
 
 	public static Intent enableDiscoverability() {
@@ -110,6 +108,5 @@ public class Connection {
 
 	public static void stopBluetooth() {
 		myBluetooth.stop();
-
 	}
 }
