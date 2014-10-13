@@ -50,6 +50,7 @@ public class MainActivity extends ActionBarActivity {
 		Utilities.AllMsgs = new ControllerMensajesCollection(
 				getApplicationContext()).search();
 		list.setAdapter(new MsgArrayAdapter(this, Utilities.AllMsgs));
+		list.setSelection(Utilities.AllMsgs.size() -1 );
 		// The function resend a message
 		list.setOnItemClickListener(new OnItemClickListener() {
 			@Override
