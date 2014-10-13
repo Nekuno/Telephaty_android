@@ -96,4 +96,5 @@ public class Utilities {
 	
 	public static Msg lastMsg;
 	public static List<Msg> AllMsgs;
+	public static ProgressDialog progressDialog;
 }

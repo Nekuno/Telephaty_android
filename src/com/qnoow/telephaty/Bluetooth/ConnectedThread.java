@@ -200,6 +200,7 @@ public class ConnectedThread extends Thread {
 			oos.writeObject(encryptedData);
 			// Share the sent message back to the UI Activity
 			mService.getHandler().obtainMessage(Utilities.getMessageWrite(), -1, -1, encryptedData).sendToTarget();
+			Utilities.progressDialog.dismiss();
 			if (diffusion == true && (mSocket.getInputStream() != null)) {
 				ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
 			}

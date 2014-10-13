@@ -2,6 +2,7 @@ package com.qnoow.telephaty;
 
 import android.app.Notification;
 import android.app.NotificationManager;
+import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
@@ -46,22 +47,28 @@ public class MainActivity extends ActionBarActivity {
 		mHandler = new CustomHandler(this);
 		// Initializing the view and the list of messages
 		final ListView list = (ListView) this.findViewById(R.id.listView);
-		Utilities.AllMsgs = new ControllerMensajesCollection(getApplicationContext()).search();
+		Utilities.AllMsgs = new ControllerMensajesCollection(
+				getApplicationContext()).search();
 		list.setAdapter(new MsgArrayAdapter(this, Utilities.AllMsgs));
 		// The function resend a message
 		list.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void onItemClick(AdapterView<?> adapter, View v, int position, long arg3) {
+			public void onItemClick(AdapterView<?> adapter, View v,
+					int position, long arg3) {
 				setupService();
-				Connection.sendDifussion(Utilities.AllMsgs.get(position).getMessage());
+				Connection.sendDifussion(Utilities.AllMsgs.get(position)
+						.getMessage());
 			}
 		});
 		// The function remove a message
 		list.setOnItemLongClickListener(new OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView parent, View view, int position, long id) {
-				new ControllerMensajesCollection(getApplicationContext()).delete(Utilities.AllMsgs.get(position));
+			public boolean onItemLongClick(AdapterView parent, View view,
+					int position, long id) {
+				new ControllerMensajesCollection(getApplicationContext())
+						.delete(Utilities.AllMsgs.get(position));
 				Utilities.AllMsgs.remove(position);
-				final MsgArrayAdapter msgs = new MsgArrayAdapter(MainActivity.this, Utilities.AllMsgs);
+				final MsgArrayAdapter msgs = new MsgArrayAdapter(
+						MainActivity.this, Utilities.AllMsgs);
 				msgs.notifyDataSetChanged();
 				list.setAdapter(msgs);
 				return true;
@@ -116,32 +123,43 @@ public class MainActivity extends ActionBarActivity {
 
 	public void sendDifussion(View view) {
 		setupService();
-		Connection.sendDifussion(((TextView) findViewById(R.id.edit_text_out)).getText().toString());
+		Connection.sendDifussion(((TextView) findViewById(R.id.edit_text_out))
+				.getText().toString());
 		TextView tx = (TextView) findViewById(R.id.edit_text_out);
 		tx.setText("");
+		Utilities.progressDialog = launchLoadingDialog(view);
 	}
 
 	private void init() {
 		if (Connection.myBluetooth == null)
 			setupService();
 		if (!Connection.myBluetooth.isSupported()) {
-			Toast.makeText(this,getString(R.string.bluetooth_no_supported), Toast.LENGTH_LONG).show();
+			Toast.makeText(this, getString(R.string.bluetooth_no_supported),
+					Toast.LENGTH_LONG).show();
 			finish();
 		} else {
 			Utilities.mainContext = this;
 			discoverability = false;
 			Connection.myBluetooth.setEnable(this);
-			mArrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1);
-			Connection.myBluetooth.registerBroadcastReceiver(getApplicationContext(), Connection.myBluetooth.setBroadcastReceiver(getApplicationContext(), mArrayAdapter));
+			mArrayAdapter = new ArrayAdapter<String>(this,
+					android.R.layout.simple_list_item_1);
+			Connection.myBluetooth.registerBroadcastReceiver(
+					getApplicationContext(), Connection.myBluetooth
+							.setBroadcastReceiver(getApplicationContext(),
+									mArrayAdapter));
 			Connection.mAdapter = BluetoothAdapter.getDefaultAdapter();
 			Connection.mainContext = this;
-			Utilities.notificationManager = new Notifications((NotificationManager) getSystemService(NOTIFICATION_SERVICE), this);
+			Utilities.notificationManager = new Notifications(
+					(NotificationManager) getSystemService(NOTIFICATION_SERVICE),
+					this);
 			Connection.BBDDmensajes = new ControllerMensajes(this);
 		}
 	}
-    // Function for scanning devices to an insecure connection
+
+	// Function for scanning devices to an insecure connection
 	public void scan_insecure(View view) {
-		Toast.makeText(this, getString(R.string.insecure_connection), Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, getString(R.string.insecure_connection),
+				Toast.LENGTH_SHORT).show();
 		Intent serverIntent = null;
 		mArrayAdapter.clear();
 		serverIntent = new Intent(this, DeviceListActivity.class);
@@ -150,7 +168,8 @@ public class MainActivity extends ActionBarActivity {
 
 	// Function for scanning devices to an secure connection
 	public void scan_secure(View view) {
-		Toast.makeText(this, getString(R.string.secure_connection), Toast.LENGTH_SHORT).show();
+		Toast.makeText(this, getString(R.string.secure_connection),
+				Toast.LENGTH_SHORT).show();
 		Intent serverIntent = null;
 		mArrayAdapter.clear();
 		serverIntent = new Intent(this, DeviceListActivity.class);
@@ -158,17 +177,20 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	public void paired(View view) {
-		Connection.myBluetooth.getPairedDevices(this, getString(R.string.previously_paired));
+		Connection.myBluetooth.getPairedDevices(this,
+				getString(R.string.previously_paired));
 	}
 
 	public void setEnableDiscoverability(View view) {
 		if (discoverability == true) {
 			discoverability = false;
-			Toast.makeText(this, getString(R.string.disabling_discoverability), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.disabling_discoverability),
+					Toast.LENGTH_SHORT).show();
 			startActivity(Connection.enableDiscoverability());
 		} else {
 			discoverability = true;
-			Toast.makeText(this, getString(R.string.enabling_discoverability), Toast.LENGTH_SHORT).show();
+			Toast.makeText(this, getString(R.string.enabling_discoverability),
+					Toast.LENGTH_SHORT).show();
 			startActivity(Connection.disableDiscoverability());
 		}
 	}
@@ -187,12 +209,13 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	private void loadNotification() {
-		SharedPreferences prefs = getSharedPreferences("Preferences", Context.MODE_PRIVATE);
+		SharedPreferences prefs = getSharedPreferences("Preferences",
+				Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = prefs.edit();
 		editor.putBoolean("notification", false);
 		editor.commit();
 	}
-	
+
 	// A Listener lo catch on back button pressed to continue listening(service)
 	@Override
 	public void onBackPressed() {
@@ -203,10 +226,28 @@ public class MainActivity extends ActionBarActivity {
 		startActivity(setIntent);
 	}
 
-	// This is a wrapper around the new startForeground method, using the older APIs if it is not available.
+	// This is a wrapper around the new startForeground method, using the older
+	// APIs if it is not available.
 	void startForegroundCompat(int id, Notification notification) {
 		// If we have the new startForeground API, then use it.
 		Log.d("startForegroundCompat", "startForegroundCompat Called");
+	}
+
+	
+	//dialog to wait for message send
+	public ProgressDialog launchLoadingDialog(View view) {
+
+		final ProgressDialog progressDialog = ProgressDialog.show(
+				MainActivity.this, getString(R.string.wait), getString(R.string.sending_message),
+				true);
+		progressDialog.setCancelable(false);
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				
+			}
+		}).start();
+		return progressDialog;
 	}
 
 }
