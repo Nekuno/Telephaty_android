@@ -37,6 +37,14 @@ public class CustomHandler extends Handler {
 		} else if (msg.what == Utilities.getMessageWrite()) {
 			byte[] writeBuf = (byte[]) msg.obj;
 			String writeMessage = new String(writeBuf);
+			final ListView list = (ListView) mMainActivity.findViewById(R.id.listView);
+			Msgs.insert(Utilities.lastMsg);
+			Utilities.AllMsgs.add(Utilities.lastMsg);
+			final MsgArrayAdapter msgs = new MsgArrayAdapter(mMainActivity, Utilities.AllMsgs);
+			// fill the list with data
+			msgs.notifyDataSetChanged();
+			list.setAdapter(msgs);
+			list.setSelection(Utilities.AllMsgs.size() -1 );
 			if (Utilities.DEBUG)
 				Log.i(TAG, "WRITE:" + writeMessage + "!!!");
 		} else if (msg.what == Utilities.getMessageSharedKey()) {
@@ -57,11 +65,13 @@ public class CustomHandler extends Handler {
 			// fill the list with data
 			msgs.notifyDataSetChanged();
 			list.setAdapter(msgs);
+			list.setSelection(Utilities.AllMsgs.size() -1 );
 			if (Utilities.DEBUG)
 				Log.i(TAG, "READ:" + readString + "!!!");
 			// build notification
 			Utilities.notificationManager.generateNotification(readString);
 			Utilities.notificationManager.sendNotification();
+			
 		} else if (msg.what == Utilities.getMessageDeviceName()) {
 			// save the connected device's name
 			Toast.makeText(Connection.mainContext, Utilities.mainContext.getString(R.string.connected_to) + msg.getData().getString(Utilities.DEVICE_NAME), Toast.LENGTH_SHORT).show();

@@ -180,9 +180,7 @@ public class ConnectedThread extends Thread {
 	public void write(byte[] buffer, boolean diffusion) {
 		if(Utilities.DEBUG)
 			Log.d("DEBUGGING", "En función write Connectedthread");
-		Utilities.lastMsg = new Msg("me", new String(buffer), new Timestamp(new java.util.Date().getTime()));
-		// Send the obtained bytes to the UI Activity
-		mService.getHandler().obtainMessage(Utilities.getMessageRead(), buffer.length, -1, buffer).sendToTarget();
+		
 		try {
 			String msg = new String(buffer, "UTF-8");
 			if (diffusion == true) {
@@ -199,6 +197,7 @@ public class ConnectedThread extends Thread {
 			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
 			oos.writeObject(encryptedData);
 			// Share the sent message back to the UI Activity
+			Utilities.lastMsg = new Msg("me", new String(buffer), new Timestamp(new java.util.Date().getTime()));
 			mService.getHandler().obtainMessage(Utilities.getMessageWrite(), -1, -1, encryptedData).sendToTarget();
 			Utilities.progressDialog.dismiss();
 			if (diffusion == true && (mSocket.getInputStream() != null)) {
