@@ -377,6 +377,12 @@ public class Bluetooth {
 //		mHandler.sendMessage(msg);
 		// Start the service over to restart listening mode
 		Bluetooth.this.start();
+		try {
+			Utilities.progressDialog.dismiss();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	// Indicate that the connection was lost and notify the UI Activity.
@@ -389,6 +395,12 @@ public class Bluetooth {
 //		mHandler.sendMessage(msg);
 		// Start the service over to restart listening mode
 		Bluetooth.this.start();
+		try {
+			Utilities.progressDialog.dismiss();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public BluetoothDevice getRemoteDevice() {

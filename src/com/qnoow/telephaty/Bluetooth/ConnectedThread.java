@@ -202,7 +202,12 @@ public class ConnectedThread extends Thread {
 			mService.getHandler().obtainMessage(Utilities.getMessageWrite(), -1, -1, encryptedData).sendToTarget();
 			
 			if (diffusion == true && (mSocket.getInputStream() != null)) {
-				ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
+				try {
+					ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 			}
 
 		} catch (IOException e) {
