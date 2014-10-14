@@ -97,4 +97,6 @@ public class Utilities {
 	public static Msg lastMsg;
 	public static List<Msg> AllMsgs;
 	public static ProgressDialog progressDialog;
+	public static int rightSends;
+	public static boolean sendCount = false;
 }

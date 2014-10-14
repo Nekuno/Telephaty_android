@@ -113,6 +113,7 @@ public class Bluetooth {
 				String action = intent.getAction();
 
 				if (BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+					Utilities.rightSends = 0;
 					Utilities.MACs.clear();
 				} else if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 					BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
@@ -180,6 +181,8 @@ public class Bluetooth {
 					if(Utilities.DEBUG)
 						Log.w("Antes del write", "Conectado con mac = " + Utilities.MACs.get(i));
 					write(msg.getBytes(), true);
+					Utilities.rightSends ++;
+					
 				} else {
 					if(Utilities.DEBUG)
 						Log.w("disconnected", "Esta petando el otro movil!");
@@ -201,6 +204,10 @@ public class Bluetooth {
 		@Override
 		protected void onPostExecute(Void result) {
 			super.onPostExecute(result);
+			if (Utilities.sendCount){
+				Toast.makeText(Utilities.mainContext, "Mensaje enviado correctamente a " + Utilities.rightSends + "/" + Utilities.MACs.size() + " dispositivos" , Toast.LENGTH_SHORT).show();
+				Utilities.sendCount = false;
+			}
 		}
 	}
 
@@ -363,11 +370,11 @@ public class Bluetooth {
 	// Indicate that the connection attempt failed and notify the UI Activity.
 	void connectionFailed() {
 		// Send a failure message back to the Activity
-		Message msg = mHandler.obtainMessage(Utilities.getMessageToast());
-		Bundle bundle = new Bundle();
-		bundle.putString(Utilities.TOAST, Utilities.mainContext.getString(R.string.can_not_connect));
-		msg.setData(bundle);
-		mHandler.sendMessage(msg);
+//		Message msg = mHandler.obtainMessage(Utilities.getMessageToast());
+//		Bundle bundle = new Bundle();
+//		bundle.putString(Utilities.TOAST, Utilities.mainContext.getString(R.string.can_not_connect));
+//		msg.setData(bundle);
+//		mHandler.sendMessage(msg);
 		// Start the service over to restart listening mode
 		Bluetooth.this.start();
 	}
@@ -375,11 +382,11 @@ public class Bluetooth {
 	// Indicate that the connection was lost and notify the UI Activity.
 	void connectionLost() {
 		// Send a failure message back to the Activity
-		Message msg = mHandler.obtainMessage(Utilities.getMessageToast());
-		Bundle bundle = new Bundle();
-		bundle.putString(Utilities.TOAST, Utilities.mainContext.getString(R.string.lost_connection));
-		msg.setData(bundle);
-		mHandler.sendMessage(msg);
+//		Message msg = mHandler.obtainMessage(Utilities.getMessageToast());
+//		Bundle bundle = new Bundle();
+//		bundle.putString(Utilities.TOAST, Utilities.mainContext.getString(R.string.lost_connection));
+//		msg.setData(bundle);
+//		mHandler.sendMessage(msg);
 		// Start the service over to restart listening mode
 		Bluetooth.this.start();
 	}

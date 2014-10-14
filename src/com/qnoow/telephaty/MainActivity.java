@@ -129,6 +129,7 @@ public class MainActivity extends ActionBarActivity {
 		TextView tx = (TextView) findViewById(R.id.edit_text_out);
 		tx.setText("");
 		Utilities.progressDialog = launchLoadingDialog(view);
+		Utilities.sendCount = true;
 	}
 
 	private void init() {

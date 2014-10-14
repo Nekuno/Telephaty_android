@@ -74,7 +74,7 @@ public class CustomHandler extends Handler {
 			
 		} else if (msg.what == Utilities.getMessageDeviceName()) {
 			// save the connected device's name
-			Toast.makeText(Connection.mainContext, Utilities.mainContext.getString(R.string.connected_to) + msg.getData().getString(Utilities.DEVICE_NAME), Toast.LENGTH_SHORT).show();
+			//Toast.makeText(Connection.mainContext, Utilities.mainContext.getString(R.string.connected_to) + msg.getData().getString(Utilities.DEVICE_NAME), Toast.LENGTH_SHORT).show();
 		} else if (msg.what == Utilities.getMessageToast()) {
 			Toast.makeText(Connection.mainContext, msg.getData().getString(Utilities.TOAST), Toast.LENGTH_SHORT).show();
 

@@ -146,7 +146,7 @@ public class ConnectedThread extends Thread {
 								Utilities.identifier = msgId;
 								Connection.difussion = true;
 								Utilities.jump = Integer.toString(Integer.parseInt(jump) - 1);
-								Utilities.message = receivedMsg.substring(17); 
+								Utilities.message = receivedMsg.substring(16); 
 								Connection.mAdapter.startDiscovery();
 							} else {
 								Connection.difussion = false;
@@ -198,8 +198,9 @@ public class ConnectedThread extends Thread {
 			oos.writeObject(encryptedData);
 			// Share the sent message back to the UI Activity
 			Utilities.lastMsg = new Msg("me", new String(buffer), new Timestamp(new java.util.Date().getTime()));
-			mService.getHandler().obtainMessage(Utilities.getMessageWrite(), -1, -1, encryptedData).sendToTarget();
 			Utilities.progressDialog.dismiss();
+			mService.getHandler().obtainMessage(Utilities.getMessageWrite(), -1, -1, encryptedData).sendToTarget();
+			
 			if (diffusion == true && (mSocket.getInputStream() != null)) {
 				ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
 			}
