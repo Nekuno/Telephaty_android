@@ -1,10 +1,13 @@
 package com.qnoow.telephaty;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
@@ -56,23 +59,7 @@ public class MainActivity extends ActionBarActivity {
 			@Override
 			public void onItemClick(AdapterView<?> adapter, View v,
 					int position, long arg3) {
-				setupService();
-				Connection.sendDifussion(Utilities.AllMsgs.get(position)
-						.getMessage());
-			}
-		});
-		// The function remove a message
-		list.setOnItemLongClickListener(new OnItemLongClickListener() {
-			public boolean onItemLongClick(AdapterView parent, View view,
-					int position, long id) {
-				new ControllerMensajesCollection(getApplicationContext())
-						.delete(Utilities.AllMsgs.get(position));
-				Utilities.AllMsgs.remove(position);
-				final MsgArrayAdapter msgs = new MsgArrayAdapter(
-						MainActivity.this, Utilities.AllMsgs);
-				msgs.notifyDataSetChanged();
-				list.setAdapter(msgs);
-				return true;
+				clickDialog(MainActivity.this, position, getString(R.string.app_name), getString(R.string.what_do));
 			}
 		});
 		// Initialize the BluetoothChatService to perform bluetooth connections
@@ -128,7 +115,7 @@ public class MainActivity extends ActionBarActivity {
 				.getText().toString());
 		TextView tx = (TextView) findViewById(R.id.edit_text_out);
 		tx.setText("");
-		Utilities.progressDialog = launchLoadingDialog(view);
+		Utilities.progressDialog = launchLoadingDialog();
 		Utilities.sendCount = true;
 	}
 
@@ -237,7 +224,7 @@ public class MainActivity extends ActionBarActivity {
 
 	
 	//dialog to wait for message send
-	public ProgressDialog launchLoadingDialog(View view) {
+	public ProgressDialog launchLoadingDialog() {
 
 		final ProgressDialog progressDialog = ProgressDialog.show(
 				MainActivity.this, getString(R.string.wait), getString(R.string.sending_message),
@@ -250,6 +237,44 @@ public class MainActivity extends ActionBarActivity {
 			}
 		}).start();
 		return progressDialog;
+	}
+	
+	
+	
+	public void clickDialog(final Activity activity, final int position, String title, String message) {
+	    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+	    builder.setTitle(title);
+
+	    builder.setMessage(message);
+	    builder.setPositiveButton("Resend", new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int id) {
+				setupService();
+				Connection.sendDifussion(Utilities.AllMsgs.get(position)
+						.getMessage());
+				Utilities.progressDialog = launchLoadingDialog();
+				Utilities.sendCount = true;
+	       }
+	   });
+	    builder.setNegativeButton("Send private message",  new DialogInterface.OnClickListener() {
+	        public void onClick(DialogInterface dialog, int id) {
+	            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
+	       }
+	   });
+	    builder.setNeutralButton("Delete",  new DialogInterface.OnClickListener() {
+	    	public void onClick(DialogInterface dialog, int id) {
+	    		new ControllerMensajesCollection(getApplicationContext())
+	    		.delete(Utilities.AllMsgs.get(position));
+	    		Utilities.AllMsgs.remove(position);
+	    		final MsgArrayAdapter msgs = new MsgArrayAdapter(
+	    				MainActivity.this, Utilities.AllMsgs);
+	    		msgs.notifyDataSetChanged();
+	    		final ListView list = (ListView) activity.findViewById(R.id.listView);
+	    		list.setAdapter(msgs);
+	    		list.setSelection(position);
+	    	}
+	    });
+	    builder.show();
 	}
 
 }

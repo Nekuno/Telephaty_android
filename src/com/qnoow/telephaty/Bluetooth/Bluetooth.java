@@ -130,6 +130,11 @@ public class Bluetooth {
 						new sendDifussionAsync().execute(Utilities.message);
 					} else {
 						Toast.makeText(context, R.string.scan_finished, Toast.LENGTH_SHORT).show();
+						try {
+							Utilities.progressDialog.dismiss();
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
 					}
 				}
 
