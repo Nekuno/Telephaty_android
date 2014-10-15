@@ -58,8 +58,10 @@ public class Utilities {
 	public static String message = "";
 	public static String jump = "";
 	public static String difusion = "1";
+	public static String privates = "2";
 	public static String identifier = "";
 	public static String lastmessage = "";
+	public static String receiverMac = "";
 
 	// Notifications
 	public static Notifications notificationManager;
@@ -99,4 +101,5 @@ public class Utilities {
 	public static ProgressDialog progressDialog;
 	public static int rightSends;
 	public static boolean sendCount = false;
+	
 }

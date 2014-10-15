@@ -17,9 +17,10 @@ import android.view.Menu;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -110,6 +111,17 @@ public class MainActivity extends ActionBarActivity {
 	}
 
 	public void sendDifussion(View view) {
+		setupService();
+		Connection.sendDifussion(((TextView) findViewById(R.id.edit_text_out))
+				.getText().toString());
+		TextView tx = (TextView) findViewById(R.id.edit_text_out);
+		tx.setText("");
+		Utilities.progressDialog = launchLoadingDialog();
+		Utilities.sendCount = true;
+	}
+	
+
+	public void sendDifussionPrivate(View view) {
 		setupService();
 		Connection.sendDifussion(((TextView) findViewById(R.id.edit_text_out))
 				.getText().toString());
@@ -241,7 +253,7 @@ public class MainActivity extends ActionBarActivity {
 	
 	
 	
-	public void clickDialog(final Activity activity, final int position, String title, String message) {
+	public void clickDialog(final Activity activity, final int position, final String title, final String message) {
 	    AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 
 	    builder.setTitle(title);
@@ -256,11 +268,14 @@ public class MainActivity extends ActionBarActivity {
 				Utilities.sendCount = true;
 	       }
 	   });
-	    builder.setNegativeButton("Send private message",  new DialogInterface.OnClickListener() {
-	        public void onClick(DialogInterface dialog, int id) {
-	            Toast.makeText(activity, "cancel", Toast.LENGTH_SHORT).show();
-	       }
-	   });
+	    
+	    if(!Utilities.AllMsgs.get(position).getMac().equals("me")){
+	    	builder.setNegativeButton("Send private message",  new DialogInterface.OnClickListener() {
+	    		public void onClick(DialogInterface dialog, int id) {
+	    			privateMessageDialog(activity, position, title, "Write your private message");
+	    		}
+	    	});
+	    }
 	    builder.setNeutralButton("Delete",  new DialogInterface.OnClickListener() {
 	    	public void onClick(DialogInterface dialog, int id) {
 	    		new ControllerMensajesCollection(getApplicationContext())
@@ -274,6 +289,37 @@ public class MainActivity extends ActionBarActivity {
 	    		list.setSelection(position);
 	    	}
 	    });
+	    builder.show();
+	}
+	
+	public void privateMessageDialog(final Activity activity, final int position, String title, String message) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+	    builder.setTitle(title);
+
+	    builder.setMessage(message);
+	    final EditText input = new EditText(MainActivity.this);  
+	    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+	                          LinearLayout.LayoutParams.MATCH_PARENT,
+	                          LinearLayout.LayoutParams.MATCH_PARENT);
+	    input.setLayoutParams(lp);
+	    builder.setView(input);
+       
+
+	    builder.setPositiveButton("Send private message", new DialogInterface.OnClickListener() {
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				setupService();
+				Connection.privates = true;
+				Connection.sendDifussionPrivate(input.getText().toString(), Utilities.AllMsgs.get(position).getMac());
+				Utilities.progressDialog = launchLoadingDialog();
+				Utilities.sendCount = true;
+				
+			}
+	       
+	       
+	   });
 	    builder.show();
 	}
 

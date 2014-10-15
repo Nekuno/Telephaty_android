@@ -151,7 +151,34 @@ public class ConnectedThread extends Thread {
 							} else {
 								Connection.difussion = false;
 							}
-						} else {
+						}
+						else if (receivedMsg.substring(0, 1).equals("2")) {
+							String msgId = receivedMsg.substring(1, 15);
+							String jump = receivedMsg.substring(15, 16);
+							String mac = receivedMsg.substring(16, 33);
+							byte[] originalMsg = receivedMsg.substring(33).getBytes();
+							Utilities.lastMsg = new Msg(mService.getRemoteDevice().toString(), new String(originalMsg), new Timestamp(new java.util.Date().getTime()));
+							if (mService.getAdapter().getAddress().toString().equals(mac)){
+								// Send the obtained bytes to the UI Activity
+								mService.getHandler().obtainMessage(Utilities.getMessageRead(), originalMsg.length, -1, originalMsg).sendToTarget();
+								mService.stop();
+							}
+							else if (Integer.parseInt(jump) > 1 && !Connection.BBDDmensajes.search(msgId) && !mService.getAdapter().getAddress().toString().equals(mac)) {
+								mService.stop();
+								Connection.BBDDmensajes.insert(msgId, mSocket.getRemoteDevice().toString());
+								Utilities.identifier = msgId;
+								Connection.difussion = true;
+								Connection.privates = true;
+								Utilities.jump = Integer.toString(Integer.parseInt(jump) - 1);
+								Utilities.message = receivedMsg.substring(33); 
+								Connection.mAdapter.startDiscovery();
+							} else {
+								mService.stop();
+								Connection.difussion = false;
+								Connection.privates = false;
+							}
+						}
+						else {
 							byte[] originalMsg = receivedMsg.substring(1).getBytes();
 							// Send the obtained bytes to the UI Activity
 							mService.getHandler().obtainMessage(Utilities.getMessageRead(), originalMsg.length, -1, originalMsg).sendToTarget();
@@ -183,12 +210,19 @@ public class ConnectedThread extends Thread {
 		
 		try {
 			String msg = new String(buffer, "UTF-8");
-			if (diffusion == true) {
+			if (diffusion && !Connection.privates) {
 				if (Utilities.jump.equals(Connection.MAXJUMP)) {
 					Utilities.message = msg;
 					Connection.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
 				}
 				msg = Utilities.difusion.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.message);
+
+			} else if (diffusion && Connection.privates) {
+				if (Utilities.jump.equals(Connection.MAXJUMP)) {
+					Utilities.message = msg;
+					Connection.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
+				}
+				msg = Utilities.privates.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.receiverMac).concat(Utilities.message);
 
 			} else {
 				msg = "0".concat(msg);

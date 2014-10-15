@@ -197,6 +197,7 @@ public class Bluetooth {
 			}
 		}
 		Connection.difussion = false;
+		Connection.privates = false;
 	}
 
 	private class sendDifussionAsync extends AsyncTask<String, Void, Void> {

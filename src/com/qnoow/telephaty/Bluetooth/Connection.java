@@ -17,6 +17,7 @@ public class Connection {
 	public static byte[] sharedKey;
 	public static Context mainContext;
 	public static boolean difussion = false;
+	public static boolean privates = false;
 	public static final String MAXJUMP = "5";
 
 	public static Bluetooth myBluetooth = null;
@@ -66,6 +67,18 @@ public class Connection {
 		mAdapter.startDiscovery();
 
 	}
+	
+	
+	public static void sendDifussionPrivate(String message, String mac) {
+		Utilities.jump = Connection.MAXJUMP;
+		Utilities.receiverMac = mac;
+		difussion = true;
+		privates = true;
+		Utilities.identifier = Utilities.generateIdentifier();
+		Utilities.message = message;
+		mAdapter.startDiscovery();
+	}
+	
 
 	public static void connectDevice(Intent data) {
 		// Get the device MAC address
