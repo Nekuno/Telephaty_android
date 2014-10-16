@@ -7,16 +7,29 @@ public class Msg {
 	private String Mac;
 	private String message;
 	private Timestamp time;
+	private int privates;
 	
 	
 	
-	public Msg(String mac, String message, Timestamp time) {
+	
+
+
+	public Msg(String mac, String message, int privates, Timestamp time) {
 		super();
 		Mac = mac;
 		this.message = message;
 		this.time = time;
+		this.privates = privates;
 	}
 	
+	public int getPrivates() {
+		return privates;
+	}
+
+
+	public void setPrivates(int privates) {
+		this.privates = privates;
+	}
 	
 	public String getMac() {
 		return Mac;

@@ -24,7 +24,7 @@ public class ControllerMensajesCollection {
 
 	public void insert(Msg msg) {
 		db = mensajesDB.getWritableDatabase();
-			db.execSQL("INSERT INTO MensajesCollection (mac, msg, time) " + "VALUES ('" + msg.getMac() + "', '" + msg.getMessage() + "', '" + msg.getTime() + "' )");
+			db.execSQL("INSERT INTO MensajesCollection (mac, msg, privates, time) " + "VALUES ('" + msg.getMac() + "', '" + msg.getMessage() +  "', " + msg.getPrivates() +", '" + msg.getTime() + "' )");
 			db.close();
 	}
 
@@ -36,7 +36,7 @@ public class ControllerMensajesCollection {
 		Cursor c = db.query("MensajesCollection", null, null, null, null, null, null);
 		if (c.moveToFirst()) {
 			do {
-				items.add(new Msg(c.getString(0), c.getString(1), Timestamp.valueOf(c.getString(2))));
+				items.add(new Msg(c.getString(0), c.getString(1), c.getInt(2), Timestamp.valueOf(c.getString(3))));
 			} while (c.moveToNext());
 		}
 		db.close();

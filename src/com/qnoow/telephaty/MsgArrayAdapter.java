@@ -28,12 +28,12 @@ public class MsgArrayAdapter  extends ArrayAdapter<Msg> {
 		LayoutInflater inflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		
-		View rowView;
-		TextView message;
-		TextView time ;
-		TextView mac;
+		View rowView = null;
+		TextView message = null;
+		TextView time = null;
+		TextView mac = null;
 		
-		if(data.get(position).getMac().equals("me")){
+		if(data.get(position).getMac().equals("me") && data.get(position).getPrivates() == 0){
 			rowView = inflater.inflate(R.layout.message_item_b,
 				parent, false);
 			message = (TextView) rowView.findViewById(R.id.singleMessageb);
@@ -42,7 +42,7 @@ public class MsgArrayAdapter  extends ArrayAdapter<Msg> {
 			
 			mac = (TextView) rowView.findViewById(R.id.MACb);
 		}
-		else{
+		else if(!data.get(position).getMac().equals("me") && data.get(position).getPrivates() == 0){
 			rowView = inflater.inflate(R.layout.message_item_a,
 					parent, false);
 			message = (TextView) rowView.findViewById(R.id.singleMessagea);
@@ -52,6 +52,28 @@ public class MsgArrayAdapter  extends ArrayAdapter<Msg> {
 			mac = (TextView) rowView.findViewById(R.id.MACa);
 			
 			LinearLayout layout = (LinearLayout) rowView.findViewById(R.id.singleMessageContainera);
+			layout.setGravity(android.view.Gravity.RIGHT);
+		}
+		else if(data.get(position).getMac().equals("me") && data.get(position).getPrivates() == 1){
+			rowView = inflater.inflate(R.layout.message_item_c,
+					parent, false);
+			message = (TextView) rowView.findViewById(R.id.singleMessagec);
+			
+			time = (TextView) rowView.findViewById(R.id.horac);
+			
+			mac = (TextView) rowView.findViewById(R.id.MACc);
+		
+		}
+		else if(!data.get(position).getMac().equals("me") && data.get(position).getPrivates() == 1){
+			rowView = inflater.inflate(R.layout.message_item_d,
+					parent, false);
+			message = (TextView) rowView.findViewById(R.id.singleMessaged);
+			
+			time = (TextView) rowView.findViewById(R.id.horad);
+			
+			mac = (TextView) rowView.findViewById(R.id.MACd);
+			
+			LinearLayout layout = (LinearLayout) rowView.findViewById(R.id.singleMessageContainerd);
 			layout.setGravity(android.view.Gravity.RIGHT);
 		}
 		

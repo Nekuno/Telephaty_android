@@ -9,7 +9,7 @@ public class BBDDMensajes extends SQLiteOpenHelper {
 
 	
 	String sqlCreate = "CREATE TABLE Mensajes (id TEXT, mac TEXT)";
-	String sqlCreate2 = "CREATE TABLE MensajesCollection (mac TEXT, msg TEXT, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
+	String sqlCreate2 = "CREATE TABLE MensajesCollection (mac TEXT, msg TEXT, privates NUMBER, time TIMESTAMP DEFAULT CURRENT_TIMESTAMP)";
 
 	public BBDDMensajes(Context contexto, String nombre, CursorFactory factory,
 			int version) {

@@ -137,7 +137,7 @@ public class ConnectedThread extends Thread {
 							String msgId = receivedMsg.substring(1, 15);
 							String jump = receivedMsg.substring(15, 16);
 							byte[] originalMsg = receivedMsg.substring(16).getBytes();
-							Utilities.lastMsg = new Msg(mService.getRemoteDevice().toString(), new String(originalMsg), new Timestamp(new java.util.Date().getTime()));
+							Utilities.lastMsg = new Msg(mService.getRemoteDevice().toString(), new String(originalMsg), 0, new Timestamp(new java.util.Date().getTime()));
 							// Send the obtained bytes to the UI Activity
 							mService.getHandler().obtainMessage(Utilities.getMessageRead(), originalMsg.length, -1, originalMsg).sendToTarget();
 							mService.stop();
@@ -157,7 +157,7 @@ public class ConnectedThread extends Thread {
 							String jump = receivedMsg.substring(15, 16);
 							String mac = receivedMsg.substring(16, 33);
 							byte[] originalMsg = receivedMsg.substring(33).getBytes();
-							Utilities.lastMsg = new Msg(mService.getRemoteDevice().toString(), new String(originalMsg), new Timestamp(new java.util.Date().getTime()));
+							Utilities.lastMsg = new Msg(mService.getRemoteDevice().toString(), new String(originalMsg), 1, new Timestamp(new java.util.Date().getTime()));
 							if (mService.getAdapter().getAddress().toString().equals(mac)){
 								// Send the obtained bytes to the UI Activity
 								mService.getHandler().obtainMessage(Utilities.getMessageRead(), originalMsg.length, -1, originalMsg).sendToTarget();
@@ -210,6 +210,7 @@ public class ConnectedThread extends Thread {
 		
 		try {
 			String msg = new String(buffer, "UTF-8");
+			int priv = 0;
 			if (diffusion && !Connection.privates) {
 				if (Utilities.jump.equals(Connection.MAXJUMP)) {
 					Utilities.message = msg;
@@ -218,6 +219,7 @@ public class ConnectedThread extends Thread {
 				msg = Utilities.difusion.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.message);
 
 			} else if (diffusion && Connection.privates) {
+				priv = 1;
 				if (Utilities.jump.equals(Connection.MAXJUMP)) {
 					Utilities.message = msg;
 					Connection.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
@@ -231,7 +233,7 @@ public class ConnectedThread extends Thread {
 			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
 			oos.writeObject(encryptedData);
 			// Share the sent message back to the UI Activity
-			Utilities.lastMsg = new Msg("me", new String(buffer), new Timestamp(new java.util.Date().getTime()));
+			Utilities.lastMsg = new Msg("me", new String(buffer), priv, new Timestamp(new java.util.Date().getTime()));
 			Utilities.progressDialog.dismiss();
 			mService.getHandler().obtainMessage(Utilities.getMessageWrite(), -1, -1, encryptedData).sendToTarget();
 			
