@@ -54,7 +54,7 @@ public class Connection {
 		if (message.length() > 0) {
 			// Get the message bytes and tell the BluetoothService to write
 			byte[] send = message.getBytes();
-			Connection.myBluetooth.write(send, false);
+			Connection.myBluetooth.write(send, false, 0);
 		}
 
 	}

@@ -170,6 +170,7 @@ public class ConnectedThread extends Thread {
 								Connection.difussion = true;
 								Connection.privates = true;
 								Utilities.jump = Integer.toString(Integer.parseInt(jump) - 1);
+								Utilities.receiverMac = mac;
 								Utilities.message = receivedMsg.substring(33); 
 								Connection.mAdapter.startDiscovery();
 							} else {
@@ -204,7 +205,7 @@ public class ConnectedThread extends Thread {
 
 	// Write to the connected OutStream.
 	// Buffer has the bytes to write
-	public void write(byte[] buffer, boolean diffusion) {
+	public void write(byte[] buffer, boolean diffusion, int i) {
 		if(Utilities.DEBUG)
 			Log.d("DEBUGGING", "En función write Connectedthread");
 		
@@ -232,10 +233,13 @@ public class ConnectedThread extends Thread {
 			byte[] encryptedData = Support.encrypt(sharedKey, msg.getBytes());
 			ObjectOutputStream oos = new ObjectOutputStream(mSocket.getOutputStream());
 			oos.writeObject(encryptedData);
-			// Share the sent message back to the UI Activity
-			Utilities.lastMsg = new Msg("me", new String(buffer), priv, new Timestamp(new java.util.Date().getTime()));
-			Utilities.progressDialog.dismiss();
-			mService.getHandler().obtainMessage(Utilities.getMessageWrite(), -1, -1, encryptedData).sendToTarget();
+			
+			if (i == 0){
+				// Share the sent message back to the UI Activity
+				Utilities.lastMsg = new Msg("me", new String(buffer), priv, new Timestamp(new java.util.Date().getTime()));
+				Utilities.progressDialog.dismiss();
+				mService.getHandler().obtainMessage(Utilities.getMessageWrite(), -1, -1, encryptedData).sendToTarget();
+			}
 			
 			if (diffusion == true && (mSocket.getInputStream() != null)) {
 				try {
@@ -243,6 +247,7 @@ public class ConnectedThread extends Thread {
 				} catch (Exception e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
+					mService.connectionLost();
 				}
 			}
 

@@ -185,7 +185,7 @@ public class Bluetooth {
 				if (getState() == Utilities.STATE_CONNECTED_ECDH_FINISH) {
 					if(Utilities.DEBUG)
 						Log.w("Antes del write", "Conectado con mac = " + Utilities.MACs.get(i));
-					write(msg.getBytes(), true);
+					write(msg.getBytes(), true, i);
 					Utilities.rightSends ++;
 					
 				} else {
@@ -359,7 +359,7 @@ public class Bluetooth {
 
 	// Write to the ConnectedThread in an unsynchronized manner
 	// Out has the bytes to write
-	public void write(byte[] out, boolean diffusion) {
+	public void write(byte[] out, boolean diffusion, int i) {
 		// Create temporary object
 		ConnectedThread r;
 		// Synchronize a copy of the ConnectedThread
@@ -370,7 +370,7 @@ public class Bluetooth {
 		}
 
 		// Perform the write unsynchronized
-		r.write(out, diffusion);
+		r.write(out, diffusion, i);
 	}
 
 	// Indicate that the connection attempt failed and notify the UI Activity.
