@@ -70,6 +70,9 @@ public class MainActivity extends ActionBarActivity {
 	@Override
 	public synchronized void onResume() {
 		super.onResume();
+		if(Connection.myBluetooth.getAdapter().getScanMode() != BluetoothAdapter.SCAN_MODE_CONNECTABLE_DISCOVERABLE){
+			startActivity(Connection.myBluetooth.enableDiscoverability(0));
+		}
 		loadNotification();
 		Utilities.notificationManager.disableNotifications();
 		Connection.start();
