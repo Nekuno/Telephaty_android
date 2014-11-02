@@ -144,7 +144,7 @@ public class MainActivity extends ActionBarActivity {
 		} else {
 			Utilities.mainContext = this;
 			discoverability = false;
-			Connection.myBluetooth.setEnable(this);
+			//Connection.myBluetooth.setEnable(this);
 			mArrayAdapter = new ArrayAdapter<String>(this,
 					android.R.layout.simple_list_item_1);
 			Connection.myBluetooth.registerBroadcastReceiver(
