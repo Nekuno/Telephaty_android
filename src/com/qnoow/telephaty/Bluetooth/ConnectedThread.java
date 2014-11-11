@@ -129,6 +129,7 @@ public class ConnectedThread extends Thread {
 					// Read from the InputStream
 					if (mSocket.getInputStream() != null) {
 						// Listening to receive a message
+						//place where had a error crash
 						ObjectInputStream ois = new ObjectInputStream(mSocket.getInputStream());
 						Object line = ois.readObject();
 						byte[] decryptedData = Support.decrypt(sharedKey, (byte[]) line);
@@ -141,6 +142,7 @@ public class ConnectedThread extends Thread {
 							// Send the obtained bytes to the UI Activity
 							mService.getHandler().obtainMessage(Utilities.getMessageRead(), originalMsg.length, -1, originalMsg).sendToTarget();
 							mService.stop();
+							
 							if (Integer.parseInt(jump) > 1 && !Connection.BBDDmensajes.search(msgId)) {
 								Connection.BBDDmensajes.insert(msgId, mSocket.getRemoteDevice().toString());
 								Utilities.identifier = msgId;

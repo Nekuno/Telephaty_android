@@ -21,7 +21,7 @@ public class Notifications {
 
 	String title = "Nuevo mensaje";
 	String ticker = "Qnoow Notification";
-	// to show notifications or not, it depends of your current state
+	// to show notifications or not, it depends of your current state, working with android wear
 	Boolean activated;
 
 	public Notifications(NotificationManager basicNotificationManager,
@@ -38,7 +38,7 @@ public class Notifications {
 		SharedPreferences prefs = context.getSharedPreferences("Preferences",
 				Context.MODE_PRIVATE);
 			SharedPreferences.Editor editor = prefs.edit();
-	
+			
 			editor.putBoolean("notification", true);
 			editor.putString("msg", msg);
 			editor.commit();
