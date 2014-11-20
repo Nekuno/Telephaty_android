@@ -124,16 +124,6 @@ public class MainActivity extends ActionBarActivity {
 	}
 	
 
-	public void sendDifussionPrivate(View view) {
-		setupService();
-		Connection.sendDifussion(((TextView) findViewById(R.id.edit_text_out))
-				.getText().toString());
-		TextView tx = (TextView) findViewById(R.id.edit_text_out);
-		tx.setText("");
-		Utilities.progressDialog = launchLoadingDialog();
-		Utilities.sendCount = true;
-	}
-
 	private void init() {
 		if (Connection.myBluetooth == null)
 			setupService();

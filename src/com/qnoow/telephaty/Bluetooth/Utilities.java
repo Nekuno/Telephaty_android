@@ -62,6 +62,7 @@ public class Utilities {
 	public static String identifier = "";
 	public static String lastmessage = "";
 	public static String receiverMac = "";
+	public static String senderMac = "";
 
 	// Notifications
 	public static Notifications notificationManager;

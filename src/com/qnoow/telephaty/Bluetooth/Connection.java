@@ -71,6 +71,7 @@ public class Connection {
 	
 	public static void sendDifussionPrivate(String message, String mac) {
 		Utilities.jump = Connection.MAXJUMP;
+		Utilities.senderMac = BluetoothAdapter.getDefaultAdapter().getAddress();
 		Utilities.receiverMac = mac;
 		difussion = true;
 		privates = true;

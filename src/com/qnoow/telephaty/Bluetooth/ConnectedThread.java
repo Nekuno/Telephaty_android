@@ -157,23 +157,25 @@ public class ConnectedThread extends Thread {
 						else if (receivedMsg.substring(0, 1).equals("2")) {
 							String msgId = receivedMsg.substring(1, 15);
 							String jump = receivedMsg.substring(15, 16);
-							String mac = receivedMsg.substring(16, 33);
-							byte[] originalMsg = receivedMsg.substring(33).getBytes();
-							Utilities.lastMsg = new Msg(mService.getRemoteDevice().toString(), new String(originalMsg), 1, new Timestamp(new java.util.Date().getTime()));
-							if (mService.getAdapter().getAddress().toString().equals(mac)){
+							String senderMac = receivedMsg.substring(16, 33);
+							String receiverMac = receivedMsg.substring(33, 50);
+							byte[] originalMsg = receivedMsg.substring(50).getBytes();
+							Utilities.lastMsg = new Msg(senderMac, new String(originalMsg), 1, new Timestamp(new java.util.Date().getTime()));
+							if (mService.getAdapter().getAddress().toString().equals(receiverMac)){
 								// Send the obtained bytes to the UI Activity
 								mService.getHandler().obtainMessage(Utilities.getMessageRead(), originalMsg.length, -1, originalMsg).sendToTarget();
 								mService.stop();
 							}
-							else if (Integer.parseInt(jump) > 1 && !Connection.BBDDmensajes.search(msgId) && !mService.getAdapter().getAddress().toString().equals(mac)) {
+							else if (Integer.parseInt(jump) > 1 && !Connection.BBDDmensajes.search(msgId) && !mService.getAdapter().getAddress().toString().equals(receiverMac)) {
 								mService.stop();
 								Connection.BBDDmensajes.insert(msgId, mSocket.getRemoteDevice().toString());
 								Utilities.identifier = msgId;
 								Connection.difussion = true;
 								Connection.privates = true;
 								Utilities.jump = Integer.toString(Integer.parseInt(jump) - 1);
-								Utilities.receiverMac = mac;
-								Utilities.message = receivedMsg.substring(33); 
+								Utilities.senderMac = senderMac;
+								Utilities.receiverMac = receiverMac;
+								Utilities.message = receivedMsg.substring(50); 
 								Connection.mAdapter.startDiscovery();
 							} else {
 								mService.stop();
@@ -227,7 +229,7 @@ public class ConnectedThread extends Thread {
 					Utilities.message = msg;
 					Connection.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
 				}
-				msg = Utilities.privates.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.receiverMac).concat(Utilities.message);
+				msg = Utilities.privates.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.senderMac).concat(Utilities.receiverMac).concat(Utilities.message);
 
 			} else {
 				msg = "0".concat(msg);
