@@ -6,7 +6,7 @@ public class Msg {
 
 	private String Mac;
 	private String message;
-	private Timestamp time;
+	private Timestamp time, destruction;
 	private int privates;
 	
 	
@@ -14,14 +14,23 @@ public class Msg {
 	
 
 
-	public Msg(String mac, String message, int privates, Timestamp time) {
+	public Msg(String mac, String message, int privates, Timestamp time, Timestamp destruction) {
 		super();
 		Mac = mac;
 		this.message = message;
 		this.time = time;
 		this.privates = privates;
+		this.destruction = destruction;
 	}
 	
+	public Timestamp getDestruction() {
+		return destruction;
+	}
+
+	public void setDestruction(Timestamp destruction) {
+		this.destruction = destruction;
+	}
+
 	public int getPrivates() {
 		return privates;
 	}

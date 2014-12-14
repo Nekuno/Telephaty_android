@@ -13,22 +13,24 @@ import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.sql.Timestamp;
-import java.text.DateFormat;
-import java.util.Date;
-import java.util.Random;
-
-import org.spongycastle.asn1.eac.PublicKeyDataObject;
-import org.spongycastle.crypto.util.PublicKeyFactory;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
-import android.widget.TextView;
+import android.widget.ListView;
+import android.widget.Toast;
 
 import com.qnoow.telephaty.MainActivity;
 import com.qnoow.telephaty.Msg;
+import com.qnoow.telephaty.MsgArrayAdapter;
 import com.qnoow.telephaty.R;
+import com.qnoow.telephaty.bbdd.BBDDMensajes;
+import com.qnoow.telephaty.bbdd.ControllerMensajesCollection;
 import com.qnoow.telephaty.security.ECDH;
 import com.qnoow.telephaty.security.Support;
 
@@ -137,10 +139,20 @@ public class ConnectedThread extends Thread {
 						if (receivedMsg.substring(0, 1).equals("1")) {
 							String msgId = receivedMsg.substring(1, 15);
 							String jump = receivedMsg.substring(15, 16);
-							byte[] originalMsg = receivedMsg.substring(16).getBytes();
-							Utilities.lastMsg = new Msg(mService.getRemoteDevice().toString(), new String(originalMsg), 0, new Timestamp(new java.util.Date().getTime()));
+							String autoDestructionTime = receivedMsg.substring(16, 19);
+							byte[] originalMsg = receivedMsg.substring(19).getBytes();
+							Utilities.lastMsg = new Msg(mService.getRemoteDevice().toString(), new String(originalMsg), 0,  new Timestamp(new java.util.Date().getTime()), new Timestamp(new java.util.Date().getTime() + (Integer.parseInt(autoDestructionTime) * 60 * 1000)));
 							// Send the obtained bytes to the UI Activity
 							mService.getHandler().obtainMessage(Utilities.getMessageRead(), originalMsg.length, -1, originalMsg).sendToTarget();
+							
+							if (!autoDestructionTime.equals("000")){
+							 Timer timer = new Timer();
+							    MyTimerTask myTimerTask = new MyTimerTask();
+							    timer.schedule(myTimerTask, new Timestamp(new java.util.Date().getTime() + (Integer.parseInt(autoDestructionTime) * 60 * 1000)));
+							   // Timestamp a = new Timestamp(new java.util.Date().getTime());
+							   // Log.d("TIMEr",a + "------" + new Timestamp(new java.util.Date().getTime() + (Integer.parseInt(autoDestructionTime) * 60 * 1000)).toGMTString() );
+							   // Log.d("AUTODESTRUCTION", autoDestructionTime);
+							}
 							mService.stop();
 							
 							if (Integer.parseInt(jump) > 1 && !Connection.BBDDmensajes.search(msgId)) {
@@ -148,7 +160,7 @@ public class ConnectedThread extends Thread {
 								Utilities.identifier = msgId;
 								Connection.difussion = true;
 								Utilities.jump = Integer.toString(Integer.parseInt(jump) - 1);
-								Utilities.message = receivedMsg.substring(16); 
+								Utilities.message = receivedMsg.substring(19); 
 								Connection.mAdapter.startDiscovery();
 							} else {
 								Connection.difussion = false;
@@ -159,11 +171,20 @@ public class ConnectedThread extends Thread {
 							String jump = receivedMsg.substring(15, 16);
 							String senderMac = receivedMsg.substring(16, 33);
 							String receiverMac = receivedMsg.substring(33, 50);
-							byte[] originalMsg = receivedMsg.substring(50).getBytes();
-							Utilities.lastMsg = new Msg(senderMac, new String(originalMsg), 1, new Timestamp(new java.util.Date().getTime()));
+							String autoDestructionTime = receivedMsg.substring(50, 53);
+							byte[] originalMsg = receivedMsg.substring(53).getBytes();
+							Utilities.lastMsg = new Msg(senderMac, new String(originalMsg), 1, new Timestamp(new java.util.Date().getTime()), new Timestamp(new java.util.Date().getTime() + (Integer.parseInt(autoDestructionTime) * 60 * 1000)) );
 							if (mService.getAdapter().getAddress().toString().equals(receiverMac)){
 								// Send the obtained bytes to the UI Activity
 								mService.getHandler().obtainMessage(Utilities.getMessageRead(), originalMsg.length, -1, originalMsg).sendToTarget();
+								if (!autoDestructionTime.equals("000")){
+									 Timer timer = new Timer();
+									    MyTimerTask myTimerTask = new MyTimerTask();
+									    timer.schedule(myTimerTask, new Timestamp(new java.util.Date().getTime() + (Integer.parseInt(autoDestructionTime) * 60 * 1000)));
+									   // Timestamp a = new Timestamp(new java.util.Date().getTime());
+									   // Log.d("TIMEr",a + "------" + new Timestamp(new java.util.Date().getTime() + (Integer.parseInt(autoDestructionTime) * 60 * 1000)).toGMTString() );
+									   // Log.d("AUTODESTRUCTION", autoDestructionTime);
+									}
 								mService.stop();
 							}
 							else if (Integer.parseInt(jump) > 1 && !Connection.BBDDmensajes.search(msgId) && !mService.getAdapter().getAddress().toString().equals(receiverMac)) {
@@ -175,7 +196,7 @@ public class ConnectedThread extends Thread {
 								Utilities.jump = Integer.toString(Integer.parseInt(jump) - 1);
 								Utilities.senderMac = senderMac;
 								Utilities.receiverMac = receiverMac;
-								Utilities.message = receivedMsg.substring(50); 
+								Utilities.message = receivedMsg.substring(53); 
 								Connection.mAdapter.startDiscovery();
 							} else {
 								mService.stop();
@@ -221,7 +242,7 @@ public class ConnectedThread extends Thread {
 					Utilities.message = msg;
 					Connection.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
 				}
-				msg = Utilities.difusion.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.message);
+				msg = Utilities.difusion.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.autoDestructionTime).concat(Utilities.message);
 
 			} else if (diffusion && Connection.privates) {
 				priv = 1;
@@ -229,7 +250,7 @@ public class ConnectedThread extends Thread {
 					Utilities.message = msg;
 					Connection.BBDDmensajes.insert(Utilities.identifier, BluetoothAdapter.getDefaultAdapter().getAddress());
 				}
-				msg = Utilities.privates.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.senderMac).concat(Utilities.receiverMac).concat(Utilities.message);
+				msg = Utilities.privates.concat(Utilities.identifier).concat(Utilities.jump).concat(Utilities.senderMac).concat(Utilities.receiverMac).concat(Utilities.autoDestructionTime).concat(Utilities.message);
 
 			} else {
 				msg = "0".concat(msg);
@@ -240,7 +261,7 @@ public class ConnectedThread extends Thread {
 			
 			if (i == 0){
 				// Share the sent message back to the UI Activity
-				Utilities.lastMsg = new Msg("me", new String(buffer), priv, new Timestamp(new java.util.Date().getTime()));
+				Utilities.lastMsg = new Msg("me", new String(buffer), priv, new Timestamp(new java.util.Date().getTime()), new Timestamp(new java.util.Date().getTime()));
 				Utilities.progressDialog.dismiss();
 				mService.getHandler().obtainMessage(Utilities.getMessageWrite(), -1, -1, encryptedData).sendToTarget();
 			}
@@ -273,5 +294,21 @@ public class ConnectedThread extends Thread {
 
 	public BluetoothDevice getRemoteDevice() {
 		return mRemoteDevice;
+	}
+	
+	class MyTimerTask extends TimerTask {
+
+		  @Override
+		  public void run() {
+			   new ControllerMensajesCollection(Utilities.mainContext).search(new Timestamp(this.scheduledExecutionTime()));
+			   Log.d("TIMER",new Timestamp(this.scheduledExecutionTime()).toGMTString());
+			   Utilities.AllMsgs = new ControllerMensajesCollection(
+						Utilities.mainContext).search();
+			   final MsgArrayAdapter msgs = new MsgArrayAdapter(
+	    				Utilities.mainContext, Utilities.AllMsgs);
+	    		msgs.notifyDataSetChanged();
+				mService.getHandler().obtainMessage(Utilities.getAutodestruction()).sendToTarget();
+
+		 }
 	}
 }

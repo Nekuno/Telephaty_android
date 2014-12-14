@@ -25,7 +25,8 @@ public class Utilities {
 	private static final int MESSAGE_DEVICE_NAME = 4;
 	private static final int MESSAGE_TOAST = 5;
 	private static final int MESSAGE_SHARED_KEY = 6;
-
+	private static final int AUTODESTRUCTION = 7;
+	
 	// Key names received from the Bluetooth Handler
 	public static final String DEVICE_NAME = "device_name";
 	public static final String TOAST = "toast";
@@ -63,6 +64,7 @@ public class Utilities {
 	public static String lastmessage = "";
 	public static String receiverMac = "";
 	public static String senderMac = "";
+	public static String autoDestructionTime = "000";
 
 	// Notifications
 	public static Notifications notificationManager;
@@ -90,7 +92,11 @@ public class Utilities {
 	public static int getMessageSharedKey() {
 		return MESSAGE_SHARED_KEY;
 	}
-
+	
+	public static int getAutodestruction() {
+		return AUTODESTRUCTION;
+	}
+	
 	public static String generateIdentifier(){
 		// currentDateTimeString is the id of the message
 		String currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());

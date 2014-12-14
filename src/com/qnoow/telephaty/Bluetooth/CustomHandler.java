@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.location.GpsStatus.NmeaListener;
 import android.os.Handler;
 import android.os.Message;
 import android.sax.TextElementListener;
@@ -14,6 +15,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.qnoow.telephaty.MainActivity;
 import com.qnoow.telephaty.Msg;
 import com.qnoow.telephaty.MsgArrayAdapter;
 import com.qnoow.telephaty.R;
@@ -78,7 +80,17 @@ public class CustomHandler extends Handler {
 		} else if (msg.what == Utilities.getMessageToast()) {
 			Toast.makeText(Connection.mainContext, msg.getData().getString(Utilities.TOAST), Toast.LENGTH_SHORT).show();
 
-		}
+		
+	} else if (msg.what == Utilities.getAutodestruction()) {
+		Utilities.AllMsgs = new ControllerMensajesCollection(
+				Utilities.mainContext).search();
+	   final MsgArrayAdapter msgs = new MsgArrayAdapter(
+				Utilities.mainContext, Utilities.AllMsgs);
+		msgs.notifyDataSetChanged();
+		final ListView list = (ListView) mMainActivity.findViewById(R.id.listView);
+		list.setAdapter(msgs);
+		list.setSelection(msgs.getCount()-1);
+	}
 
 	}
 }

@@ -1,5 +1,7 @@
 package com.qnoow.telephaty;
 
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -10,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
@@ -22,6 +25,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.NumberPicker;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +38,7 @@ import com.qnoow.telephaty.Bluetooth.Utilities;
 import com.qnoow.telephaty.bbdd.ControllerMensajes;
 import com.qnoow.telephaty.bbdd.ControllerMensajesCollection;
 
+@TargetApi(Build.VERSION_CODES.HONEYCOMB)
 public class MainActivity extends ActionBarActivity {
 
 	private static final String TAG = "En MAIN";
@@ -115,12 +120,9 @@ public class MainActivity extends ActionBarActivity {
 
 	public void sendDifussion(View view) {
 		setupService();
-		Connection.sendDifussion(((TextView) findViewById(R.id.edit_text_out))
+		autodestructionDialog(MainActivity.this, getString(R.string.autodestruction), getString(R.string.autodestruction_time), 0, false, ((TextView) findViewById(R.id.edit_text_out))
 				.getText().toString());
-		TextView tx = (TextView) findViewById(R.id.edit_text_out);
-		tx.setText("");
-		Utilities.progressDialog = launchLoadingDialog();
-		Utilities.sendCount = true;
+		
 	}
 	
 
@@ -254,11 +256,10 @@ public class MainActivity extends ActionBarActivity {
 	    builder.setMessage(message);
 	    builder.setPositiveButton("Resend", new DialogInterface.OnClickListener() {
 	        public void onClick(DialogInterface dialog, int id) {
-				setupService();
-				Connection.sendDifussion(Utilities.AllMsgs.get(position)
+				autodestructionDialog(MainActivity.this, getString(R.string.autodestruction), getString(R.string.autodestruction_time), position, false, Utilities.AllMsgs.get(position)
 						.getMessage());
-				Utilities.progressDialog = launchLoadingDialog();
-				Utilities.sendCount = true;
+
+				
 	       }
 	   });
 	    
@@ -303,17 +304,83 @@ public class MainActivity extends ActionBarActivity {
 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				setupService();
-				Connection.privates = true;
-				Connection.sendDifussionPrivate(input.getText().toString(), Utilities.AllMsgs.get(position).getMac());
-				Utilities.progressDialog = launchLoadingDialog();
-				Utilities.sendCount = true;
 				
+				autodestructionDialog(MainActivity.this, getString(R.string.autodestruction), getString(R.string.autodestruction_time), position, true, input.getText().toString());
 			}
 	       
 	       
 	   });
 	    builder.show();
 	}
+	
+	
 
+	@SuppressLint("NewApi")
+	public void autodestructionDialog(final Activity activity, final String title, final String message, final int position, final boolean privates, final String msg) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+
+		builder.setTitle(title);
+		builder.setCancelable(false);
+		builder.setMessage(message);
+		
+		final NumberPicker np = new NumberPicker(MainActivity.this);  
+		np.setMaxValue(999);
+		np.setMinValue(0);
+	    LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+	                          LinearLayout.LayoutParams.MATCH_PARENT,
+	                          LinearLayout.LayoutParams.MATCH_PARENT);
+	    np.setLayoutParams(lp);
+	    builder.setView(np);
+		
+		builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				if (np.getValue() < 10)
+					Utilities.autoDestructionTime = "00" + np.getValue();
+				else if (np.getValue() >= 10 && np.getValue() < 100)
+					Utilities.autoDestructionTime = "0" + np.getValue();
+				else
+					Utilities.autoDestructionTime = "" + np.getValue();
+				
+				if (!privates){
+					setupService();
+					Connection.sendDifussion(msg);
+					TextView tx = (TextView) findViewById(R.id.edit_text_out);
+					tx.setText("");
+					Utilities.progressDialog = launchLoadingDialog();
+					Utilities.sendCount = true;
+				}else{
+					setupService();
+					Connection.privates = true;
+					Connection.sendDifussionPrivate(msg, Utilities.AllMsgs.get(position).getMac());
+					Utilities.progressDialog = launchLoadingDialog();
+					Utilities.sendCount = true;
+				}
+			}
+			
+		});
+
+
+		builder.setNegativeButton("No",  new DialogInterface.OnClickListener() {
+			public void onClick(DialogInterface dialog, int id) {
+				Utilities.autoDestructionTime = "000";
+				if (!privates){
+					setupService();
+					Connection.sendDifussion(msg);
+					TextView tx = (TextView) findViewById(R.id.edit_text_out);
+					tx.setText("");
+					Utilities.progressDialog = launchLoadingDialog();
+					Utilities.sendCount = true;
+				}else{
+					setupService();
+					Connection.privates = true;
+					Connection.sendDifussionPrivate(msg, Utilities.AllMsgs.get(position).getMac());
+					Utilities.progressDialog = launchLoadingDialog();
+					Utilities.sendCount = true;
+				}
+			}
+		});
+		
+		
+		builder.show();
+	}
 }
